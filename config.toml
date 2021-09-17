@@ -52,8 +52,11 @@ disqusShortname = "https-hugo-tania-netlify-app"
 
 [menu]
 [[menu.header]]
-  name = "Articles"
+  name = "📚 Articles"
   url = "/articles/"
+[[menu.header]]
+  name = "🏡 Home"
+  url = "https://www.ibyte.me/"  
 [[menu.footer]]
     name = "RSS"
     url = "/index.xml"
