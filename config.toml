@@ -1,0 +1,69 @@
+baseURL = "http://blog.ibyte.me/"
+languageCode = "en-us"
+title = "打码匠"
+
+
+publishdir="docs"
+
+theme = "hugo-tania"
+
+paginate = 6
+
+disqusShortname = "https-hugo-tania-netlify-app"
+
+[params]
+  # Emoji will show before the blog title on site navbar.
+  titleEmoji  = "😎"
+
+  # Logo will show before the blog title on site navbar.
+  titleLogo = ""
+
+  # Enable float footnotes.
+  # Default to true
+  enableFootnotes = true
+  siteName = "打码匠 | ibyte.me"
+  siteDesc = "Share computer science and technology, Golang, Rust, distributed systems, system design articles."
+  author = "Leon Ding"
+
+  # Limit how many categories filter show above search input.
+  # Default to 5
+  maxCategoryToShow = 10
+
+  # Show your social information with icon on index bio with `_index.md` content.
+  [params.socialOptions]
+    dev-to = ""
+    email = "ding@ibyte.me"
+    facebook = ""
+    github = "https://github.com/auula"
+    instagram = ""
+    linkedin = ""
+    medium = ""
+    stack-overflow = ""
+    steam = ""
+    telegram = ""
+    twitter = "https://twitter.com/auula_"
+    twitch = ""
+    whatsapp = ""
+  
+  # Comments settigns
+  [params.comments]
+    enabled = true
+    provider = "disqus"
+
+[menu]
+[[menu.header]]
+  name = "Articles"
+  url = "/articles/"
+[[menu.footer]]
+    name = "RSS"
+    url = "/index.xml"
+
+[markup]
+[markup.highlight]
+  noClasses = false
+  lineNos = true
+[markup.goldmark.renderer]
+  unsafe = true
+
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
