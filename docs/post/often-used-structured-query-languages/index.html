@@ -45,7 +45,7 @@
     },
     "datePublished": "2021-09-21",
     "description": "",
-    "wordCount":  94 ,
+    "wordCount":  146 ,
     "mainEntityOfPage": "True",
     "dateModified": "2021-09-21",
     "publisher": {
@@ -228,7 +228,7 @@
 </div>
 </div><p>对表进行按照<code>age</code>升序排序整理输出结果。</p>
 <p><code>limit</code>支持几种方式，<code>limit 2,5</code>意思是从第<code>2</code>行开始，往后查询<code>5</code>条数据，<code>limit 2 offset 3</code>意思是从<code>3</code>开始往后查询<code>2</code>条数据。</p>
-<p>有时候我们查询需要使用运算符，<code>sql</code>也是支持运算符的<code>&lt;</code>、<code>&gt;</code>、<code>&lt;&gt;</code>、<code>&lt;=</code>、&lsquo;&gt;=&rsquo;、<code>!&lt;</code>、<code>!&gt;</code>，这些都可以加在条件语句中。</p>
+<p>有时候我们查询需要使用运算符，<code>sql</code>也是支持运算符的<code>&lt;</code>、<code>&gt;</code>、<code>&lt;&gt;</code>、<code>&lt;=</code>、<code>&gt;=</code>、<code>!&lt;</code>、<code>!&gt;</code>，这些都可以加在条件语句中。</p>
 <p>字段类型也支持数学运算例如：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -239,6 +239,41 @@
 </code></pre></td></tr></table>
 </div>
 </div><p>上面一条语句就是查询<code>age</code>加<code>10</code>以后等于<code>32</code>的数据。</p>
+<p>有时候我们需要对这个表进行多个条件限制查询，我们可能就需要使用到<code>OR</code>或者<code>AND</code>进行条件关联查询了，例如：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">select</span> <span class="n">users</span><span class="p">.</span><span class="n">mobile</span><span class="p">,</span> <span class="n">user_address</span><span class="p">.</span><span class="n">mobile</span> <span class="k">as</span> <span class="s2">&#34;用户订单手机号&#34;</span><span class="p">,</span> <span class="n">user_address</span><span class="p">.</span><span class="n">address</span>
+<span class="k">from</span> <span class="n">user_address</span><span class="p">,</span>
+     <span class="n">users</span>
+<span class="k">where</span> <span class="n">user_address</span><span class="p">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="n">users</span><span class="p">.</span><span class="n">user_id</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>上面这个多表关联查询了，条件是<code>user_address</code>表的<code>id</code>要和<code>users</code>表的<code>id</code>相等的数据查询出来。</p>
+<p>多个条件可以使用<code>and</code>关联起来组成一个条件，例如：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">select</span> <span class="n">BookName</span> <span class="k">as</span> <span class="err">书名</span><span class="p">,</span><span class="n">Price</span> <span class="k">as</span> <span class="err">价格</span><span class="p">,</span> <span class="n">Writer</span> <span class="k">AS</span> <span class="err">作者</span> <span class="k">from</span> <span class="n">bookinfo</span> <span class="k">WHERE</span> <span class="k">MONTH</span><span class="p">(</span><span class="n">pDate</span><span class="p">)</span><span class="o">=</span><span class="mi">9</span> <span class="k">and</span> <span class="k">YEAR</span><span class="p">(</span><span class="n">pDate</span><span class="p">)</span><span class="o">=</span><span class="mi">2021</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>查询图书表里面的出版月份是<code>9</code>月的并且是<code>2021</code>年的<code>9</code>月出版的图书信息。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">TableName</span> <span class="k">where</span> <span class="n">username</span> <span class="o">=</span> <span class="s1">&#39;Leon Ding&#39;</span> <span class="k">or</span> <span class="n">age</span> <span class="o">=</span> <span class="mi">22</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>上面使用<code>or</code>满足任意一边条件即可就能查询到数据。</p>
 
     </div>
 </div>

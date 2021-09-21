@@ -57,7 +57,7 @@ select * from TableName order by age ASC;
 
 `limit`支持几种方式，`limit 2,5`意思是从第`2`行开始，往后查询`5`条数据，`limit 2 offset 3`意思是从`3`开始往后查询`2`条数据。
 
-有时候我们查询需要使用运算符，`sql`也是支持运算符的`<`、`>`、`<>`、`<=`、'>='、`!<`、`!>`，这些都可以加在条件语句中。
+有时候我们查询需要使用运算符，`sql`也是支持运算符的`<`、`>`、`<>`、`<=`、`>=`、`!<`、`!>`，这些都可以加在条件语句中。
 
 字段类型也支持数学运算例如：
 
@@ -65,4 +65,27 @@ select * from TableName order by age ASC;
 select * from TableName where (age+10) = 32;
 ```
 上面一条语句就是查询`age`加`10`以后等于`32`的数据。
+
+有时候我们需要对这个表进行多个条件限制查询，我们可能就需要使用到`OR`或者`AND`进行条件关联查询了，例如：
+
+```sql
+select users.mobile, user_address.mobile as "用户订单手机号", user_address.address
+from user_address,
+     users
+where user_address.user_id = users.user_id;
+```
+上面这个多表关联查询了，条件是`user_address`表的`id`要和`users`表的`id`相等的数据查询出来。
+
+多个条件可以使用`and`关联起来组成一个条件，例如：
+
+```sql
+select BookName as 书名,Price as 价格, Writer AS 作者 from bookinfo WHERE MONTH(pDate)=9 and YEAR(pDate)=2021;
+```
+查询图书表里面的出版月份是`9`月的并且是`2021`年的`9`月出版的图书信息。
+
+```sql
+select * from TableName where username = 'Leon Ding' or age = 22;
+```
+
+上面使用`or`满足任意一边条件即可就能查询到数据。
 
