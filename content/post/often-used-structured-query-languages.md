@@ -89,3 +89,21 @@ select * from TableName where username = 'Leon Ding' or age = 22;
 
 上面使用`or`满足任意一边条件即可就能查询到数据。
 
+还有一种就是查询在某个范围内的数据，例如：
+
+```sql
+select *
+from goods
+where cost_price between 1099 and 2880;
+```
+
+上面就是查询成本价在`1099-2880`之间的商品信息，我们还可以使用`not`放在`between`前面，也就是取反的意思。
+
+多个条件或者通过多个类型来查询可以使用`in`关键字，例如：
+
+```sql
+select * from TableName age in (22,18);
+```
+上面是查年龄是`22`和`18`的用户信息。
+
+
