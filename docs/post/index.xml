@@ -6,10 +6,27 @@
     <description>Recent content in Posts on 打码匠</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 16 Sep 2021 22:49:08 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 21 Sep 2021 18:52:13 +0800</lastBuildDate>
     
 	<atom:link href="http://blog.ibyte.me/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Often Used Structured Query Languages</title>
+      <link>http://blog.ibyte.me/post/often-used-structured-query-languages/</link>
+      <pubDate>Tue, 21 Sep 2021 18:52:13 +0800</pubDate>
+      
+      <guid>http://blog.ibyte.me/post/often-used-structured-query-languages/</guid>
+      <description>概 述  在开发过程中，作为一个crud boy来说会使sql来操作数据库增删改查是必不可少的，这篇文章将写写日常开发中常用的sql语句。数据是一个抽象的的定义，所谓的数据库就是把一些元数据通过特定规律整理到一起管理起来，方便通过他特定DDL，DCL，DML这些特定的语句来方便管理数据。
+ DDL (data definition languages) 方便开发者通过SQL来定义存储的数据格式，组织数据。 DML (data manipulation languages) 允许用户对数据进行create、delete、insert、updated操作。 DCL (data control languages) 可以来管理用户对数据的访问操作权限，例如检索，更新，删除 &amp;hellip;     查询语句  在日常开发过程中查询数据是应用场景最多的，查询就要使用select关键字，如下：
+1  select * from tableName;   例如有一个表结构如下：
+上面是查询整张表的所有字段数据，如果需要筛选就需要制定其field name如下：
+1  select name as &amp;#34;用户名&amp;#34; from TableName;   并且上面使用了as关键字并进行了别名，查询出来数据就按照别名进行展示。
+如果想查询指定的数据,就要使用where子语句，如下：
+1  select * from TableName where ID = 1;   那么上的SQL语句查询出来的结果就是上图中ID等于1的一条数据。
+如果需要整理结果集去重复的话在前面加入distinct关键字，就可以去重了。
+   查询过滤  有时候我们通过条件查询到的数据需要进行其他筛选，这个时候我们就要使用到limit或者order by进行过滤或者重新整理了。</description>
+    </item>
     
     <item>
       <title>Golang Database Reverse Engineering</title>
