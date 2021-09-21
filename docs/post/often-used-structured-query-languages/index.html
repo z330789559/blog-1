@@ -45,7 +45,7 @@
     },
     "datePublished": "2021-09-21",
     "description": "",
-    "wordCount":  146 ,
+    "wordCount":  171 ,
     "mainEntityOfPage": "True",
     "dateModified": "2021-09-21",
     "publisher": {
@@ -274,6 +274,30 @@
 </code></pre></td></tr></table>
 </div>
 </div><p>上面使用<code>or</code>满足任意一边条件即可就能查询到数据。</p>
+<p>还有一种就是查询在某个范围内的数据，例如：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">select</span> <span class="o">*</span>
+<span class="k">from</span> <span class="n">goods</span>
+<span class="k">where</span> <span class="n">cost_price</span> <span class="k">between</span> <span class="mi">1099</span> <span class="k">and</span> <span class="mi">2880</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>上面就是查询成本价在<code>1099-2880</code>之间的商品信息，我们还可以使用<code>not</code>放在<code>between</code>前面，也就是取反的意思。</p>
+<p>多个条件或者通过多个类型来查询可以使用<code>in</code>关键字，例如：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">TableName</span> <span class="n">age</span> <span class="k">in</span> <span class="p">(</span><span class="mi">22</span><span class="p">,</span><span class="mi">18</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>上面是查年龄是<code>22</code>和<code>18</code>的用户信息。</p>
 
     </div>
 </div>
