@@ -5,7 +5,41 @@
     <description>Recent content on 打码匠</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 21 Sep 2021 18:52:13 +0800</lastBuildDate><atom:link href="http://blog.ibyte.me/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 24 Sep 2021 21:38:31 +0800</lastBuildDate><atom:link href="http://blog.ibyte.me/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+    <title>Computer Science Learning</title>
+    <link>http://blog.ibyte.me/post/computer-science-learning/</link>
+    <pubDate>Fri, 24 Sep 2021 21:38:31 +0800</pubDate>
+    
+    <guid>http://blog.ibyte.me/post/computer-science-learning/</guid>
+    <description>
+        &lt;p&gt;本页面是本博主个人平时整理一下计算机科学专业相关的视频或者文档资料，整合了放在下面方便大家浏览，希望对大家有帮助。&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;资料名称&lt;/th&gt;
+&lt;th&gt;链接&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;数据库基础&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://www.bilibili.com/video/BV1GP4y1h7Z&#34;&gt;哔哩哔哩视频&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;数据结构基础&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://www.bilibili.com/video/BV1E4411H73v&#34;&gt;哔哩哔哩视频&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;操作系统基础&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://ipads.se.sjtu.edu.cn/mospi/&#34;&gt;上海交通大学-陈海波&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+    </description>
+    </item>
+    
     <item>
     <title>Often Used Structured Query Languages</title>
     <link>http://blog.ibyte.me/post/often-used-structured-query-languages/</link>

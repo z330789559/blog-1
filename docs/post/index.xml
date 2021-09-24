@@ -6,10 +6,20 @@
     <description>Recent content in Posts on 打码匠</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 21 Sep 2021 18:52:13 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 24 Sep 2021 21:38:31 +0800</lastBuildDate>
     
 	<atom:link href="http://blog.ibyte.me/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Computer Science Learning</title>
+      <link>http://blog.ibyte.me/post/computer-science-learning/</link>
+      <pubDate>Fri, 24 Sep 2021 21:38:31 +0800</pubDate>
+      
+      <guid>http://blog.ibyte.me/post/computer-science-learning/</guid>
+      <description>本页面是本博主个人平时整理一下计算机科学专业相关的视频或者文档资料，整合了放在下面方便大家浏览，希望对大家有帮助。
+   资料名称 链接     数据库基础 哔哩哔哩视频   数据结构基础 哔哩哔哩视频   操作系统基础 上海交通大学-陈海波    </description>
+    </item>
     
     <item>
       <title>Often Used Structured Query Languages</title>
