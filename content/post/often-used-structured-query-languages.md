@@ -1,6 +1,7 @@
 ---
 title: "Often Used Structured Query Languages"
 date: 2021-09-21T18:52:13+08:00
+draft: true
 ---
 
 ## 概 述
