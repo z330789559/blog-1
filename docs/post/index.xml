@@ -20,7 +20,7 @@
       <description>切片是Golang里面一个复合数据类型，可以把它看做为一个可变长度的数组，和动态数组一样，在创建的时候我们可以指定容量大小，如果不够了，它还能指定扩容，基本的crud没有什么可说的本篇文章将写写切片底层的实现。
    slice struct  其实slice在底层就是一个struct声明一个结构体，结构如下：
 1 2 3 4 5  type slice struct { array unsafe.Pointer len int cap int }   slice本身一个结构体里面包含了array和len和cap成员变量，array是一个指针指向真正存储数据的内存头元素地址，len记录着当前实际的元素个数，cap记录当前切片的容量，如上图所示。
-   append expansion  在说append扩容机制之前，先看一个下面的题目，最终输出说明？？
+   append expansion  在说append扩容机制之前，先看一个下面的题目，最终输出什么？？
 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22  package main import ( &amp;#34;fmt&amp;#34; ) func main() { array := [...]int{1,2,3,4,5} s1 := append(array[:3],array[4:].</description>
     </item>
     

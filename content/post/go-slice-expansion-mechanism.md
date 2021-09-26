@@ -27,7 +27,7 @@ type slice struct {
 ## append expansion
 
 
-在说`append`扩容机制之前，先看一个下面的题目，最终输出说明？？
+在说`append`扩容机制之前，先看一个下面的题目，最终输出什么？？
 
 ```go
 package main

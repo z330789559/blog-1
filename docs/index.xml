@@ -56,7 +56,7 @@
     &lt;/a&gt;
     append expansion
 &lt;/h2&gt;
-&lt;p&gt;在说&lt;code&gt;append&lt;/code&gt;扩容机制之前，先看一个下面的题目，最终输出说明？？&lt;/p&gt;
+&lt;p&gt;在说&lt;code&gt;append&lt;/code&gt;扩容机制之前，先看一个下面的题目，最终输出什么？？&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
