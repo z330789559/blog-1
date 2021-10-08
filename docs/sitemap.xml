@@ -24,17 +24,22 @@
   
   <url>
     <loc>http://blog.ibyte.me/</loc>
-    <lastmod>2021-09-26T23:06:08+08:00</lastmod>
+    <lastmod>2021-10-08T20:40:55+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://blog.ibyte.me/post/go-slice-expansion-mechanism/</loc>
-    <lastmod>2021-09-26T23:06:08+08:00</lastmod>
+    <loc>http://blog.ibyte.me/post/</loc>
+    <lastmod>2021-10-08T20:40:55+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.ibyte.me/post/</loc>
+    <loc>http://blog.ibyte.me/post/virtual-memory/</loc>
+    <lastmod>2021-10-08T20:40:55+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.ibyte.me/post/go-slice-expansion-mechanism/</loc>
     <lastmod>2021-09-26T23:06:08+08:00</lastmod>
   </url>
   

@@ -5,7 +5,80 @@
     <description>Recent content on 打码匠</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 26 Sep 2021 23:06:08 +0800</lastBuildDate><atom:link href="http://blog.ibyte.me/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 08 Oct 2021 20:40:55 +0800</lastBuildDate><atom:link href="http://blog.ibyte.me/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+    <title>Virtual Memory</title>
+    <link>http://blog.ibyte.me/post/virtual-memory/</link>
+    <pubDate>Fri, 08 Oct 2021 20:40:55 +0800</pubDate>
+    
+    <guid>http://blog.ibyte.me/post/virtual-memory/</guid>
+    <description>
+        &lt;h2 id=&#34;什么是逻辑内存&#34;&gt;
+    &lt;a href=&#34;#%e4%bb%80%e4%b9%88%e6%98%af%e9%80%bb%e8%be%91%e5%86%85%e5%ad%98&#34; class=&#34;anchor&#34;&gt;
+        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;
+            &lt;path fill-rule=&#34;evenodd&#34;
+                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;
+            &lt;/path&gt;
+        &lt;/svg&gt;
+    &lt;/a&gt;
+    什么是逻辑内存
+&lt;/h2&gt;
+&lt;p&gt;什么是逻辑内存？把物理内存通过程序进行虚拟化出来的内存映射，这就称之为&lt;code&gt;逻辑内存&lt;/code&gt;或&lt;code&gt;虚拟内存&lt;/code&gt;。内存对于程序来说非常重要，当然大部分现在如果你不搞操作系统或者一些特定领域的开发一般很少了解。内存对于计算机来说非常宝贵的东西，现在的程序员只会在这些基础之上进行开发东西，内存管理是交给操作系统进行管理的。&lt;/p&gt;
+&lt;h2 id=&#34;内存管理&#34;&gt;
+    &lt;a href=&#34;#%e5%86%85%e5%ad%98%e7%ae%a1%e7%90%86&#34; class=&#34;anchor&#34;&gt;
+        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;
+            &lt;path fill-rule=&#34;evenodd&#34;
+                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;
+            &lt;/path&gt;
+        &lt;/svg&gt;
+    &lt;/a&gt;
+    内存管理
+&lt;/h2&gt;
+&lt;p&gt;对于操作系统来说怎么分配内存，怎么去给每个不同程序分配内存，管理数据，怎么隔离内存，怎么不让程序&lt;code&gt;a&lt;/code&gt;去访问程序&lt;code&gt;b&lt;/code&gt;的内存，内存不够了会怎么样？这些问题都是需要操作系统解决的。&lt;/p&gt;
+&lt;p&gt;假设计算机内存是&lt;code&gt;4GB&lt;/code&gt;，这里需要运行&lt;code&gt;4&lt;/code&gt;个程序，如图：&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gv856r4smhj60g50bg74p02.jpg&#34; 
+    alt=&#34;示意图&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;如图内存只要&lt;code&gt;4GB&lt;/code&gt;但是需要运行的程序内存总和还要大于&lt;code&gt;4GB&lt;/code&gt;，只能满足&lt;code&gt;ABC&lt;/code&gt;这&lt;code&gt;3&lt;/code&gt;个程序的运行，这时需要运行&lt;code&gt;D&lt;/code&gt;那么就要等着，操作系统回收内存再去看看有木有合适的位置满足运行条件。&lt;/p&gt;
+&lt;p&gt;但是这又出现一个新的问题，如图：&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gv85cu4f08j606605cglk02.jpg&#34; 
+    alt=&#34;内存情况&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;当操作系统回收了&lt;code&gt;A和C&lt;/code&gt;程序所占用的内存时，发现这块内存不是连续的，而&lt;code&gt;D&lt;/code&gt;程序需要一块连续的内存才能正常跑起来，这里问题就是为什么需要有&lt;code&gt;virtual memory&lt;/code&gt;的原因之一了。&lt;/p&gt;
+&lt;h2 id=&#34;virtual-memory&#34;&gt;
+    &lt;a href=&#34;#virtual-memory&#34; class=&#34;anchor&#34;&gt;
+        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;
+            &lt;path fill-rule=&#34;evenodd&#34;
+                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;
+            &lt;/path&gt;
+        &lt;/svg&gt;
+    &lt;/a&gt;
+    Virtual Memory
+&lt;/h2&gt;
+&lt;p&gt;有了这些使用上的问题，然后就会出现了&lt;code&gt;Virtual Memory&lt;/code&gt;这种技术，把&lt;code&gt;物理&lt;/code&gt;加一层映射，而映射这一层就是现在的&lt;code&gt;Virtual Memory&lt;/code&gt;，下面我画了一张图：&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gv85ogr9ylj60g506uwer02.jpg&#34; 
+    alt=&#34;MMU&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;通过这种方式把&lt;code&gt;物理内存&lt;/code&gt;虚拟化成一个虚拟化的内存，从而达到高效的利用，虚拟地址抽象不能在应用的运行过程中造成明显的开销，也不会占用过多的物理内存资源，有效的动态规划利用物理内存。虚拟内存可以完全把不同程序的内存隔离开来，让程序无法访问到其他程序的内存，安全性高。透明性，程序开发者也无限关系程序在运行的时候内存是否够用，感觉不到虚拟内存的存在。&lt;/p&gt;
+&lt;p&gt;虚拟内存划分规则有很多种，例如&lt;code&gt;分段机制&lt;/code&gt;和&lt;code&gt;分页机制&lt;/code&gt;这里我也没有打算写，后面有空再写写&lt;code&gt;分段和分页区别&lt;/code&gt;和&lt;code&gt;缺页异常和内存页替换策略，怎么在物理内存不够用的情况下去解决这个问题等...&lt;/code&gt;。&lt;/p&gt;
+&lt;h2 id=&#34;其他&#34;&gt;
+    &lt;a href=&#34;#%e5%85%b6%e4%bb%96&#34; class=&#34;anchor&#34;&gt;
+        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;
+            &lt;path fill-rule=&#34;evenodd&#34;
+                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;
+            &lt;/path&gt;
+        &lt;/svg&gt;
+    &lt;/a&gt;
+    其他
+&lt;/h2&gt;
+&lt;p&gt;如果对相关内容感兴趣，可以去看看&lt;code&gt;上海交大陈海波教授的操作系统课程&lt;/code&gt;，地址：&lt;code&gt;https://ipads.se.sjtu.edu.cn/courses/os/&lt;/code&gt;，当然这个部分内存只支持内网访问。&lt;/p&gt;
+
+    </description>
+    </item>
+    
     <item>
     <title>Go Slice Expansion Mechanism</title>
     <link>http://blog.ibyte.me/post/go-slice-expansion-mechanism/</link>

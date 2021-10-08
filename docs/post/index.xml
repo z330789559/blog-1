@@ -6,10 +6,28 @@
     <description>Recent content in Posts on 打码匠</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 26 Sep 2021 23:06:08 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 08 Oct 2021 20:40:55 +0800</lastBuildDate>
     
 	<atom:link href="http://blog.ibyte.me/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Virtual Memory</title>
+      <link>http://blog.ibyte.me/post/virtual-memory/</link>
+      <pubDate>Fri, 08 Oct 2021 20:40:55 +0800</pubDate>
+      
+      <guid>http://blog.ibyte.me/post/virtual-memory/</guid>
+      <description>什么是逻辑内存  什么是逻辑内存？把物理内存通过程序进行虚拟化出来的内存映射，这就称之为逻辑内存或虚拟内存。内存对于程序来说非常重要，当然大部分现在如果你不搞操作系统或者一些特定领域的开发一般很少了解。内存对于计算机来说非常宝贵的东西，现在的程序员只会在这些基础之上进行开发东西，内存管理是交给操作系统进行管理的。
+   内存管理  对于操作系统来说怎么分配内存，怎么去给每个不同程序分配内存，管理数据，怎么隔离内存，怎么不让程序a去访问程序b的内存，内存不够了会怎么样？这些问题都是需要操作系统解决的。
+假设计算机内存是4GB，这里需要运行4个程序，如图：
+如图内存只要4GB但是需要运行的程序内存总和还要大于4GB，只能满足ABC这3个程序的运行，这时需要运行D那么就要等着，操作系统回收内存再去看看有木有合适的位置满足运行条件。
+但是这又出现一个新的问题，如图：
+当操作系统回收了A和C程序所占用的内存时，发现这块内存不是连续的，而D程序需要一块连续的内存才能正常跑起来，这里问题就是为什么需要有virtual memory的原因之一了。
+   Virtual Memory  有了这些使用上的问题，然后就会出现了Virtual Memory这种技术，把物理加一层映射，而映射这一层就是现在的Virtual Memory，下面我画了一张图：
+通过这种方式把物理内存虚拟化成一个虚拟化的内存，从而达到高效的利用，虚拟地址抽象不能在应用的运行过程中造成明显的开销，也不会占用过多的物理内存资源，有效的动态规划利用物理内存。虚拟内存可以完全把不同程序的内存隔离开来，让程序无法访问到其他程序的内存，安全性高。透明性，程序开发者也无限关系程序在运行的时候内存是否够用，感觉不到虚拟内存的存在。
+虚拟内存划分规则有很多种，例如分段机制和分页机制这里我也没有打算写，后面有空再写写分段和分页区别和缺页异常和内存页替换策略，怎么在物理内存不够用的情况下去解决这个问题等...。
+   其他  如果对相关内容感兴趣，可以去看看上海交大陈海波教授的操作系统课程，地址：https://ipads.se.sjtu.edu.cn/courses/os/，当然这个部分内存只支持内网访问。</description>
+    </item>
     
     <item>
       <title>Go Slice Expansion Mechanism</title>
