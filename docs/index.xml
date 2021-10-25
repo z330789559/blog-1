@@ -5,7 +5,124 @@
     <description>Recent content on 打码匠</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 08 Oct 2021 20:40:55 +0800</lastBuildDate><atom:link href="http://blog.ibyte.me/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 25 Oct 2021 14:15:01 +0800</lastBuildDate><atom:link href="http://blog.ibyte.me/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+    <title>Bernoulli Experiment</title>
+    <link>http://blog.ibyte.me/post/bernoulli-experiment/</link>
+    <pubDate>Mon, 25 Oct 2021 14:15:01 +0800</pubDate>
+    
+    <guid>http://blog.ibyte.me/post/bernoulli-experiment/</guid>
+    <description>
+        &lt;h2 id=&#34;一个关于统计学的问题&#34;&gt;
+    &lt;a href=&#34;#%e4%b8%80%e4%b8%aa%e5%85%b3%e4%ba%8e%e7%bb%9f%e8%ae%a1%e5%ad%a6%e7%9a%84%e9%97%ae%e9%a2%98&#34; class=&#34;anchor&#34;&gt;
+        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;
+            &lt;path fill-rule=&#34;evenodd&#34;
+                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;
+            &lt;/path&gt;
+        &lt;/svg&gt;
+    &lt;/a&gt;
+    一个关于统计学的问题
+&lt;/h2&gt;
+&lt;p&gt;说&lt;code&gt;Hyperloglog&lt;/code&gt;之前，我得先写一些它的由来。设想一下，某某地方举办了一场技术交流活动，工作人员需要统计一下这个活动当天有多少的人参加？这个需求就是一个简单的统计的需求，解决方法有很多种，例如：活动举办方在会场门口设置一个签到处，每来一个参会者记录一下，最后统计一下人数就可以了。这是一个很简单问题，当时某一天作为开发的我，接到一个来自产品需求，&lt;code&gt;要我统计一下在双十一1天内的某一个页面的UV（Unique Visitors）？&lt;/code&gt;，那么问题来了？怎么解决？&lt;/p&gt;
+&lt;p&gt;了解这个问题之前先说一下&lt;code&gt;uv统计标准&lt;/code&gt;：独立访客UV指不同的用户，通过互联网访问同一个网页或产品的独立触发用户数。&lt;/p&gt;
+&lt;p&gt;假设一个场景: 今天爸爸、妈妈、儿子三人通过三个账号访问了某宝网页，则&lt;code&gt;UV=3&lt;/code&gt;，
+这里需要提一点：独立&lt;code&gt;UV&lt;/code&gt;是按浏览器&lt;code&gt;cookie&lt;/code&gt;为依据。只要&lt;code&gt;cookie&lt;/code&gt;不清楚，3个人在&lt;code&gt;0:00—24:00&lt;/code&gt;内用同一个浏览器不同的账号登陆，只会算作一个&lt;code&gt;UV&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;如图3个不同账户但是通过同一台电脑的浏览器访问的，如果默认以&lt;code&gt;cookie&lt;/code&gt;作为标准的话，没有清理&lt;code&gt;cookie&lt;/code&gt;的话，那么只会算一个&lt;code&gt;uv&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gvn6plcne8j60gx0ab0t602.jpg&#34; 
+    alt=&#34;uv访问记录&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;那么有开发经验的肯定会说简单啊，用&lt;code&gt;hashmap&lt;/code&gt;或者用&lt;code&gt;set&lt;/code&gt;集合&amp;hellip;看似是一个简单问题，问题虽不难，但当参与问题中的变量达到一定数量级的时候，再简单的问题都会变成一个难题。假设日活用户达到百万或千万以上级别的话，我们采用 &lt;code&gt;HashMap&lt;/code&gt; 的做法，就会导致程序中占用大量的内存，并且都是在并行的操作记录，还可能要考虑锁颗粒度问题，显然有经验的老司机会直接否决🙅这种方案。&lt;/p&gt;
+&lt;h2 id=&#34;hyperloglog&#34;&gt;
+    &lt;a href=&#34;#hyperloglog&#34; class=&#34;anchor&#34;&gt;
+        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;
+            &lt;path fill-rule=&#34;evenodd&#34;
+                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;
+            &lt;/path&gt;
+        &lt;/svg&gt;
+    &lt;/a&gt;
+    HyperLogLog
+&lt;/h2&gt;
+&lt;p&gt;看了什么的问题，那有木有什么好的解决方案？ 有肯定是有的：&lt;code&gt;B+ tree&lt;/code&gt;，&lt;code&gt;Bitmap&lt;/code&gt;，在&lt;code&gt;redis&lt;/code&gt;中就有造好的轮子的&lt;code&gt;HyperLogLog&lt;/code&gt;概率数据结构算法，在&lt;code&gt;redis&lt;/code&gt;中使用也就是&lt;code&gt;3&lt;/code&gt;个&lt;code&gt;api&lt;/code&gt;的事情：&lt;code&gt;pfadd&lt;/code&gt;、&lt;code&gt;pfcount&lt;/code&gt;、&lt;code&gt;pfmerge&lt;/code&gt;。但是想深挖下去这个东西属实有点复杂，会涉及到一些数学上的东西，正好笔者我也看了看实现，顺便就写了这篇文章，&lt;code&gt;HyperLogLog&lt;/code&gt;这个是由下面👇这个&lt;code&gt;肥宅&lt;/code&gt;在他的论文中提出的，对可能这就是国外搞学术的大佬吧，不过可惜的是大佬在 &lt;code&gt;2011年3月22日&lt;/code&gt;就去世了，不过他留下的&lt;code&gt;HyperLogLog&lt;/code&gt;还是很值得研究的。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gvn7lmdwfaj605e0773yj02.jpg&#34; 
+    alt=&#34;Philippe Flajolet教授&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;HLL&lt;/code&gt;的特点就是能花较低的内存占用统计海量的数据，但是缺点也有代码实现比较难，有一定的误差，如果要统计的&lt;code&gt;100%&lt;/code&gt;的准确性，还是要考虑其他方案或者通过数学计算算出误差值（负载因子）。&lt;/p&gt;
+&lt;p&gt;在&lt;code&gt;redis&lt;/code&gt;实现的&lt;code&gt;HyperLogLog&lt;/code&gt;中能用&lt;code&gt;12k&lt;/code&gt;内存就能统计&lt;code&gt;2^64&lt;/code&gt;个数据，我表示很震撼。。。怎么做到的？？？&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gvn8x0umjvj60ck0b4aai02.jpg&#34; 
+    alt=&#34;&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;挖槽这是怎么做到的？看了一下那篇论文：&lt;a href=&#34;http://algo.inria.fr/flajolet/Publications/FlFuGaMe07.pdf&#34;&gt;http://algo.inria.fr/flajolet/Publications/FlFuGaMe07.pdf&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gvn95nc0o8j60k010jtbc02.jpg&#34; 
+    alt=&#34;呵呵哈哈哈&#34; 
+     /&gt;&lt;/p&gt;
+&lt;h2 id=&#34;伯努利试验证明&#34;&gt;
+    &lt;a href=&#34;#%e4%bc%af%e5%8a%aa%e5%88%a9%e8%af%95%e9%aa%8c%e8%af%81%e6%98%8e&#34; class=&#34;anchor&#34;&gt;
+        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;
+            &lt;path fill-rule=&#34;evenodd&#34;
+                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;
+            &lt;/path&gt;
+        &lt;/svg&gt;
+    &lt;/a&gt;
+    伯努利试验证明
+&lt;/h2&gt;
+&lt;p&gt;在说&lt;code&gt;HLL&lt;/code&gt;之前得先了解一下&lt;code&gt;伯努利试验&lt;/code&gt;!&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;伯努利试验是数学概率论中的一部分内容，它的典故来源于抛硬币游戏。 实验的内容：在同一个条件下重复地、各次之间相互独立地进行的一种试验，但是实验的结果只要两种结果，每次实验结果只会是两种结果中一个，然后在相同条件下重复做&lt;code&gt;n&lt;/code&gt;次的试验称为&lt;code&gt;n&lt;/code&gt;次独立重复试验，独立性是只各次试验的结果不会受其他实验结果的影响。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;次数较少的实验是没有意义的，只要当实验次数达到一定数量，就和微积分一样，短时间是看不出来差异的，但是如果把时间线拉长，那么差异就出来了。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gvn9weyz9pg609o05ggp202.gif&#34; 
+    alt=&#34;结果是？&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;实验过程： 硬币拥有正反两面，一次的上抛至落下，最终出现正反面的概率各自都是&lt;code&gt;50%&lt;/code&gt;，假设一直抛硬币，直到它出现正面为止，我们记录为一次完整的试验，间中可能抛了一次就出现了正面，也可能抛了&lt;code&gt;n&lt;/code&gt;次才出现正面，不管抛出多少次，只要出现了正面，就记录为一次试验。&lt;/p&gt;
+&lt;p&gt;重复不断这个过程，假设这个多次为&lt;code&gt;n&lt;/code&gt;次，就意味着出现了&lt;code&gt;n&lt;/code&gt;次的正面。假设每次伯努利试验所经历了的抛掷次数为&lt;code&gt;k&lt;/code&gt;，第一次伯努利试验，次数设为&lt;code&gt;k1&lt;/code&gt;，以此类推，第&lt;code&gt;n&lt;/code&gt;次对应的是&lt;code&gt;kn&lt;/code&gt;，在实验过程中肯定会出现抛出&lt;code&gt;n&lt;/code&gt;才能出现一次正面，那么称这个为&lt;code&gt;k_max&lt;/code&gt;，代表抛了最多的次数。&lt;/p&gt;
+&lt;p&gt;经过反复实验得出结果：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;N&lt;/code&gt;次实验抛出的次数不会大于&lt;code&gt;k_max&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;N&lt;/code&gt;次实验最少有一次的次数是&lt;code&gt;k_max&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;当有了这些结论之后，发现在&lt;code&gt;n&lt;/code&gt;和&lt;code&gt;k_max&lt;/code&gt;中存在估算关联：&lt;code&gt;n = 2^(k_max)&lt;/code&gt;，当然需要大量的数据和实验次数证明，如果需要深入挖掘其中的奥秘，那么还会涉及到数学中的概率和统计的方法才能推导和验证这种关联关系。。。。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span class=&#34;nx&#34;&gt;第一次&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;抛了3次出正面&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;，&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;此时&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;k&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;，&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;n&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;
+&lt;span class=&#34;nx&#34;&gt;第二次&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;抛了2次出正面&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;，&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;此时&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;k&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;，&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;n&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;
+&lt;span class=&#34;nx&#34;&gt;第三次&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;抛了6次出正面&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;，&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;此时&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;k&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;6&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;，&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;n&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;3&lt;/span&gt;
+&lt;span class=&#34;nx&#34;&gt;第n&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;次&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;：&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;抛了20次出正面&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;，&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;此时我们估算&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;，&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;n&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;^&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;20&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;看上面的实验如果套用这个估算关系公式的话，那么结果是：上面例子中实验组数共3组，那么 &lt;code&gt;k_max = 6&lt;/code&gt;，最终 &lt;code&gt;n=3&lt;/code&gt;，我们放进估算公式中去，明显： &lt;code&gt;3 ≠ 2^6&lt;/code&gt;不成立的，但是证明了数据次数越少，意义就不大，发挥不了作用，就存在一定的误差值。&lt;/p&gt;
+&lt;p&gt;通过上面一系列的推导，又会得出一个结论就是，如果我每轮实验的次数越多，那么结果偏差就会越小，但是还有有偏差的存在。那么可不可以搞一个多轮的次数测试，例如搞&lt;code&gt;1000&lt;/code&gt;次，然后再去取&lt;code&gt;每轮的k_max&lt;/code&gt;，然后把&lt;code&gt;k_max&lt;/code&gt;平摊到轮数上，就能算出&lt;code&gt;n&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;但是结果还是有偏差的，那怎么办？可以通过少量的测试观察结果误差，适当用&lt;code&gt;修正因子&lt;/code&gt;做计算提高准确率，然后又演进出了一种&lt;code&gt;LogLog&lt;/code&gt;的估算公式：&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gvnavkzk30j60gu03c0sm02.jpg&#34; 
+    alt=&#34;LogLog估算公式&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;上面的&lt;code&gt;DVLL&lt;/code&gt;对应的就是&lt;code&gt;n&lt;/code&gt;，&lt;code&gt;constant&lt;/code&gt;为修正因子具体值是不定的，自定义设置，可以通过少量的测试观察结果误差，&lt;code&gt;m&lt;/code&gt;代表的是试验的轮数，头上有一横的R就是平均数：&lt;code&gt;(k_max_1 + ... + k_max_m)/m&lt;/code&gt;。&lt;/p&gt;
+&lt;h2 id=&#34;小结&#34;&gt;
+    &lt;a href=&#34;#%e5%b0%8f%e7%bb%93&#34; class=&#34;anchor&#34;&gt;
+        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;
+            &lt;path fill-rule=&#34;evenodd&#34;
+                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;
+            &lt;/path&gt;
+        &lt;/svg&gt;
+    &lt;/a&gt;
+    小结
+&lt;/h2&gt;
+&lt;p&gt;本文整理一下&lt;code&gt;LogLog&lt;/code&gt;相关基础理论，但是没有写完，后面更新下篇文章会讲&lt;code&gt;redis&lt;/code&gt;的&lt;code&gt;hll&lt;/code&gt;具体实现细节，&lt;code&gt;HyperLogLog&lt;/code&gt;是由&lt;code&gt;Loglog&lt;/code&gt;优化改进过来的，所以本篇先写到这。&lt;/p&gt;
+
+    </description>
+    </item>
+    
     <item>
     <title>Virtual Memory</title>
     <link>http://blog.ibyte.me/post/virtual-memory/</link>

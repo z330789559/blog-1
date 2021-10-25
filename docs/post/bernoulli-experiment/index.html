@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="theme-color" content="dark">
+    <title>Bernoulli Experiment | 打码匠</title>
+
+    
+    
+    
+    <meta property="og:site_name" content="打码匠 | ibyte.me" />
+    <meta property="og:title" content="Bernoulli Experiment | 打码匠"/>
+    <meta itemprop="name" content="Bernoulli Experiment | 打码匠" />
+    <meta name="twitter:title" content="Bernoulli Experiment | 打码匠" />
+    <meta name="application-name" content="Bernoulli Experiment | 打码匠" />
+
+
+    <meta name="description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles." />
+    <meta name="twitter:description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles."/>
+    <meta itemprop="description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles."/>
+    <meta property="og:description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles." />
+
+    
+
+<meta property="og:type" content="article" />
+<meta property="article:publisher" content="Leon Ding" />
+<meta property="og:article:published_time" content=2021-10-25T14:15:01&#43;0800 />
+<meta property="article:published_time" content=2021-10-25T14:15:01&#43;0800 />
+
+
+
+
+
+<script defer type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "Article",
+    "headline": "Bernoulli Experiment",
+    "author": {
+      "@type": "Person",
+      "name": "Leon Ding"
+    },
+    "datePublished": "2021-10-25",
+    "description": "",
+    "wordCount":  68 ,
+    "mainEntityOfPage": "True",
+    "dateModified": "2021-10-25",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Leon Ding",
+      "logo": {
+        "@type": "imageObject",
+        "url": "http:\/\/blog.ibyte.me\/favicon.ico"
+      }
+    }
+  }
+</script>
+
+
+    <link rel="shortcut icon" type="image/x-icon" href="https://avatars.githubusercontent.com/u/38412458?v=4" />
+    
+    
+    <link rel="stylesheet" href="/sass/main.min.85d2dd3a54e29956009c7c48e5f5d4bc22b6af329dc58a4fc8919e8c12720daa.css">
+    
+</head>
+    <script>
+    (function() {
+        const colorSchemeKey = 'ThemeColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.userColorScheme = 'dark';
+        } else {
+            document.documentElement.dataset.userColorScheme = 'light';
+        }
+    })();
+</script>
+
+    <body class="dark">
+        <nav class="navbar">
+    <div class="container">
+        <div class="flex">
+            <div>
+                <a class="brand" href="/">
+                    
+                    
+                        <img src="https://avatars.githubusercontent.com/u/38412458?v=4" />
+                    
+                    打码匠
+                    </a>
+            </div>
+            <div class="flex">
+                
+                <a href="https://www.ibyte.me/">🏡 Home</a>
+                
+                <a href="/articles/">📚 Articles</a>
+                
+                <button id="dark-mode-button">
+                  <svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path fill="#FFD983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163 0 1 0 1.643 1.641a1.163 1.163 0 0 0-1.643-1.641zm-16.022 14.38a1.74 1.74 0 0 0 0 2.465a1.742 1.742 0 1 0 0-2.465zm13.968-2.147a2.904 2.904 0 0 1-4.108 0a2.902 2.902 0 0 1 0-4.107a2.902 2.902 0 0 1 4.108 0a2.902 2.902 0 0 1 0 4.107z" fill="#FFCC4D"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)" /></svg>
+                  <svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path fill="#FFD983" d="M16 2s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2V2zm18 14s2 0 2 2s-2 2-2 2h-2s-2 0-2-2s2-2 2-2h2zM4 16s2 0 2 2s-2 2-2 2H2s-2 0-2-2s2-2 2-2h2zm5.121-8.707s1.414 1.414 0 2.828s-2.828 0-2.828 0L4.878 8.708s-1.414-1.414 0-2.829c1.415-1.414 2.829 0 2.829 0l1.414 1.414zm21 21s1.414 1.414 0 2.828s-2.828 0-2.828 0l-1.414-1.414s-1.414-1.414 0-2.828s2.828 0 2.828 0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828l-1.414 1.414zM16 32s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2v-2z"/><circle fill="#FFD983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)" /></svg>
+                </button>
+            </div>
+            </div>
+    </div>
+</nav>
+        <main>
+            
+<div class="container">
+    <article>
+        <header class="article-header">
+            <div class="thumb">
+                <div>
+                    <h1>Bernoulli Experiment</h1>
+                    <div class="post-meta">
+                        <div>
+                            
+                            
+                              
+                            
+                            By Leon Ding | <time>October 25, 2021</time>
+                            | 1 minutes
+                        </div>
+                        <div class="tags">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </article>
+
+    <div class="article-post">
+    <h2 id="一个关于统计学的问题">
+    <a href="#%e4%b8%80%e4%b8%aa%e5%85%b3%e4%ba%8e%e7%bb%9f%e8%ae%a1%e5%ad%a6%e7%9a%84%e9%97%ae%e9%a2%98" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    一个关于统计学的问题
+</h2>
+<p>说<code>Hyperloglog</code>之前，我得先写一些它的由来。设想一下，某某地方举办了一场技术交流活动，工作人员需要统计一下这个活动当天有多少的人参加？这个需求就是一个简单的统计的需求，解决方法有很多种，例如：活动举办方在会场门口设置一个签到处，每来一个参会者记录一下，最后统计一下人数就可以了。这是一个很简单问题，当时某一天作为开发的我，接到一个来自产品需求，<code>要我统计一下在双十一1天内的某一个页面的UV（Unique Visitors）？</code>，那么问题来了？怎么解决？</p>
+<p>了解这个问题之前先说一下<code>uv统计标准</code>：独立访客UV指不同的用户，通过互联网访问同一个网页或产品的独立触发用户数。</p>
+<p>假设一个场景: 今天爸爸、妈妈、儿子三人通过三个账号访问了某宝网页，则<code>UV=3</code>，
+这里需要提一点：独立<code>UV</code>是按浏览器<code>cookie</code>为依据。只要<code>cookie</code>不清楚，3个人在<code>0:00—24:00</code>内用同一个浏览器不同的账号登陆，只会算作一个<code>UV</code>。</p>
+<p>如图3个不同账户但是通过同一台电脑的浏览器访问的，如果默认以<code>cookie</code>作为标准的话，没有清理<code>cookie</code>的话，那么只会算一个<code>uv</code>。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gvn6plcne8j60gx0ab0t602.jpg" 
+    alt="uv访问记录" 
+     /></p>
+<p>那么有开发经验的肯定会说简单啊，用<code>hashmap</code>或者用<code>set</code>集合&hellip;看似是一个简单问题，问题虽不难，但当参与问题中的变量达到一定数量级的时候，再简单的问题都会变成一个难题。假设日活用户达到百万或千万以上级别的话，我们采用 <code>HashMap</code> 的做法，就会导致程序中占用大量的内存，并且都是在并行的操作记录，还可能要考虑锁颗粒度问题，显然有经验的老司机会直接否决🙅这种方案。</p>
+<h2 id="hyperloglog">
+    <a href="#hyperloglog" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    HyperLogLog
+</h2>
+<p>看了什么的问题，那有木有什么好的解决方案？ 有肯定是有的：<code>B+ tree</code>，<code>Bitmap</code>，在<code>redis</code>中就有造好的轮子的<code>HyperLogLog</code>概率数据结构算法，在<code>redis</code>中使用也就是<code>3</code>个<code>api</code>的事情：<code>pfadd</code>、<code>pfcount</code>、<code>pfmerge</code>。但是想深挖下去这个东西属实有点复杂，会涉及到一些数学上的东西，正好笔者我也看了看实现，顺便就写了这篇文章，<code>HyperLogLog</code>这个是由下面👇这个<code>肥宅</code>在他的论文中提出的，对可能这就是国外搞学术的大佬吧，不过可惜的是大佬在 <code>2011年3月22日</code>就去世了，不过他留下的<code>HyperLogLog</code>还是很值得研究的。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gvn7lmdwfaj605e0773yj02.jpg" 
+    alt="Philippe Flajolet教授" 
+     /></p>
+<p><code>HLL</code>的特点就是能花较低的内存占用统计海量的数据，但是缺点也有代码实现比较难，有一定的误差，如果要统计的<code>100%</code>的准确性，还是要考虑其他方案或者通过数学计算算出误差值（负载因子）。</p>
+<p>在<code>redis</code>实现的<code>HyperLogLog</code>中能用<code>12k</code>内存就能统计<code>2^64</code>个数据，我表示很震撼。。。怎么做到的？？？</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gvn8x0umjvj60ck0b4aai02.jpg" 
+    alt="" 
+     /></p>
+<p>挖槽这是怎么做到的？看了一下那篇论文：<a href="http://algo.inria.fr/flajolet/Publications/FlFuGaMe07.pdf">http://algo.inria.fr/flajolet/Publications/FlFuGaMe07.pdf</a></p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gvn95nc0o8j60k010jtbc02.jpg" 
+    alt="呵呵哈哈哈" 
+     /></p>
+<h2 id="伯努利试验证明">
+    <a href="#%e4%bc%af%e5%8a%aa%e5%88%a9%e8%af%95%e9%aa%8c%e8%af%81%e6%98%8e" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    伯努利试验证明
+</h2>
+<p>在说<code>HLL</code>之前得先了解一下<code>伯努利试验</code>!</p>
+<blockquote>
+<p>伯努利试验是数学概率论中的一部分内容，它的典故来源于抛硬币游戏。 实验的内容：在同一个条件下重复地、各次之间相互独立地进行的一种试验，但是实验的结果只要两种结果，每次实验结果只会是两种结果中一个，然后在相同条件下重复做<code>n</code>次的试验称为<code>n</code>次独立重复试验，独立性是只各次试验的结果不会受其他实验结果的影响。</p>
+</blockquote>
+<p>次数较少的实验是没有意义的，只要当实验次数达到一定数量，就和微积分一样，短时间是看不出来差异的，但是如果把时间线拉长，那么差异就出来了。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gvn9weyz9pg609o05ggp202.gif" 
+    alt="结果是？" 
+     /></p>
+<p>实验过程： 硬币拥有正反两面，一次的上抛至落下，最终出现正反面的概率各自都是<code>50%</code>，假设一直抛硬币，直到它出现正面为止，我们记录为一次完整的试验，间中可能抛了一次就出现了正面，也可能抛了<code>n</code>次才出现正面，不管抛出多少次，只要出现了正面，就记录为一次试验。</p>
+<p>重复不断这个过程，假设这个多次为<code>n</code>次，就意味着出现了<code>n</code>次的正面。假设每次伯努利试验所经历了的抛掷次数为<code>k</code>，第一次伯努利试验，次数设为<code>k1</code>，以此类推，第<code>n</code>次对应的是<code>kn</code>，在实验过程中肯定会出现抛出<code>n</code>才能出现一次正面，那么称这个为<code>k_max</code>，代表抛了最多的次数。</p>
+<p>经过反复实验得出结果：</p>
+<ol>
+<li><code>N</code>次实验抛出的次数不会大于<code>k_max</code></li>
+<li><code>N</code>次实验最少有一次的次数是<code>k_max</code></li>
+</ol>
+<p>当有了这些结论之后，发现在<code>n</code>和<code>k_max</code>中存在估算关联：<code>n = 2^(k_max)</code>，当然需要大量的数据和实验次数证明，如果需要深入挖掘其中的奥秘，那么还会涉及到数学中的概率和统计的方法才能推导和验证这种关联关系。。。。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">第一次</span><span class="p">:</span> <span class="nx">抛了3次出正面</span><span class="err">，</span><span class="nx">此时</span> <span class="nx">k</span><span class="p">=</span><span class="mi">3</span><span class="err">，</span><span class="nx">n</span><span class="p">=</span><span class="mi">1</span>
+<span class="nx">第二次</span><span class="p">:</span> <span class="nx">抛了2次出正面</span><span class="err">，</span><span class="nx">此时</span> <span class="nx">k</span><span class="p">=</span><span class="mi">2</span><span class="err">，</span><span class="nx">n</span><span class="p">=</span><span class="mi">2</span>
+<span class="nx">第三次</span><span class="p">:</span> <span class="nx">抛了6次出正面</span><span class="err">，</span><span class="nx">此时</span> <span class="nx">k</span><span class="p">=</span><span class="mi">6</span><span class="err">，</span><span class="nx">n</span><span class="p">=</span><span class="mi">3</span>
+<span class="nx">第n</span> <span class="nx">次</span><span class="err">：</span><span class="nx">抛了20次出正面</span><span class="err">，</span><span class="nx">此时我们估算</span><span class="err">，</span> <span class="nx">n</span> <span class="p">=</span> <span class="mi">2</span><span class="p">^</span><span class="mi">20</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>看上面的实验如果套用这个估算关系公式的话，那么结果是：上面例子中实验组数共3组，那么 <code>k_max = 6</code>，最终 <code>n=3</code>，我们放进估算公式中去，明显： <code>3 ≠ 2^6</code>不成立的，但是证明了数据次数越少，意义就不大，发挥不了作用，就存在一定的误差值。</p>
+<p>通过上面一系列的推导，又会得出一个结论就是，如果我每轮实验的次数越多，那么结果偏差就会越小，但是还有有偏差的存在。那么可不可以搞一个多轮的次数测试，例如搞<code>1000</code>次，然后再去取<code>每轮的k_max</code>，然后把<code>k_max</code>平摊到轮数上，就能算出<code>n</code>。</p>
+<p>但是结果还是有偏差的，那怎么办？可以通过少量的测试观察结果误差，适当用<code>修正因子</code>做计算提高准确率，然后又演进出了一种<code>LogLog</code>的估算公式：</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gvnavkzk30j60gu03c0sm02.jpg" 
+    alt="LogLog估算公式" 
+     /></p>
+<p>上面的<code>DVLL</code>对应的就是<code>n</code>，<code>constant</code>为修正因子具体值是不定的，自定义设置，可以通过少量的测试观察结果误差，<code>m</code>代表的是试验的轮数，头上有一横的R就是平均数：<code>(k_max_1 + ... + k_max_m)/m</code>。</p>
+<h2 id="小结">
+    <a href="#%e5%b0%8f%e7%bb%93" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    小结
+</h2>
+<p>本文整理一下<code>LogLog</code>相关基础理论，但是没有写完，后面更新下篇文章会讲<code>redis</code>的<code>hll</code>具体实现细节，<code>HyperLogLog</code>是由<code>Loglog</code>优化改进过来的，所以本篇先写到这。</p>
+
+    </div>
+</div>
+
+<div class="container">
+    
+    <nav class="flex container suggested">
+        
+        <a rel="prev" href="/post/virtual-memory/" title="Previous post (older)">
+            <span>Previous</span>
+            Virtual Memory
+            </a>
+        
+        
+        
+    </nav>
+    
+</div>
+ 
+<div class="container">
+    
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "https-hugo-tania-netlify-app" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (DISQUS) {
+            DISQUS.reset({
+                reload: true
+            })
+        }
+    })
+</script>
+
+</div>
+
+</main>
+
+
+        </main>
+        <footer class="footer flex">
+    <section class="container">
+        <nav class="footer-links">
+            
+            <a href="/index.xml">RSS</a>
+            
+        </nav>
+    </section>
+    <script defer src="/ts/features.b5555d1ae12309fd7a67c0d19ce81e7098647818f6758eb95f88ea9d550d2d2c.js" data-enable-footnotes="true"></script>
+</footer>
+    </body>
+</html>
