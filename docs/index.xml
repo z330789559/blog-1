@@ -5,7 +5,99 @@
     <description>Recent content on 打码匠</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 25 Oct 2021 14:15:01 +0800</lastBuildDate><atom:link href="http://blog.ibyte.me/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 25 Oct 2021 14:18:04 +0800</lastBuildDate><atom:link href="http://blog.ibyte.me/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+    <title>Hyperloglog</title>
+    <link>http://blog.ibyte.me/post/hyperloglog/</link>
+    <pubDate>Mon, 25 Oct 2021 14:18:04 +0800</pubDate>
+    
+    <guid>http://blog.ibyte.me/post/hyperloglog/</guid>
+    <description>
+        &lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gvodsvv1xaj60o00maq4a02.jpg&#34; 
+    alt=&#34;一张有趣的表情&#34; 
+     /&gt;&lt;/p&gt;
+&lt;h2 id=&#34;hyperloglog&#34;&gt;
+    &lt;a href=&#34;#hyperloglog&#34; class=&#34;anchor&#34;&gt;
+        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;
+            &lt;path fill-rule=&#34;evenodd&#34;
+                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;
+            &lt;/path&gt;
+        &lt;/svg&gt;
+    &lt;/a&gt;
+    Hyperloglog
+&lt;/h2&gt;
+&lt;p&gt;上一篇文章&lt;a href=&#34;https://mp.weixin.qq.com/s/nBNnaP2i7lJV_vJzHN0zMg&#34;&gt;HLL基础部分&lt;/a&gt;介绍了&lt;code&gt;HLL&lt;/code&gt;一些相关理论知识，里面的抛硬币游戏，硬币正反两面，如果用计算机里面的数据表示的话，完全可以使用&lt;code&gt;0&lt;/code&gt;和&lt;code&gt;1&lt;/code&gt;，&lt;code&gt;1&lt;/code&gt;表示正面，&lt;code&gt;0&lt;/code&gt;表示反面。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;HLL&lt;/code&gt;常用于去重场景，&lt;code&gt;HLL&lt;/code&gt; 算法需要完整遍历所有元素一次，而非多次或采样，算法&lt;code&gt;只能计算集合中有多少个不重复的元素&lt;/code&gt;，不能给出每个元素的出现次数或是判断一个元素是否之前出现过，多个使用 &lt;code&gt;HLL&lt;/code&gt; 统计出的&lt;code&gt;基数值&lt;/code&gt;  可以融合。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gvp8dfx7ytj60sw0dq75102.jpg&#34; 
+    alt=&#34;特性：数据变 内存不变&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;HLL&lt;/code&gt;的空间只会和精度有关，下面的后面不同的数字代表着不同的精度，数字越大，精度越高，占用的空间也越大。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gvp8ifcvrsj60sw0dqt9p02.jpg&#34; 
+    alt=&#34;精度和空间变换&#34; 
+     /&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;上一篇文章&lt;a href=&#34;https://mp.weixin.qq.com/s/nBNnaP2i7lJV_vJzHN0zMg&#34;&gt;HLL基础部分&lt;/a&gt;介绍了&lt;code&gt;HLL&lt;/code&gt;一些相关理论知识，里面的抛硬币游戏，你非常幸运，第一次进行这个实验就连抛了 20 次正面，你进行了很多次这个实验才得到了这个记录，这就会导致错误的预估，改进的方式是请 &lt;code&gt;10&lt;/code&gt; 位不同的人进行这项实验，这样就可以观察到更多的样本数据，降低出现上述情况的概率，这就是 &lt;code&gt;HLL&lt;/code&gt; 算法的核心思想。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;code&gt;HLL&lt;/code&gt;实现原理的话，当输入一个元素的时候，会把元素通过&lt;code&gt;Jenkins hash function&lt;/code&gt;（当然这里也可以用其他&lt;code&gt;hash&lt;/code&gt;算法）转成哈希值然后再转换成&lt;code&gt;01&lt;/code&gt;表示的二进制数据。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gvpfp5wrgvj609w0dr3ym02.jpg&#34; 
+    alt=&#34;转换过程&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;有了&lt;code&gt;bit&lt;/code&gt;位值后，里面的&lt;code&gt;0&lt;/code&gt;和&lt;code&gt;1&lt;/code&gt;就可以表示某个事件结果的两种状态，例如&lt;code&gt;正反面&lt;/code&gt;。有这些就可以找出每个位串上第一个最晚&lt;code&gt;1&lt;/code&gt;出现的位置并且记录下来，并且来根据这个&lt;code&gt;1&lt;/code&gt;来估算这些哈希值中不重复的个数。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gvpgzsunugj609w044dfo02.jpg&#34; 
+    alt=&#34;要区分高低位&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;例如有集合为&lt;code&gt;[010, 100, 001]&lt;/code&gt;, 集合中元素的第一个 &lt;code&gt;1&lt;/code&gt; 出现的位置分别为 &lt;code&gt;2, 1, 3&lt;/code&gt;，可以得到里面最大的值为 &lt;code&gt;3&lt;/code&gt;，故该集合中第一个&lt;code&gt;1&lt;/code&gt;出现的最晚的位置为 &lt;code&gt;3&lt;/code&gt;因为每个位置上出现&lt;code&gt;1&lt;/code&gt;的概率都是 &lt;code&gt;1/2&lt;/code&gt;，所以我们可以做一个简单的推断，该集合中有 &lt;code&gt;8&lt;/code&gt; 个不重复的元素。&lt;/p&gt;
+&lt;p&gt;这种简单的推断计算出来集合的基数值是有较大的偏差，为了减少误差，&lt;code&gt;HLL&lt;/code&gt; 通过多次的进行试验来减少误差，&lt;code&gt;HLL&lt;/code&gt;设计者使用了分桶的思想。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gvpguk73qcj60t406ydg702.jpg&#34; 
+    alt=&#34;映射到桶&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;如上图，该 &lt;code&gt;hash &lt;/code&gt;值的后 &lt;code&gt;10&lt;/code&gt; 位的 &lt;code&gt;bit&lt;/code&gt; 值是 &lt;code&gt;0000001001&lt;/code&gt;，转成十进制是 &lt;code&gt;9&lt;/code&gt;，对应第&lt;code&gt; 9&lt;/code&gt; 号桶，而该值第一个&lt;code&gt;1&lt;/code&gt;出现的位置是第&lt;code&gt;6&lt;/code&gt;位，比原先 &lt;code&gt;9&lt;/code&gt;号桶中的数字大，故把 &lt;code&gt;9&lt;/code&gt; 号桶中的数字更新为 &lt;code&gt;6&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;为什么是取后&lt;code&gt;10&lt;/code&gt;位，这是是取决于结果的精确度，&lt;code&gt;HLL&lt;/code&gt;算法的精度就越高，&lt;code&gt;HLL(10)&lt;/code&gt; 有 &lt;code&gt;1024(2^10)&lt;/code&gt; 个桶，&lt;code&gt;HLL(16)&lt;/code&gt;有 &lt;code&gt;65536(2^16)&lt;/code&gt; 个桶，桶的个数越多，所占用的空间也会越大。&lt;/p&gt;
+&lt;p&gt;其实我这里写的还是比较简单的，省略了一些细节，真实的 &lt;code&gt;HLL&lt;/code&gt; 算法的完整描述见上图，这边的重点是计算桶中平均数时使用调和平均数，调和平均数的优点是可以过滤掉不健康的统计值，使用算术平均值容易受到极值的影响。&lt;/p&gt;
+&lt;p&gt;例如：求一个&lt;code&gt;Google L3员工和一个 Google L6 的评价工资&lt;/code&gt;，如果使用传统的算法计算，计算两个相加然后/个数。&lt;/p&gt;
+&lt;p&gt;而调和平均数计算如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span class=&#34;err&#34;&gt;采用调和平均数的方式就是：&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1000&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;30000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;err&#34;&gt;≈&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mf&#34;&gt;1935.484&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h2 id=&#34;redis&#34;&gt;
+    &lt;a href=&#34;#redis&#34; class=&#34;anchor&#34;&gt;
+        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;
+            &lt;path fill-rule=&#34;evenodd&#34;
+                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;
+            &lt;/path&gt;
+        &lt;/svg&gt;
+    &lt;/a&gt;
+    Redis
+&lt;/h2&gt;
+&lt;p&gt;分桶过程：抽象到计算机存储中去，就是存储的是一个以单位是比特&lt;code&gt;(bit)&lt;/code&gt;，长度为 &lt;code&gt;L&lt;/code&gt; 的大数组 &lt;code&gt;S&lt;/code&gt; ，将 &lt;code&gt;S&lt;/code&gt; 平均分为 &lt;code&gt;m&lt;/code&gt; 组，注意这个 &lt;code&gt;m&lt;/code&gt; 组，就是对应多少轮，然后每组所占有的比特个数是平均的，设为 &lt;code&gt;P&lt;/code&gt;。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span class=&#34;nx&#34;&gt;L&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;S&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;length&lt;/span&gt;
+&lt;span class=&#34;nx&#34;&gt;L&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;m&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;p&lt;/span&gt;
+&lt;span class=&#34;nx&#34;&gt;以&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;K&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;为单位&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;，&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;S&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;占用内存&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;L&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;/&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;8&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;/&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1024&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;在&lt;code&gt;Redis&lt;/code&gt;中&lt;code&gt;HyperLogLog&lt;/code&gt;设置为：&lt;code&gt;m=16834，p=6，L=16834 * 6&lt;/code&gt;，所以占用内存为=&lt;code&gt;16834 * 6 / 8 / 1024 = 12K&lt;/code&gt;。&lt;/p&gt;
+
+    </description>
+    </item>
+    
     <item>
     <title>Bernoulli Experiment</title>
     <link>http://blog.ibyte.me/post/bernoulli-experiment/</link>
