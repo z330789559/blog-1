@@ -6,10 +6,22 @@
     <description>Recent content in Posts on 打码匠</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 25 Oct 2021 14:18:04 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 28 Oct 2021 21:41:23 +0800</lastBuildDate>
     
 	<atom:link href="http://blog.ibyte.me/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Redis Current Limiting</title>
+      <link>http://blog.ibyte.me/post/redis-current-limiting/</link>
+      <pubDate>Thu, 28 Oct 2021 21:41:23 +0800</pubDate>
+      
+      <guid>http://blog.ibyte.me/post/redis-current-limiting/</guid>
+      <description>Current Limiting  在编写系统时候有时候我们的系统在设计的时候就已经估算到了最大请求负载了，如果大量的请求超过系统所能承受着的值时，那么系统可能随时挂掉，所有聪明程序员就想到了请求限流来控制系统的可用和稳定性。
+   滑动窗口限流  滑动窗口算法将一个大的时间窗口分成多个小窗口，每次大窗口向后滑动一个小窗口，并保证大的窗口内流量不会超出最大值，这种实现比固定窗口的流量曲线更加平滑。
+以系统限制用户行为为例子，比如一秒内进行某个操作5次，这种行为应该进行限制，滑动窗口就是记录一个滑动的时间窗口内的操作次数，操作次数超过阈值则进行限流。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22  public boolean isActionAllowed(String userId, String actionKey, int period, int maxCount) { // 生成唯一的key  String key = String.format(&amp;#34;hist:%s:%s&amp;#34;, userId, actionKey); long nowTs = System.currentTimeMillis(); // 使用管道  Pipeline pipe = jedis.pipelined(); pipe.multi(); // 添加当前操作当zset中  pipe.</description>
+    </item>
     
     <item>
       <title>Hyperloglog</title>
