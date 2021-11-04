@@ -42,12 +42,11 @@ date: 2021-11-04T14:32:49+08:00
 
 这个流程就是我们常说的`Blocking I/O`如图：
 
-
-![blocking io](https://files.mdnice.com/user/8699/c3ff4b65-dee0-4d34-8e4f-5fa8dd738d4e.png)
+![blocking io](https://tva1.sinaimg.cn/large/008i3skNgy1gw340thbasj30wk0u0gn7.jpg)
 
 同步`阻塞 IO `模型中，应用程序发起 `read` 调用后，会一直阻塞，直到内核把数据拷贝到用户空间。
 
-2. Non Blocking IO
+1. Non Blocking IO
 
 切换一下常见：
 > 同样你中午吃饭，给餐厅老板说要一碗‘热干面’，然后老板开始做了，你每隔几分钟向老板问一下‘好了吗？’，直到老板说好了，你取到‘热干面’结束。
