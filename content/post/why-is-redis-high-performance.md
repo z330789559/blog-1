@@ -1,5 +1,5 @@
 ---
-title: "Why Is Redis High Peformance"
+title: "Why Is Redis High Performance"
 date: 2021-11-04T14:32:49+08:00
 ---
 

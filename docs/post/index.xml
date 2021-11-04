@@ -12,11 +12,11 @@
     
     
     <item>
-      <title>Why Is Redis High Peformance</title>
-      <link>http://blog.ibyte.me/post/why-is-redis-high-peformance/</link>
+      <title>Why Is Redis High Performance</title>
+      <link>http://blog.ibyte.me/post/why-is-redis-high-performance/</link>
       <pubDate>Thu, 04 Nov 2021 14:32:49 +0800</pubDate>
       
-      <guid>http://blog.ibyte.me/post/why-is-redis-high-peformance/</guid>
+      <guid>http://blog.ibyte.me/post/why-is-redis-high-performance/</guid>
       <description>Redis的高性能怎么做到的？  Redis这个NOSQL数据库在计算机界可谓是无人不知，无人不晓。只要涉及到数据那么就需要数据库，数据库类型很多，但是NOSQL的kv内存数据库也很多，redis作为其中一个是怎么做到行业天花板的呢？是怎么做到高性能的呢？怎么做到高可用的呢？今天这篇八股文我就整理一些redis的设计写写，本篇还是偏关于高性能这一块。
    高效数据结构  Redis的数据库相比传统的关系数据库，在数据结构上也是比较特殊的，它的所有数据类型都可以看做是一个map的结构，key作为查询条件。
 Redis基于KV内存数据库，它内部构建了一个哈希表，根据指定的KEY访问时，只需要O(1)的时间复杂度就可以找到对应的数据，而value的值又是一些拥有各种特性的数据结构，这就给redis在数据操作的时候提供很好的性能了。

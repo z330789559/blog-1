@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="theme-color" content="dark">
+    <title>Why Is Redis High Performance | 打码匠</title>
+
+    
+    
+    
+    <meta property="og:site_name" content="打码匠 | ibyte.me" />
+    <meta property="og:title" content="Why Is Redis High Performance | 打码匠"/>
+    <meta itemprop="name" content="Why Is Redis High Performance | 打码匠" />
+    <meta name="twitter:title" content="Why Is Redis High Performance | 打码匠" />
+    <meta name="application-name" content="Why Is Redis High Performance | 打码匠" />
+
+
+    <meta name="description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles." />
+    <meta name="twitter:description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles."/>
+    <meta itemprop="description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles."/>
+    <meta property="og:description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles." />
+
+    
+
+<meta property="og:type" content="article" />
+<meta property="article:publisher" content="Leon Ding" />
+<meta property="og:article:published_time" content=2021-11-04T14:32:49&#43;0800 />
+<meta property="article:published_time" content=2021-11-04T14:32:49&#43;0800 />
+
+
+
+
+
+<script defer type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "Article",
+    "headline": "Why Is Redis High Performance",
+    "author": {
+      "@type": "Person",
+      "name": "Leon Ding"
+    },
+    "datePublished": "2021-11-04",
+    "description": "",
+    "wordCount":  100 ,
+    "mainEntityOfPage": "True",
+    "dateModified": "2021-11-04",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Leon Ding",
+      "logo": {
+        "@type": "imageObject",
+        "url": "http:\/\/blog.ibyte.me\/favicon.ico"
+      }
+    }
+  }
+</script>
+
+
+    <link rel="shortcut icon" type="image/x-icon" href="https://avatars.githubusercontent.com/u/38412458?v=4" />
+    
+    
+    <link rel="stylesheet" href="/sass/main.min.85d2dd3a54e29956009c7c48e5f5d4bc22b6af329dc58a4fc8919e8c12720daa.css">
+    
+</head>
+    <script>
+    (function() {
+        const colorSchemeKey = 'ThemeColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.userColorScheme = 'dark';
+        } else {
+            document.documentElement.dataset.userColorScheme = 'light';
+        }
+    })();
+</script>
+
+    <body class="dark">
+        <nav class="navbar">
+    <div class="container">
+        <div class="flex">
+            <div>
+                <a class="brand" href="/">
+                    
+                    
+                        <img src="https://avatars.githubusercontent.com/u/38412458?v=4" />
+                    
+                    打码匠
+                    </a>
+            </div>
+            <div class="flex">
+                
+                <a href="https://www.ibyte.me/">🏡 Home</a>
+                
+                <a href="/articles/">📚 Articles</a>
+                
+                <button id="dark-mode-button">
+                  <svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path fill="#FFD983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163 0 1 0 1.643 1.641a1.163 1.163 0 0 0-1.643-1.641zm-16.022 14.38a1.74 1.74 0 0 0 0 2.465a1.742 1.742 0 1 0 0-2.465zm13.968-2.147a2.904 2.904 0 0 1-4.108 0a2.902 2.902 0 0 1 0-4.107a2.902 2.902 0 0 1 4.108 0a2.902 2.902 0 0 1 0 4.107z" fill="#FFCC4D"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)" /></svg>
+                  <svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path fill="#FFD983" d="M16 2s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2V2zm18 14s2 0 2 2s-2 2-2 2h-2s-2 0-2-2s2-2 2-2h2zM4 16s2 0 2 2s-2 2-2 2H2s-2 0-2-2s2-2 2-2h2zm5.121-8.707s1.414 1.414 0 2.828s-2.828 0-2.828 0L4.878 8.708s-1.414-1.414 0-2.829c1.415-1.414 2.829 0 2.829 0l1.414 1.414zm21 21s1.414 1.414 0 2.828s-2.828 0-2.828 0l-1.414-1.414s-1.414-1.414 0-2.828s2.828 0 2.828 0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828l-1.414 1.414zM16 32s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2v-2z"/><circle fill="#FFD983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)" /></svg>
+                </button>
+            </div>
+            </div>
+    </div>
+</nav>
+        <main>
+            
+<div class="container">
+    <article>
+        <header class="article-header">
+            <div class="thumb">
+                <div>
+                    <h1>Why Is Redis High Performance</h1>
+                    <div class="post-meta">
+                        <div>
+                            
+                            
+                              
+                            
+                            By Leon Ding | <time>November 04, 2021</time>
+                            | 1 minutes
+                        </div>
+                        <div class="tags">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </article>
+
+    <div class="article-post">
+    <h2 id="redis的高性能怎么做到的">
+    <a href="#redis%e7%9a%84%e9%ab%98%e6%80%a7%e8%83%bd%e6%80%8e%e4%b9%88%e5%81%9a%e5%88%b0%e7%9a%84" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    Redis的高性能怎么做到的？
+</h2>
+<p><code>Redis</code>这个<code>NOSQL</code>数据库在计算机界可谓是无人不知，无人不晓。只要涉及到数据那么就需要数据库，数据库类型很多，但是<code>NOSQL</code>的<code>kv</code>内存数据库也很多，<code>redis</code>作为其中一个是怎么做到行业天花板的呢？是怎么做到高性能的呢？怎么做到高可用的呢？今天这篇八股文我就整理一些<code>redis</code>的设计写写，本篇还是偏关于<code>高性能</code>这一块。</p>
+<h2 id="高效数据结构">
+    <a href="#%e9%ab%98%e6%95%88%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    高效数据结构
+</h2>
+<p><code>Redis</code>的数据库相比传统的关系数据库，在数据结构上也是比较特殊的，它的所有数据类型都可以看做是一个<code>map</code>的结构，<code>key</code>作为查询条件。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gw12lj58anj30de0doweo.jpg" 
+    alt="基本数据结构" 
+     /></p>
+<p><code>Redis</code>基于<code>KV</code>内存数据库，它内部构建了一个哈希表，根据指定的<code>KEY</code>访问时，只需要<code>O(1)</code>的时间复杂度就可以找到对应的数据，而<code>value</code>的值又是一些拥有各种特性的数据结构，这就给<code>redis</code>在数据操作的时候提供很好的性能了。</p>
+<h2 id="基于内存存储">
+    <a href="#%e5%9f%ba%e4%ba%8e%e5%86%85%e5%ad%98%e5%ad%98%e5%82%a8" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    基于内存存储
+</h2>
+<p>相比传统的关系数据库，数据文件可能以<code>lsm tree 或者 b+ tree</code>形式存在硬盘上，这个时候读取文件要有<code>io</code>操作了，而<code>redis</code>在内存中进行，并不会大量消耗<code>CPU</code>资源，所以速度极快。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gw12yqw92mj30vq0gbq42.jpg" 
+    alt="存储金字塔" 
+     /></p>
+<p>内存从上图可以看到它介于硬盘和<code>cpu</code>缓存中间的，相比硬盘查找数据肯定是快的，当然这里笔者个人见解上，如果关系型数据库把一些平凡操作的数据库也放置在内存中缓存，也会得到一些性能的提升，像操作系统里面缺页异常一样处理，把数据片段通过一些特殊算法缓存在内存里面，减少文件<code>io</code>的开销。</p>
+<h2 id="io多路复用">
+    <a href="#io%e5%a4%9a%e8%b7%af%e5%a4%8d%e7%94%a8" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    io多路复用
+</h2>
+<p>传统对于并发情况，假如一个进程不行，那搞多个进程不就可以同时处理多个客户端连接了么？多进程是可以解决一些并发问题，但是还是有一些问题，上下文切换开销，线程循环创建，从<code>PCB</code>来回恢复效率较低。随着客户端请求增多，那么线程也随着请求数量直线上升，如果是并发的时候涉及到数据共享访问，有时候涉及到使用锁来控制范围顺序，影响其他线程执行效率。（进程在<code>Linux</code>也可以理解为线程，每个进程只是有一个线程，当然这里我上面写的进程，别纠结这些。。。）</p>
+<p><code>线程</code>是运行在进程上下文的逻辑流，一个进程可以包含多个线程，多个线程运行在同一进程上下文中，因此可共享这个进程地址空间的所有内容，解决了进程与进程之间通信难的问题，同时，由于一个线程的上下文要比一个进程的上下文小得多，所以线程的上下文切换，要比进程的上下文切换效率高得多。</p>
+<p><strong>像<code>redis</code>和<code>Nginx</code>这种应用就是单线程的程序，为什么他们能做到这么强的性能？首先看一个例子：</strong></p>
+<ol>
+<li>Blocking IO</li>
+</ol>
+<blockquote>
+<p>中午吃饭，我给餐厅老板说要一碗‘热干面’，然后我就在那边一直等着老板做，老板没有做好，我就一直在哪里等着什么也不做，直到‘热干面’做好。</p>
+</blockquote>
+<p>这个流程就是我们常说的<code>Blocking I/O</code>如图：</p>
+<p><img loading="lazy" 
+    src="https://files.mdnice.com/user/8699/c3ff4b65-dee0-4d34-8e4f-5fa8dd738d4e.png" 
+    alt="blocking io" 
+     /></p>
+<p>同步<code>阻塞 IO </code>模型中，应用程序发起 <code>read</code> 调用后，会一直阻塞，直到内核把数据拷贝到用户空间。</p>
+<ol start="2">
+<li>Non Blocking IO</li>
+</ol>
+<p>切换一下常见：</p>
+<blockquote>
+<p>同样你中午吃饭，给餐厅老板说要一碗‘热干面’，然后老板开始做了，你每隔几分钟向老板问一下‘好了吗？’，直到老板说好了，你取到‘热干面’结束。</p>
+</blockquote>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gw002j5urbj30ww0u0gnu.jpg" 
+    alt="非阻塞io" 
+     /></p>
+<p>同步<code>非阻塞 IO </code>模型中，应用程序会一直发起<code>read</code>调用，等待数据从内核空间拷贝到用户空间的这段时间里，线程依然是阻塞的，直到在内核把数据拷贝到用户空间，通过轮询操作，避免了一直阻塞，取回<code>热干面</code>的过程就是内核把准备好的数据交换到用户空间过程。</p>
+<p>综上两种模型，缺点都是差不多，都是在等待内核准备数据，然后阻塞等待，同样逃不开阻塞这个问题，应用程序不断进行<code>I/O</code>系统调用轮询数据是否已经准备好的过程是十分消耗<code>CPU</code>资源的。</p>
+<ol start="3">
+<li>I/O Multiplexing</li>
+</ol>
+<p>还是之前那个例子：</p>
+<blockquote>
+<p>中午吃饭，给餐厅老板说要一碗‘热干面’，然后老板安排给下面的厨子做，具体哪个厨子做不知道，有好几个厨子，然后老板每隔一段时间询问下面的厨子有木有做好，如果做好了，就通知我来去取餐。</p>
+</blockquote>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gw0v3rlxc1j30vs0u040c.jpg" 
+    alt="多路复用" 
+     /></p>
+<p><code>IO </code>多路复用模型中，线程首先发起 <code>select</code> 调用，询问内核数据是否准备就绪，等内核把数据准备好了，用户线程再发起 <code>read </code>调用，<code>read</code> 调用的过程（数据从内核空间-&gt;用户空间）还是阻塞的。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gw0xx5f2ohj30et0fbaar.jpg" 
+    alt="Reactor模式" 
+     /></p>
+<p><code>Reactor </code>通过 <code>I/O复用</code>程序监控客户端请求事件，收到事件后通过任务分派器进行分发。针对建立连接请求事件，通过 <code>Acceptor</code> 处理，并建立对应的<code> handler</code> 负责后续业务处理，针对非连接事件，<code>Reactor </code>会调用对应的<code> handler</code> 完成 <code>read-&gt;</code>业务处理<code>-&gt;write</code> 处理流程，并将结果返回给客户端，整个过程都在一个线程里完成。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gw0y5wvraij30et0j3q3u.jpg" 
+    alt="redis里面模型" 
+     /></p>
+<p><code>Redis</code> 是基于 <code>Reactor</code> 单线程模式来实现的，<code>IO多路复</code>用程序接收到用户的请求后，全部推送到一个队列里，交给文件分派器。对于后续的操作，和在 <code>reactor</code> 单线程实现方案里看到的一样，整个过程都在一个线程里完成，因此 <code>Redis</code> 被称为是单线程的操作。</p>
+<p>我们平时说的<code>Redis</code>单线程快是指它的请求处理过程非常地快！在单线程中监听多个<code>Socket</code>的请求，在任意一个<code>Socket</code>可读/可写时，<code>Redis</code>去读取客户端请求，在内存中操作对应的数据，然后再写回到<code>Socket</code>中。</p>
+<p><strong>单线程的好处：</strong></p>
+<ul>
+<li>没有了访问共享资源加锁的性能损耗</li>
+<li>开发和调试非常友好，可维护性高</li>
+<li>没有多个线程上下文切换带来的额外开销，不是没有，是减少了</li>
+</ul>
+<p>单线程不是没有缺点，其实缺点也是很明显的，如果前一个请求发生耗时比较久的操作，那么整个<code>Redis</code>就会阻塞住，其他请求也无法进来，直到这个耗时久的操作处理完成并返回，其他请求才能被处理到，但是<code>redis</code>使用的<code>Reactor</code> 单线程模式来实现的可以缓解这种情况。</p>
+<blockquote>
+<p>在<code>Redis 4.0</code>之后的版本，引入多线程，而这个多线程是只的异步释放内存，它主要是为了解决在释放大内存数据导致整个<code>redis</code>阻塞的性能问题，单机<code>redis</code>如果处理大数据请求时还是会出现瓶颈，但是<code>redis</code>有集群高可用解决方案可以解决，主节点只负责写，从节点负责读，<code>io</code>复用先写到这里，集群高可用我会另外在出一篇文章。</p>
+</blockquote>
+<h2 id="写时拷贝">
+    <a href="#%e5%86%99%e6%97%b6%e6%8b%b7%e8%b4%9d" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    写时拷贝
+</h2>
+<p>有了高效的数据结构和<code>io</code>多路模型，目前能解决数据访问效率问题，但是<code>redis</code>为了保证了数据不丢失有快照机制，说到快照那么会操作磁盘，<code>redis</code>怎么解决的在数据操作的时候并且还能保证数据记录完整性的？不影响数据访问效率的呢？</p>
+<p>答案是用了<code>写时复制技术</code>，什么是<code>写时复制</code>？如果你是一个科班的或者你的操作系统学的不错的话，这个问题很清楚。</p>
+<p>在操作系统设计中进程的内存可分为 <code>虚拟内存</code> 和 <code>物理内存</code>，什么是虚拟内存？你可以去看我上一篇文章<a href="https://mp.weixin.qq.com/s/Ecy0lOSmyKNxON3LhdMhpQ">Virtual Memory</a>。<code>redis</code>会从主进程中通过<code>fork()</code>系统调用，创建一个子进程，将父进程的 <code>虚拟内存</code> 与 <code>物理内存</code> 映射关系复制到子进程中，并将设置内存共享的，子进程只负责将内存里面数据写入到<code>rdb</code>进行持久化操作，如果在操作的时候主进程对内存修改了，使用<code>写时拷贝</code>技术，将对应的内存创建一个副本然后进行写入持久化。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gw14asdso9j30qo0eygme.jpg" 
+    alt="示意图" 
+     /></p>
+<p>如上图主进程则提供服务，只有当有人修改当前内存数据时，才去复制被修改的内存页，用于生成快照。</p>
+<h2 id="管道通讯">
+    <a href="#%e7%ae%a1%e9%81%93%e9%80%9a%e8%ae%af" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    管道通讯
+</h2>
+<p>除了本地服务器内存和数据结构的操作影响客户端读写效率的还有网络原因。<code>redis</code>的通讯协议是用一种文件协议，有兴趣自己去研究研究吧，我这里不打算写。每次客户端操作的时候，命令和元数据都被打包成<code>redis</code>协议进行传输到服务器上。</p>
+<p>按照这样那每个命令的执行时间：<code>客户端发送时间 + 服务器处理和返回时间 + 一个网络来回的时间。</code></p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gw14qin0ghj30gx0fdmxc.jpg" 
+    alt="数据包来回" 
+     /></p>
+<p>从上图可以看出来如果每操作一条命令，那么就要执行一次<code>网络io</code>，如果客户端频繁操作数据那么就频繁网络操作，这个过程也是非常耗时的，影响性能的。<code>redis</code>在客户端程序中做了一些优化引入了一个管道（<code>pipelining</code>）概念。</p>
+<p>管道会把多条无关命令批量执行，以减少多个命令分别执行带来的网络交互时间，在一些批量操作数据的场景。</p>
+<h1 id="小结">
+    <a href="#%e5%b0%8f%e7%bb%93" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    小结
+</h1>
+<p><code>简单始于复杂！</code>，别看客户端就几个简单<code>api call</code>的事情，这后面还有很多设计值得去学习，看完这篇八股文你或许对<code>redis</code>高性能有新的认识了，不要小看某些细节优化和解决方案选型，有时候可以带来明显性能提升。当然这篇文章没有把<code>redis</code>设计写完，例如还有<code>aof</code>的内核文件描述符映射，异步写数据到硬盘上，零拷贝技术等等。。。。后续文章将会更新<code>redis高可用是怎么做到的？</code></p>
+
+    </div>
+</div>
+
+<div class="container">
+    
+    <nav class="flex container suggested">
+        
+        <a rel="prev" href="/post/redis-current-limiting/" title="Previous post (older)">
+            <span>Previous</span>
+            Redis Current Limiting
+            </a>
+        
+        
+        
+    </nav>
+    
+</div>
+ 
+<div class="container">
+    
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "https-hugo-tania-netlify-app" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (DISQUS) {
+            DISQUS.reset({
+                reload: true
+            })
+        }
+    })
+</script>
+
+</div>
+
+</main>
+
+
+        </main>
+        <footer class="footer flex">
+    <section class="container">
+        <nav class="footer-links">
+            
+            <a href="/index.xml">RSS</a>
+            
+        </nav>
+    </section>
+    <script defer src="/ts/features.b5555d1ae12309fd7a67c0d19ce81e7098647818f6758eb95f88ea9d550d2d2c.js" data-enable-footnotes="true"></script>
+</footer>
+    </body>
+</html>
