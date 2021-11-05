@@ -77,11 +77,11 @@
 &lt;/blockquote&gt;
 &lt;p&gt;这个流程就是我们常说的&lt;code&gt;Blocking I/O&lt;/code&gt;如图：&lt;/p&gt;
 &lt;p&gt;&lt;img loading=&#34;lazy&#34; 
-    src=&#34;https://files.mdnice.com/user/8699/c3ff4b65-dee0-4d34-8e4f-5fa8dd738d4e.png&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gw340thbasj30wk0u0gn7.jpg&#34; 
     alt=&#34;blocking io&#34; 
      /&gt;&lt;/p&gt;
 &lt;p&gt;同步&lt;code&gt;阻塞 IO &lt;/code&gt;模型中，应用程序发起 &lt;code&gt;read&lt;/code&gt; 调用后，会一直阻塞，直到内核把数据拷贝到用户空间。&lt;/p&gt;
-&lt;ol start=&#34;2&#34;&gt;
+&lt;ol&gt;
 &lt;li&gt;Non Blocking IO&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;切换一下常见：&lt;/p&gt;
