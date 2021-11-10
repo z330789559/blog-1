@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="theme-color" content="dark">
+    <title>How Redis Solves the CAP Problem | 打码匠</title>
+
+    
+    
+    
+    <meta property="og:site_name" content="打码匠 | ibyte.me" />
+    <meta property="og:title" content="How Redis Solves the CAP Problem | 打码匠"/>
+    <meta itemprop="name" content="How Redis Solves the CAP Problem | 打码匠" />
+    <meta name="twitter:title" content="How Redis Solves the CAP Problem | 打码匠" />
+    <meta name="application-name" content="How Redis Solves the CAP Problem | 打码匠" />
+
+
+    <meta name="description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles." />
+    <meta name="twitter:description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles."/>
+    <meta itemprop="description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles."/>
+    <meta property="og:description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles." />
+
+    
+
+<meta property="og:type" content="article" />
+<meta property="article:publisher" content="Leon Ding" />
+<meta property="og:article:published_time" content=2021-11-10T17:22:55&#43;0800 />
+<meta property="article:published_time" content=2021-11-10T17:22:55&#43;0800 />
+
+
+
+
+
+<script defer type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "Article",
+    "headline": "How Redis Solves the CAP Problem",
+    "author": {
+      "@type": "Person",
+      "name": "Leon Ding"
+    },
+    "datePublished": "2021-11-10",
+    "description": "",
+    "wordCount":  38 ,
+    "mainEntityOfPage": "True",
+    "dateModified": "2021-11-10",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Leon Ding",
+      "logo": {
+        "@type": "imageObject",
+        "url": "http:\/\/blog.ibyte.me\/favicon.ico"
+      }
+    }
+  }
+</script>
+
+
+    <link rel="shortcut icon" type="image/x-icon" href="https://avatars.githubusercontent.com/u/38412458?v=4" />
+    
+    
+    <link rel="stylesheet" href="/sass/main.min.85d2dd3a54e29956009c7c48e5f5d4bc22b6af329dc58a4fc8919e8c12720daa.css">
+    
+</head>
+    <script>
+    (function() {
+        const colorSchemeKey = 'ThemeColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.userColorScheme = 'dark';
+        } else {
+            document.documentElement.dataset.userColorScheme = 'light';
+        }
+    })();
+</script>
+
+    <body class="dark">
+        <nav class="navbar">
+    <div class="container">
+        <div class="flex">
+            <div>
+                <a class="brand" href="/">
+                    
+                    
+                        <img src="https://avatars.githubusercontent.com/u/38412458?v=4" />
+                    
+                    打码匠
+                    </a>
+            </div>
+            <div class="flex">
+                
+                <a href="https://www.ibyte.me/">🏡 Home</a>
+                
+                <a href="/articles/">📚 Articles</a>
+                
+                <button id="dark-mode-button">
+                  <svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path fill="#FFD983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163 0 1 0 1.643 1.641a1.163 1.163 0 0 0-1.643-1.641zm-16.022 14.38a1.74 1.74 0 0 0 0 2.465a1.742 1.742 0 1 0 0-2.465zm13.968-2.147a2.904 2.904 0 0 1-4.108 0a2.902 2.902 0 0 1 0-4.107a2.902 2.902 0 0 1 4.108 0a2.902 2.902 0 0 1 0 4.107z" fill="#FFCC4D"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)" /></svg>
+                  <svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path fill="#FFD983" d="M16 2s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2V2zm18 14s2 0 2 2s-2 2-2 2h-2s-2 0-2-2s2-2 2-2h2zM4 16s2 0 2 2s-2 2-2 2H2s-2 0-2-2s2-2 2-2h2zm5.121-8.707s1.414 1.414 0 2.828s-2.828 0-2.828 0L4.878 8.708s-1.414-1.414 0-2.829c1.415-1.414 2.829 0 2.829 0l1.414 1.414zm21 21s1.414 1.414 0 2.828s-2.828 0-2.828 0l-1.414-1.414s-1.414-1.414 0-2.828s2.828 0 2.828 0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828l-1.414 1.414zM16 32s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2v-2z"/><circle fill="#FFD983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)" /></svg>
+                </button>
+            </div>
+            </div>
+    </div>
+</nav>
+        <main>
+            
+<div class="container">
+    <article>
+        <header class="article-header">
+            <div class="thumb">
+                <div>
+                    <h1>How Redis Solves the CAP Problem</h1>
+                    <div class="post-meta">
+                        <div>
+                            
+                            
+                              
+                            
+                            By Leon Ding | <time>November 10, 2021</time>
+                            | 1 minutes
+                        </div>
+                        <div class="tags">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </article>
+
+    <div class="article-post">
+    <h2 id="cap理论">
+    <a href="#cap%e7%90%86%e8%ae%ba" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    CAP理论
+</h2>
+<p><code>CAP</code>理论是什么？ 可以这么说吧<code>cap</code>理论是分布式系统的奠基石吧，这个理论论述分布式系统设计的<code>3</code>个最大问题：</p>
+<ul>
+<li>一致性 (<code>Consistency</code>)</li>
+<li>可用性 (<code>Availability</code>)</li>
+<li>分区容错性 (<code>Partition Tolerance</code>)</li>
+</ul>
+<p>什么是<code>一致性</code>？假设一个集群有<code>2</code>个节点<code>A-1</code>和<code>A-2</code>，这两个节点为主从关系，例如<code>redis</code>里面的主从模式。主节点负责写入数据，从节点负责从主节点同步数据到本机。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gw6xnn7ddaj311o0fwdg8.jpg" 
+    alt="如图" 
+     /></p>
+<p><code>A-1</code>和<code>A-2</code> 通过网络进行数据同步，要怎么保证两台机子上的数据一致的呢？这个就是数据<code>一致性</code>问题。</p>
+<p>那什么是<code>可用性</code>？<code>A-1</code>和<code>A-2</code>两台机子做成一个集群，实际上真实情况可能更多，在集群中一部分节点故障后，集群整体是否还能响应客户端的读写请求，例如<code>A-1</code>挂掉以后，<code>A-2</code>会马上接管这些请求的，保持整体可用性。</p>
+<p>那什么是<code>分区容错性</code>？一个集群都靠着网络进行通讯的，如果网络波动，这个集群中的部分节点网络和集群上的其他节点联通不了，那么数据一致性就很难保持了，网络一断开，那么那么整个集群可能被划分成多个独立的小分区了，如果在短时间内不能联通同步数据，这就是出现<code>网络分区问题</code>。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gw6y36jt9tj30xy0u0t9r.jpg" 
+    alt="网络分区" 
+     /></p>
+<p>如上图 <code>A-1</code>和<code>A-3</code>网络连接出现了故障，那么这个集群就已经存在了<code>网络分区问题</code>！但是整体集群而看上去却好像是在一个可以运转正常，其他剩下的机器还能够正常运转满足系统需求，对于用户而言并没有什么体验上的影响。</p>
+<p><strong>所以在设计分布式系统时，CAP问题必会出现！除非你玩单机系统😜！怎么优雅解决问题，就看设计者了在<code>A</code>和<code>C</code>、<code>P</code>之前怎么做决策了。用这些问题我去套用在<code>redis</code>集群模式上，看redis集群是怎么解决CAP问题的。</strong></p>
+<h2 id="redis哨兵">
+    <a href="#redis%e5%93%a8%e5%85%b5" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    Redis哨兵
+</h2>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gw70jzv2abj30e50bkaag.jpg" 
+    alt="哨兵" 
+     /></p>
+<p><code>Redis早期版本</code>，<code>redis</code>单机情况下即便性能强的一批，但是大规模数据或者海量请求下还是为支撑不了可用性和稳定性，后面<code>redis</code>官方有一个解决方案就是<code>哨兵模式</code>。</p>
+<p><code>哨兵模式</code>：上面提到了主从架构，主从切换技术方案是，当主服务器宕机后，需要手动把一台从服务器切换为主服务器，这中间就需要人工干预，例如大半夜收到报警，爬起来手动切换服务器？？？需要手动将 <code>从节点</code> 晋升为 <code>主节点</code>，同时还要通知 <code>客户端</code> 更新 <code>主节点地址</code>，显然这种问题怎么可能忍？大家都是程序员自己写个程序自动化不就好了，为什么要用这么笨方式。。。<code>哨兵模式</code>哨兵就是解决这个问题的，哨兵是一个独立的进程，作为进程，它会独立运行，其原理是哨兵通过发送命令，等待<code>Redis</code>服务器响应，从而监控运行的多个<code>Redis</code>实例，当有一个节点挂掉的时候，客户端连接其节点失败，就会向哨兵服务器询问新的节点地址然后继续使用，其他从节点也会跟着把主节点调整到新节点上，哨兵还会记录当前挂掉节点状态，还会定时进行查看如果复活了还会添加到哨兵集群里，从而达到无人干扰。</p>
+<h2 id="增量同步全量同步">
+    <a href="#%e5%a2%9e%e9%87%8f%e5%90%8c%e6%ad%a5%e5%85%a8%e9%87%8f%e5%90%8c%e6%ad%a5" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    增量同步&amp;amp;全量同步
+</h2>
+<p>上面哨兵模式切换过程，提到了主从，那主从节点数据，怎么保证一致性的的？在<code>redis</code>集群情况下同步模式有两种：</p>
+<ul>
+<li>增量同步</li>
+<li>全量同步</li>
+</ul>
+<p>设想一下主从节点在某个网络情况出现问题波动，这是客户端正在朝着服务器端主节点，写数据，而从节点又在从主节点读取同步被写入的数据，这时网络一波动，那么就出现网络分区了。出现网络分区了，此时两个节点就处于独立的单机状态，如图：</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gw71jdnzcsj30fl0dcaae.jpg" 
+    alt="看这个图特定画的" 
+     /></p>
+<p>正如上图所话的，主从在短时间内出现网络分区，<code>redis</code>的设计者针对这个方案提出了一个方案叫<code>增量复制</code>，如下图，当然这个图我之前讲<code>go</code>中的<code>channel</code>的时候画的，反正是同用的，所以懒得话了，直接拿过来用一用。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gtl27ej1w4j60qo0k0t9202.jpg" 
+    alt="增量同步" 
+     /></p>
+<p><code>redis</code>在每个主节点上分配一快<code>ring</code>也可以叫为<code>buf</code>，这个<code>ring</code>是里面就记录它自身大小元素个数的<code>最近客户端执行命令记录</code>，如果从节点短时间内恢复了链接，此时从节点直接去主节点的<code>ring</code>中拿取命令记录数据，然后在自己本机上跑一遍。</p>
+<p><code>增量复制</code>不是没有问题的，设想一下如果这个网络分区出现很长时间，这个<code>ring</code>容量是不是不够用，所有第二套解决方案出现了，<code>全量同步</code>这个过程是怎么样的？</p>
+<p>直接把<code>redis</code>在内存里面的数据通过序列化然后通过网络发送到从节点，从节点在本地保存，然后全量加载到内存里面完成数据恢复，在全量同步的时候，可能也有其他命令漏掉，还会配上<code>增量复制</code>进行。</p>
+<h2 id="小结">
+    <a href="#%e5%b0%8f%e7%bb%93" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    小结
+</h2>
+<p>目前只说到<code>Redis</code>哨兵模式了，这个模式能解决一部分<code>CAP</code>问题，例如还有：节点动态添加，数据动态迁移。。。这些问题在下一篇文章写，也是经典的<code>分而治之</code>的应用。</p>
+
+    </div>
+</div>
+
+<div class="container">
+    
+    <nav class="flex container suggested">
+        
+        <a rel="prev" href="/post/why-is-redis-high-performance/" title="Previous post (older)">
+            <span>Previous</span>
+            Why Is Redis High Performance
+            </a>
+        
+        
+        
+    </nav>
+    
+</div>
+ 
+<div class="container">
+    
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "https-hugo-tania-netlify-app" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (DISQUS) {
+            DISQUS.reset({
+                reload: true
+            })
+        }
+    })
+</script>
+
+</div>
+
+</main>
+
+
+        </main>
+        <footer class="footer flex">
+    <section class="container">
+        <nav class="footer-links">
+            
+            <a href="/index.xml">RSS</a>
+            
+        </nav>
+    </section>
+    <script defer src="/ts/features.b5555d1ae12309fd7a67c0d19ce81e7098647818f6758eb95f88ea9d550d2d2c.js" data-enable-footnotes="true"></script>
+</footer>
+    </body>
+</html>
