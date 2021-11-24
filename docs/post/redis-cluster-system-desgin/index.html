@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="theme-color" content="dark">
+    <title>Redis Cluster System Desgin | 打码匠</title>
+
+    
+    
+    
+    <meta property="og:site_name" content="打码匠 | ibyte.me" />
+    <meta property="og:title" content="Redis Cluster System Desgin | 打码匠"/>
+    <meta itemprop="name" content="Redis Cluster System Desgin | 打码匠" />
+    <meta name="twitter:title" content="Redis Cluster System Desgin | 打码匠" />
+    <meta name="application-name" content="Redis Cluster System Desgin | 打码匠" />
+
+
+    <meta name="description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles." />
+    <meta name="twitter:description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles."/>
+    <meta itemprop="description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles."/>
+    <meta property="og:description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles." />
+
+    
+
+<meta property="og:type" content="article" />
+<meta property="article:publisher" content="Leon Ding" />
+<meta property="og:article:published_time" content=2021-11-24T14:37:48&#43;0800 />
+<meta property="article:published_time" content=2021-11-24T14:37:48&#43;0800 />
+
+
+
+
+
+<script defer type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "Article",
+    "headline": "Redis Cluster System Desgin",
+    "author": {
+      "@type": "Person",
+      "name": "Leon Ding"
+    },
+    "datePublished": "2021-11-24",
+    "description": "",
+    "wordCount":  55 ,
+    "mainEntityOfPage": "True",
+    "dateModified": "2021-11-24",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Leon Ding",
+      "logo": {
+        "@type": "imageObject",
+        "url": "http:\/\/blog.ibyte.me\/favicon.ico"
+      }
+    }
+  }
+</script>
+
+
+    <link rel="shortcut icon" type="image/x-icon" href="https://avatars.githubusercontent.com/u/38412458?v=4" />
+    
+    
+    <link rel="stylesheet" href="/sass/main.min.85d2dd3a54e29956009c7c48e5f5d4bc22b6af329dc58a4fc8919e8c12720daa.css">
+    
+</head>
+    <script>
+    (function() {
+        const colorSchemeKey = 'ThemeColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.userColorScheme = 'dark';
+        } else {
+            document.documentElement.dataset.userColorScheme = 'light';
+        }
+    })();
+</script>
+
+    <body class="dark">
+        <nav class="navbar">
+    <div class="container">
+        <div class="flex">
+            <div>
+                <a class="brand" href="/">
+                    
+                    
+                        <img src="https://avatars.githubusercontent.com/u/38412458?v=4" />
+                    
+                    打码匠
+                    </a>
+            </div>
+            <div class="flex">
+                
+                <a href="https://www.ibyte.me/">🏡 Home</a>
+                
+                <a href="/articles/">📚 Articles</a>
+                
+                <button id="dark-mode-button">
+                  <svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path fill="#FFD983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163 0 1 0 1.643 1.641a1.163 1.163 0 0 0-1.643-1.641zm-16.022 14.38a1.74 1.74 0 0 0 0 2.465a1.742 1.742 0 1 0 0-2.465zm13.968-2.147a2.904 2.904 0 0 1-4.108 0a2.902 2.902 0 0 1 0-4.107a2.902 2.902 0 0 1 4.108 0a2.902 2.902 0 0 1 0 4.107z" fill="#FFCC4D"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)" /></svg>
+                  <svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path fill="#FFD983" d="M16 2s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2V2zm18 14s2 0 2 2s-2 2-2 2h-2s-2 0-2-2s2-2 2-2h2zM4 16s2 0 2 2s-2 2-2 2H2s-2 0-2-2s2-2 2-2h2zm5.121-8.707s1.414 1.414 0 2.828s-2.828 0-2.828 0L4.878 8.708s-1.414-1.414 0-2.829c1.415-1.414 2.829 0 2.829 0l1.414 1.414zm21 21s1.414 1.414 0 2.828s-2.828 0-2.828 0l-1.414-1.414s-1.414-1.414 0-2.828s2.828 0 2.828 0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828l-1.414 1.414zM16 32s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2v-2z"/><circle fill="#FFD983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)" /></svg>
+                </button>
+            </div>
+            </div>
+    </div>
+</nav>
+        <main>
+            
+<div class="container">
+    <article>
+        <header class="article-header">
+            <div class="thumb">
+                <div>
+                    <h1>Redis Cluster System Desgin</h1>
+                    <div class="post-meta">
+                        <div>
+                            
+                            
+                              
+                            
+                            By Leon Ding | <time>November 24, 2021</time>
+                            | 1 minutes
+                        </div>
+                        <div class="tags">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </article>
+
+    <div class="article-post">
+    <h2 id="为什么会出现集群架构">
+    <a href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e4%bc%9a%e5%87%ba%e7%8e%b0%e9%9b%86%e7%be%a4%e6%9e%b6%e6%9e%84" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    为什么会出现集群架构？
+</h2>
+<p>上一篇写到了<code>redis</code>哨兵模式，这种模式虽然能解决一些并发情况下的数据请求压力问题和可用性问题，主从替换以及故障恢复。哨兵模式只是<code>redis</code>架构在历史演变过程中一个的转折点，哨兵这种模式主从模式的数据都是全量同步的，也就是每个从节点上的数据都是主节点上的数据副本，大家想一想有木有问题？</p>
+<p>是不是太浪费内存了？或者说可不可以把全量的数据拆解成部分数据，然后分布在不同节点上？那么这种有什么好处吗？？？</p>
+<p>如果数据全部存储在一台机子上，全量同步的时候会时间过长，有时候出现了<code>big key</code>情况更是一个问题，网络一波动，本来传输正在进行中，一半断掉了，会增加同步失败的概率。分片的存储好处，是不是可以减低这些风险的，每个节点我存储一部分数据，实质我们可以交叉存储数据块，<code>a</code>节点存储<code>b</code>节点一个副本，<code>b</code>节点存储<code>a</code>节点一个副本，这样就算如果<code>a</code>当掉了，我们是不是可以去<code>b</code>里面拿取副本继续使用，当然这个我是自己的一些看法，我看<code>hdfs</code>就是这么设计的，当然<code>redis</code>没有这个交叉存储策略，但是笔者认为如果在<code>key</code>下功夫也可以达到的，把<code>key</code>以特定格式的命名的格式二次存储也能达到，只是说浪费一点内存吧了。</p>
+<h2 id="存储模型">
+    <a href="#%e5%ad%98%e5%82%a8%e6%a8%a1%e5%9e%8b" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    存储模型
+</h2>
+<p>有木有想过为什么<code>redis</code>为什么是<code>k:v</code>这种存储模型，而不是直接设计成关系型数据库那样的？？熟悉<code>redis</code>应该都了解一点历史，使用<code>key-value</code>是有历史原因的，早期的时候，<code>redis</code>作者起初是为提高自己网站的读写并发能力而创建<code>redis</code>，而<code>key-value</code>字典结构的常规时间复杂度是<code>O(1)</code>，刚好满足作者的性能要求和业务数据结构需求。</p>
+<p><code>redis</code>大部分作用都是缓存数据的，大部分数据都是从<code>db</code>读取的，而且这些数据也不是<code>db</code>中全量的数据，只是一部分而已，没有高度组织化结构化数据，用一部分数据，怎么组成一个完整的关系模型？所以不需要结构化查询语言。</p>
+<h2 id="codis分片方案">
+    <a href="#codis%e5%88%86%e7%89%87%e6%96%b9%e6%a1%88" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    Codis分片方案
+</h2>
+<p>正是<code>redis</code>作者这些历史原因，本来在设计之初可能也就是单机就可以满足作者自己的需求，但是没想到它写的这个软件被这么多人使用，影响力这么大，然后出现了主从模式，哨兵模式，直到本文要讲的集群模式。</p>
+<blockquote>
+<p>计算机科学领域的任何问题都可以通过增加一个间接的中间层来解决!</p>
+</blockquote>
+<p><code>Redis</code>的集群也有演变历史，早期有<code>Twemproxy</code>是<code>Twitter</code>团队的开源的解决分片方案，还有<code>Codis</code>的方案值得注意这是一个国人开源的，也就是现在<code>pingcap</code>几位创始人，前豌豆荚团队的，不得不说<code>屌爆了</code>。</p>
+<p>他们方案都有一个共同特点，都是通过一个<code>proxy</code>代理层进行的分片处理的，不知道有没有使用过<code>Nginx</code>的，使用过大家应该知道<code>Nginx</code>反向代理一些服务程序，例如<code>Nginx</code>和<code>Tomcat</code>组成一个反向代理负载均衡的集群，<code>codis</code>也是类似这样的方案。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gwob6q2qnnj30ih071q2y.jpg" 
+    alt="codis代理方案" 
+     /></p>
+<p><code>Codis</code>就是起着一个中间代理的作用，<code>Codis</code>内部维护一个<code>key</code>映射算法，客户端访问<code>codis</code>和直接访问<code>redis</code>没有区别的，因为<code>codis</code>实现了<code>redis</code>的通讯协议，<code>协议</code>这个东西很重要的，双方都商量好的怎么处理数据，做起事来，就很方便，大家懂得。。。。<code>Codis</code>是一个无状态的，所以可以增加多个<code>Codis</code>来提升<code>QPS</code>,同时也可以起着扩容的作用。</p>
+<p><strong><code>Codis</code>怎么工作的？</strong></p>
+<ol>
+<li>
+<p>在<code>Codis</code>会把所有的<code>key</code>分成<code>1024</code>个槽，这<code>1024</code>个槽对应着的就是<code>Redis</code>的集群，这个在<code>Codis</code>中是会在内存中维护着这<code>1024</code>个槽与<code>Redis</code>实例的映射的，当然这个是可以配置，就看你的<code>Redis</code>的节点数量有多少，偏多的话，可以设置槽多一些。</p>
+</li>
+<li>
+<p><code>codis</code>会先是把<code>key</code>进行<code>CRC32</code> 后，得到一个<code>32</code>位的数字，然后再<code>hash%1024</code>后得到一个余数，这个值就是这个<code>key</code>对应着的槽，这槽后面对应着的就是<code>redis</code>的实例。</p>
+</li>
+</ol>
+<p><strong>那么问题来了？我多个<code>codis</code>怎么解决槽位共享？</strong></p>
+<p><code>Codis</code>把这个工作交给了<code>ZooKeeper</code>来管理，<code>Codis</code>节点会监听到<code>ZooKeeper</code>的槽位变化，会及时同步过来，如下图</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gwobtmal3aj30dh0agjrr.jpg" 
+    alt="槽位共享" 
+     /></p>
+<p><strong>这种方式有木有什么弊端？？？</strong></p>
+<p>如果是使用<code>mset</code>批量设置值，值是是不是被分散在各个节点上，还有如果<code>rename</code>的时候也是一个问题，不过我认为有一种解决方案在映射的时候给<code>key</code>生成一个唯一的<code>uuid</code>，我<code>rename</code>的只是<code>key</code>，而映射的时候使用<code>uuid</code>计算槽位，当然这些问题在后面的<code>redis</code>官方解决方案里面得到了解决。</p>
+<h2 id="官方集群方案">
+    <a href="#%e5%ae%98%e6%96%b9%e9%9b%86%e7%be%a4%e6%96%b9%e6%a1%88" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    官方集群方案
+</h2>
+<p>说起官方集群解决方案，是<code>redis</code>作者在前面那些代理中间件出现之后发布的，我看他这个设计之后感觉应该借鉴了<code>codis</code>的设计方案，只是把集群槽位信息同步改成<code>p2p</code>然后通过<code>gossip</code>协议来解决了同步的问题，个人感觉都是都是<code>redis</code>在设计之初留下技术负债问题，早期的时候估计作者自己也没有打算写集群方案，被逼的，当然这个是我个人的想法和看法。</p>
+<p>相对于 <code>Codis</code> 的不同，它是去中心化的，如图下面我画的图，该集群有4个 <code>Redis</code> 节点组成， 每个节点负责整个集群的一部分数据，每个节点负责的数据多少可能不一样，这4个节点相 互连接组成一个对等的集群，它们之间通过一种<code>gossip</code>协议相互交互集群信息。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gwph0tv6fcj30fm0d474u.jpg" 
+    alt="示意图" 
+     /></p>
+<p>当然我上面画的图太接近<code>一致性哈希环</code>了，但是设计思想是接近的，<code>Redis Cluster</code> 将所有数据划分为 <code>16384</code> 的 <code>slots</code>，比 <code>Codis</code> 的 <code>1024</code> 个槽划分得更为精细，每个节点负责其中一部分槽，槽位的信息存储于每个节点中，它不像 <code>Codis</code>存储在<code>zookeeper</code>中，相信大家都听说过<code>p2p</code>，不清楚自己去查吧。。</p>
+<p><strong>那么问题来了！客户端怎么获取不同节点中的<code>key</code>呢？</strong></p>
+<p>有木有想过，我客户端连接的是<code>a</code>节点，而我要的数据在<code>b</code>节点上，这个问题怎么解决的呢？<code>redis</code>在通讯协议上下了功夫！它借鉴了<code>http</code>协议的重定向的概念，大家的应该熟悉<code>http</code>中重定向协议吧，如下图：</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gwphe8i7haj309908ndfz.jpg" 
+    alt="重定向过程" 
+     /></p>
+<p>客户端来连接集群时，它也会得到一份集群的槽位配置信息。这样当客户端要查找某个 <code>key</code> 时，可以直接定位到目标节点，这么一来就解决了数据重定向拿取问题，上面我说到了<code>codis的rename</code>问题，官方解决方案是可以让客户端把每个<code>key</code>设置一个<code>tag</code>然后指定到对应节点槽位上，想深入了解的自己看看一些资料吧，我这里主要讲大问题思路。</p>
+<p><strong>这种模式就十全十美了吗？没有其他问题了吗？</strong></p>
+<p>从上面我画的图就能看出来，集群内置了<code>16384</code>个<code>slot</code>，并且把所有的物理节点映射到了这<code>16384</code>个<code>slot</code>上，或者说把这些<code>slot</code>均等的分配给了各个节点，但是这种分片模式，肯定是有问题的，例如一个节点挂掉了，那么整个集群中的一部分数据丢失了，数据就不是完整的了，有什么办法解决？</p>
+<p>解决办法还是有的每个分片节点备几个从节点，从主节点上读取数据到从节点上，和哨兵模式一样，有问题自己从节点顶上。</p>
+<h2 id="小结">
+    <a href="#%e5%b0%8f%e7%bb%93" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    小结
+</h2>
+<p><code>redis</code>集群采用<code>P2P</code>模式，是完全去中心化的，不存在中心节点或者代理节点，都是历史遇到问题就出解决方案演进过来的。估计作者早期也就是打算设计的时候一个单机就能解决问题了，没想到，万万没想到啊，用的人那么多，然后出现分布式问题哈哈哈哈。。所以出现了各种解决方案，不管什么解决方案，<code>redis</code>数据不能做到保证强一致性，一些已经向客户端确认写成功的操作，会在某些不确定的情况下丢失，而且由于集群方案都是把一大块数据使用<code>分治法</code>打散在各个节点上，支持<code>acid</code>更是一个问题，这估计也是在历史设计的时候留下的问题，但是大部分场景<code>redis</code>都是做缓存服务器用用可以了。</p>
+<p>好了本文是<code>redis</code>系统设计系列最后一章了，后面再找找其他<code>NB</code>的系统设计写写，好看不过瘾，那你倒是点个关注啊。。。。</p>
+<h2 id="文末立个flag">
+    <a href="#%e6%96%87%e6%9c%ab%e7%ab%8b%e4%b8%aaflag" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    文末立个flag
+</h2>
+<p><code>KVBase</code>要开始动工了，先把<code>flag</code>立在这儿，<code>logo</code>都设计好了，管它三七二十一把第一个版本撸出来再说，然后慢慢迭代。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gwpi1bqrbhj31hc0dwwfn.jpg" 
+    alt="LOGO预览哈哈哈" 
+     /></p>
+
+    </div>
+</div>
+
+<div class="container">
+    
+    <nav class="flex container suggested">
+        
+        <a rel="prev" href="/post/how-redis-solves-the-cap-problem/" title="Previous post (older)">
+            <span>Previous</span>
+            How Redis Solves the CAP Problem
+            </a>
+        
+        
+        
+    </nav>
+    
+</div>
+ 
+<div class="container">
+    
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "https-hugo-tania-netlify-app" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (DISQUS) {
+            DISQUS.reset({
+                reload: true
+            })
+        }
+    })
+</script>
+
+</div>
+
+</main>
+
+
+        </main>
+        <footer class="footer flex">
+    <section class="container">
+        <nav class="footer-links">
+            
+            <a href="/index.xml">RSS</a>
+            
+        </nav>
+    </section>
+    <script defer src="/ts/features.b5555d1ae12309fd7a67c0d19ce81e7098647818f6758eb95f88ea9d550d2d2c.js" data-enable-footnotes="true"></script>
+</footer>
+    </body>
+</html>

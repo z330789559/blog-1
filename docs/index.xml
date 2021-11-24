@@ -5,7 +5,135 @@
     <description>Recent content on 打码匠</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 10 Nov 2021 17:22:55 +0800</lastBuildDate><atom:link href="http://blog.ibyte.me/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 24 Nov 2021 14:37:48 +0800</lastBuildDate><atom:link href="http://blog.ibyte.me/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+    <title>Redis Cluster System Desgin</title>
+    <link>http://blog.ibyte.me/post/redis-cluster-system-desgin/</link>
+    <pubDate>Wed, 24 Nov 2021 14:37:48 +0800</pubDate>
+    
+    <guid>http://blog.ibyte.me/post/redis-cluster-system-desgin/</guid>
+    <description>
+        &lt;h2 id=&#34;为什么会出现集群架构&#34;&gt;
+    &lt;a href=&#34;#%e4%b8%ba%e4%bb%80%e4%b9%88%e4%bc%9a%e5%87%ba%e7%8e%b0%e9%9b%86%e7%be%a4%e6%9e%b6%e6%9e%84&#34; class=&#34;anchor&#34;&gt;
+        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;
+            &lt;path fill-rule=&#34;evenodd&#34;
+                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;
+            &lt;/path&gt;
+        &lt;/svg&gt;
+    &lt;/a&gt;
+    为什么会出现集群架构？
+&lt;/h2&gt;
+&lt;p&gt;上一篇写到了&lt;code&gt;redis&lt;/code&gt;哨兵模式，这种模式虽然能解决一些并发情况下的数据请求压力问题和可用性问题，主从替换以及故障恢复。哨兵模式只是&lt;code&gt;redis&lt;/code&gt;架构在历史演变过程中一个的转折点，哨兵这种模式主从模式的数据都是全量同步的，也就是每个从节点上的数据都是主节点上的数据副本，大家想一想有木有问题？&lt;/p&gt;
+&lt;p&gt;是不是太浪费内存了？或者说可不可以把全量的数据拆解成部分数据，然后分布在不同节点上？那么这种有什么好处吗？？？&lt;/p&gt;
+&lt;p&gt;如果数据全部存储在一台机子上，全量同步的时候会时间过长，有时候出现了&lt;code&gt;big key&lt;/code&gt;情况更是一个问题，网络一波动，本来传输正在进行中，一半断掉了，会增加同步失败的概率。分片的存储好处，是不是可以减低这些风险的，每个节点我存储一部分数据，实质我们可以交叉存储数据块，&lt;code&gt;a&lt;/code&gt;节点存储&lt;code&gt;b&lt;/code&gt;节点一个副本，&lt;code&gt;b&lt;/code&gt;节点存储&lt;code&gt;a&lt;/code&gt;节点一个副本，这样就算如果&lt;code&gt;a&lt;/code&gt;当掉了，我们是不是可以去&lt;code&gt;b&lt;/code&gt;里面拿取副本继续使用，当然这个我是自己的一些看法，我看&lt;code&gt;hdfs&lt;/code&gt;就是这么设计的，当然&lt;code&gt;redis&lt;/code&gt;没有这个交叉存储策略，但是笔者认为如果在&lt;code&gt;key&lt;/code&gt;下功夫也可以达到的，把&lt;code&gt;key&lt;/code&gt;以特定格式的命名的格式二次存储也能达到，只是说浪费一点内存吧了。&lt;/p&gt;
+&lt;h2 id=&#34;存储模型&#34;&gt;
+    &lt;a href=&#34;#%e5%ad%98%e5%82%a8%e6%a8%a1%e5%9e%8b&#34; class=&#34;anchor&#34;&gt;
+        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;
+            &lt;path fill-rule=&#34;evenodd&#34;
+                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;
+            &lt;/path&gt;
+        &lt;/svg&gt;
+    &lt;/a&gt;
+    存储模型
+&lt;/h2&gt;
+&lt;p&gt;有木有想过为什么&lt;code&gt;redis&lt;/code&gt;为什么是&lt;code&gt;k:v&lt;/code&gt;这种存储模型，而不是直接设计成关系型数据库那样的？？熟悉&lt;code&gt;redis&lt;/code&gt;应该都了解一点历史，使用&lt;code&gt;key-value&lt;/code&gt;是有历史原因的，早期的时候，&lt;code&gt;redis&lt;/code&gt;作者起初是为提高自己网站的读写并发能力而创建&lt;code&gt;redis&lt;/code&gt;，而&lt;code&gt;key-value&lt;/code&gt;字典结构的常规时间复杂度是&lt;code&gt;O(1)&lt;/code&gt;，刚好满足作者的性能要求和业务数据结构需求。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;redis&lt;/code&gt;大部分作用都是缓存数据的，大部分数据都是从&lt;code&gt;db&lt;/code&gt;读取的，而且这些数据也不是&lt;code&gt;db&lt;/code&gt;中全量的数据，只是一部分而已，没有高度组织化结构化数据，用一部分数据，怎么组成一个完整的关系模型？所以不需要结构化查询语言。&lt;/p&gt;
+&lt;h2 id=&#34;codis分片方案&#34;&gt;
+    &lt;a href=&#34;#codis%e5%88%86%e7%89%87%e6%96%b9%e6%a1%88&#34; class=&#34;anchor&#34;&gt;
+        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;
+            &lt;path fill-rule=&#34;evenodd&#34;
+                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;
+            &lt;/path&gt;
+        &lt;/svg&gt;
+    &lt;/a&gt;
+    Codis分片方案
+&lt;/h2&gt;
+&lt;p&gt;正是&lt;code&gt;redis&lt;/code&gt;作者这些历史原因，本来在设计之初可能也就是单机就可以满足作者自己的需求，但是没想到它写的这个软件被这么多人使用，影响力这么大，然后出现了主从模式，哨兵模式，直到本文要讲的集群模式。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;计算机科学领域的任何问题都可以通过增加一个间接的中间层来解决!&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;code&gt;Redis&lt;/code&gt;的集群也有演变历史，早期有&lt;code&gt;Twemproxy&lt;/code&gt;是&lt;code&gt;Twitter&lt;/code&gt;团队的开源的解决分片方案，还有&lt;code&gt;Codis&lt;/code&gt;的方案值得注意这是一个国人开源的，也就是现在&lt;code&gt;pingcap&lt;/code&gt;几位创始人，前豌豆荚团队的，不得不说&lt;code&gt;屌爆了&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;他们方案都有一个共同特点，都是通过一个&lt;code&gt;proxy&lt;/code&gt;代理层进行的分片处理的，不知道有没有使用过&lt;code&gt;Nginx&lt;/code&gt;的，使用过大家应该知道&lt;code&gt;Nginx&lt;/code&gt;反向代理一些服务程序，例如&lt;code&gt;Nginx&lt;/code&gt;和&lt;code&gt;Tomcat&lt;/code&gt;组成一个反向代理负载均衡的集群，&lt;code&gt;codis&lt;/code&gt;也是类似这样的方案。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gwob6q2qnnj30ih071q2y.jpg&#34; 
+    alt=&#34;codis代理方案&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Codis&lt;/code&gt;就是起着一个中间代理的作用，&lt;code&gt;Codis&lt;/code&gt;内部维护一个&lt;code&gt;key&lt;/code&gt;映射算法，客户端访问&lt;code&gt;codis&lt;/code&gt;和直接访问&lt;code&gt;redis&lt;/code&gt;没有区别的，因为&lt;code&gt;codis&lt;/code&gt;实现了&lt;code&gt;redis&lt;/code&gt;的通讯协议，&lt;code&gt;协议&lt;/code&gt;这个东西很重要的，双方都商量好的怎么处理数据，做起事来，就很方便，大家懂得。。。。&lt;code&gt;Codis&lt;/code&gt;是一个无状态的，所以可以增加多个&lt;code&gt;Codis&lt;/code&gt;来提升&lt;code&gt;QPS&lt;/code&gt;,同时也可以起着扩容的作用。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&lt;code&gt;Codis&lt;/code&gt;怎么工作的？&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;在&lt;code&gt;Codis&lt;/code&gt;会把所有的&lt;code&gt;key&lt;/code&gt;分成&lt;code&gt;1024&lt;/code&gt;个槽，这&lt;code&gt;1024&lt;/code&gt;个槽对应着的就是&lt;code&gt;Redis&lt;/code&gt;的集群，这个在&lt;code&gt;Codis&lt;/code&gt;中是会在内存中维护着这&lt;code&gt;1024&lt;/code&gt;个槽与&lt;code&gt;Redis&lt;/code&gt;实例的映射的，当然这个是可以配置，就看你的&lt;code&gt;Redis&lt;/code&gt;的节点数量有多少，偏多的话，可以设置槽多一些。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;codis&lt;/code&gt;会先是把&lt;code&gt;key&lt;/code&gt;进行&lt;code&gt;CRC32&lt;/code&gt; 后，得到一个&lt;code&gt;32&lt;/code&gt;位的数字，然后再&lt;code&gt;hash%1024&lt;/code&gt;后得到一个余数，这个值就是这个&lt;code&gt;key&lt;/code&gt;对应着的槽，这槽后面对应着的就是&lt;code&gt;redis&lt;/code&gt;的实例。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;那么问题来了？我多个&lt;code&gt;codis&lt;/code&gt;怎么解决槽位共享？&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Codis&lt;/code&gt;把这个工作交给了&lt;code&gt;ZooKeeper&lt;/code&gt;来管理，&lt;code&gt;Codis&lt;/code&gt;节点会监听到&lt;code&gt;ZooKeeper&lt;/code&gt;的槽位变化，会及时同步过来，如下图&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gwobtmal3aj30dh0agjrr.jpg&#34; 
+    alt=&#34;槽位共享&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;这种方式有木有什么弊端？？？&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;如果是使用&lt;code&gt;mset&lt;/code&gt;批量设置值，值是是不是被分散在各个节点上，还有如果&lt;code&gt;rename&lt;/code&gt;的时候也是一个问题，不过我认为有一种解决方案在映射的时候给&lt;code&gt;key&lt;/code&gt;生成一个唯一的&lt;code&gt;uuid&lt;/code&gt;，我&lt;code&gt;rename&lt;/code&gt;的只是&lt;code&gt;key&lt;/code&gt;，而映射的时候使用&lt;code&gt;uuid&lt;/code&gt;计算槽位，当然这些问题在后面的&lt;code&gt;redis&lt;/code&gt;官方解决方案里面得到了解决。&lt;/p&gt;
+&lt;h2 id=&#34;官方集群方案&#34;&gt;
+    &lt;a href=&#34;#%e5%ae%98%e6%96%b9%e9%9b%86%e7%be%a4%e6%96%b9%e6%a1%88&#34; class=&#34;anchor&#34;&gt;
+        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;
+            &lt;path fill-rule=&#34;evenodd&#34;
+                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;
+            &lt;/path&gt;
+        &lt;/svg&gt;
+    &lt;/a&gt;
+    官方集群方案
+&lt;/h2&gt;
+&lt;p&gt;说起官方集群解决方案，是&lt;code&gt;redis&lt;/code&gt;作者在前面那些代理中间件出现之后发布的，我看他这个设计之后感觉应该借鉴了&lt;code&gt;codis&lt;/code&gt;的设计方案，只是把集群槽位信息同步改成&lt;code&gt;p2p&lt;/code&gt;然后通过&lt;code&gt;gossip&lt;/code&gt;协议来解决了同步的问题，个人感觉都是都是&lt;code&gt;redis&lt;/code&gt;在设计之初留下技术负债问题，早期的时候估计作者自己也没有打算写集群方案，被逼的，当然这个是我个人的想法和看法。&lt;/p&gt;
+&lt;p&gt;相对于 &lt;code&gt;Codis&lt;/code&gt; 的不同，它是去中心化的，如图下面我画的图，该集群有4个 &lt;code&gt;Redis&lt;/code&gt; 节点组成， 每个节点负责整个集群的一部分数据，每个节点负责的数据多少可能不一样，这4个节点相 互连接组成一个对等的集群，它们之间通过一种&lt;code&gt;gossip&lt;/code&gt;协议相互交互集群信息。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gwph0tv6fcj30fm0d474u.jpg&#34; 
+    alt=&#34;示意图&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;当然我上面画的图太接近&lt;code&gt;一致性哈希环&lt;/code&gt;了，但是设计思想是接近的，&lt;code&gt;Redis Cluster&lt;/code&gt; 将所有数据划分为 &lt;code&gt;16384&lt;/code&gt; 的 &lt;code&gt;slots&lt;/code&gt;，比 &lt;code&gt;Codis&lt;/code&gt; 的 &lt;code&gt;1024&lt;/code&gt; 个槽划分得更为精细，每个节点负责其中一部分槽，槽位的信息存储于每个节点中，它不像 &lt;code&gt;Codis&lt;/code&gt;存储在&lt;code&gt;zookeeper&lt;/code&gt;中，相信大家都听说过&lt;code&gt;p2p&lt;/code&gt;，不清楚自己去查吧。。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;那么问题来了！客户端怎么获取不同节点中的&lt;code&gt;key&lt;/code&gt;呢？&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;有木有想过，我客户端连接的是&lt;code&gt;a&lt;/code&gt;节点，而我要的数据在&lt;code&gt;b&lt;/code&gt;节点上，这个问题怎么解决的呢？&lt;code&gt;redis&lt;/code&gt;在通讯协议上下了功夫！它借鉴了&lt;code&gt;http&lt;/code&gt;协议的重定向的概念，大家的应该熟悉&lt;code&gt;http&lt;/code&gt;中重定向协议吧，如下图：&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gwphe8i7haj309908ndfz.jpg&#34; 
+    alt=&#34;重定向过程&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;客户端来连接集群时，它也会得到一份集群的槽位配置信息。这样当客户端要查找某个 &lt;code&gt;key&lt;/code&gt; 时，可以直接定位到目标节点，这么一来就解决了数据重定向拿取问题，上面我说到了&lt;code&gt;codis的rename&lt;/code&gt;问题，官方解决方案是可以让客户端把每个&lt;code&gt;key&lt;/code&gt;设置一个&lt;code&gt;tag&lt;/code&gt;然后指定到对应节点槽位上，想深入了解的自己看看一些资料吧，我这里主要讲大问题思路。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;这种模式就十全十美了吗？没有其他问题了吗？&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;从上面我画的图就能看出来，集群内置了&lt;code&gt;16384&lt;/code&gt;个&lt;code&gt;slot&lt;/code&gt;，并且把所有的物理节点映射到了这&lt;code&gt;16384&lt;/code&gt;个&lt;code&gt;slot&lt;/code&gt;上，或者说把这些&lt;code&gt;slot&lt;/code&gt;均等的分配给了各个节点，但是这种分片模式，肯定是有问题的，例如一个节点挂掉了，那么整个集群中的一部分数据丢失了，数据就不是完整的了，有什么办法解决？&lt;/p&gt;
+&lt;p&gt;解决办法还是有的每个分片节点备几个从节点，从主节点上读取数据到从节点上，和哨兵模式一样，有问题自己从节点顶上。&lt;/p&gt;
+&lt;h2 id=&#34;小结&#34;&gt;
+    &lt;a href=&#34;#%e5%b0%8f%e7%bb%93&#34; class=&#34;anchor&#34;&gt;
+        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;
+            &lt;path fill-rule=&#34;evenodd&#34;
+                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;
+            &lt;/path&gt;
+        &lt;/svg&gt;
+    &lt;/a&gt;
+    小结
+&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;redis&lt;/code&gt;集群采用&lt;code&gt;P2P&lt;/code&gt;模式，是完全去中心化的，不存在中心节点或者代理节点，都是历史遇到问题就出解决方案演进过来的。估计作者早期也就是打算设计的时候一个单机就能解决问题了，没想到，万万没想到啊，用的人那么多，然后出现分布式问题哈哈哈哈。。所以出现了各种解决方案，不管什么解决方案，&lt;code&gt;redis&lt;/code&gt;数据不能做到保证强一致性，一些已经向客户端确认写成功的操作，会在某些不确定的情况下丢失，而且由于集群方案都是把一大块数据使用&lt;code&gt;分治法&lt;/code&gt;打散在各个节点上，支持&lt;code&gt;acid&lt;/code&gt;更是一个问题，这估计也是在历史设计的时候留下的问题，但是大部分场景&lt;code&gt;redis&lt;/code&gt;都是做缓存服务器用用可以了。&lt;/p&gt;
+&lt;p&gt;好了本文是&lt;code&gt;redis&lt;/code&gt;系统设计系列最后一章了，后面再找找其他&lt;code&gt;NB&lt;/code&gt;的系统设计写写，好看不过瘾，那你倒是点个关注啊。。。。&lt;/p&gt;
+&lt;h2 id=&#34;文末立个flag&#34;&gt;
+    &lt;a href=&#34;#%e6%96%87%e6%9c%ab%e7%ab%8b%e4%b8%aaflag&#34; class=&#34;anchor&#34;&gt;
+        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;
+            &lt;path fill-rule=&#34;evenodd&#34;
+                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;
+            &lt;/path&gt;
+        &lt;/svg&gt;
+    &lt;/a&gt;
+    文末立个flag
+&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;KVBase&lt;/code&gt;要开始动工了，先把&lt;code&gt;flag&lt;/code&gt;立在这儿，&lt;code&gt;logo&lt;/code&gt;都设计好了，管它三七二十一把第一个版本撸出来再说，然后慢慢迭代。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gwpi1bqrbhj31hc0dwwfn.jpg&#34; 
+    alt=&#34;LOGO预览哈哈哈&#34; 
+     /&gt;&lt;/p&gt;
+
+    </description>
+    </item>
+    
     <item>
     <title>How Redis Solves the CAP Problem</title>
     <link>http://blog.ibyte.me/post/how-redis-solves-the-cap-problem/</link>
