@@ -63,7 +63,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="https://avatars.githubusercontent.com/u/38412458?v=4" />
     
     
-    <link rel="stylesheet" href="/sass/main.min.85d2dd3a54e29956009c7c48e5f5d4bc22b6af329dc58a4fc8919e8c12720daa.css">
+    <link rel="stylesheet" href="/sass/main.min.3b60735c96f5faa623d75aceae8ee0a0c7d19f76a3eed0574c61f7253a4eeb3d.css">
     
 </head>
     <script>
@@ -169,14 +169,14 @@
 <p>限流算法就可以帮助我们去控制每个接口或程序的函数被调用频率，它有点儿像保险丝，防止系统因为超过访问频率或并发量而引起瘫痪。我们可能在调用某些第三方的接口的时候会看到类似这样的响应头：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="k">X-RateLimit-Limit</span><span class="p">:</span><span class="w"> </span><span class="m">60</span><span class="w">         </span>//每秒60次请求<span class="w">
-</span><span class="w"></span><span class="k">X-RateLimit-Remaining</span><span class="p">:</span><span class="w"> </span><span class="m">22</span><span class="w">     </span>//当前还剩下多少次<span class="w">
-</span><span class="w"></span><span class="k">X-RateLimit-Reset</span><span class="p">:</span><span class="w"> </span><span class="m">1612184024</span><span class="w"> </span>//限制重置时间<span class="w">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">X-RateLimit-Limit</span><span class="p">:</span><span class="w"> </span><span class="m">60</span><span class="w">         </span><span class="l">//每秒60次请求</span><span class="w">
+</span><span class="w"></span><span class="nt">X-RateLimit-Remaining</span><span class="p">:</span><span class="w"> </span><span class="m">22</span><span class="w">     </span><span class="l">//当前还剩下多少次</span><span class="w">
+</span><span class="w"></span><span class="nt">X-RateLimit-Reset</span><span class="p">:</span><span class="w"> </span><span class="m">1612184024</span><span class="w"> </span><span class="l">//限制重置时间</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
 </div><p>上面的 <code>HTTP Response</code> 是通过响应头告诉调用方服务端的限流频次是怎样的，保证后端的接口访问上限。为了解决限流问题出现了很多的算法，它们都有不同的用途，通常的策略就是拒绝超出的请求，或者让超出的请求排队等待。</p>
@@ -210,7 +210,7 @@
 <p>代码实现:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -278,7 +278,7 @@
 </span><span class="lnt">66
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
 
 <span class="kn">import</span> <span class="p">(</span>
     <span class="s">&#34;log&#34;</span>
@@ -349,7 +349,7 @@
 </div><p>OutPut:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -366,7 +366,7 @@
 </span><span class="lnt">15
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell">2021/02/01 21:16:12 创建请求: <span class="m">0</span>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">2021/02/01 21:16:12 创建请求: <span class="m">0</span>
 2021/02/01 21:16:12 响应请求: <span class="m">0</span>
 2021/02/01 21:16:12 创建请求: <span class="m">1</span>
 2021/02/01 21:16:12 响应请求: <span class="m">1</span>
@@ -438,7 +438,7 @@
 <p>代码实现:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -474,7 +474,7 @@
 </span><span class="lnt">34
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">LeakyBucket</span> <span class="kd">struct</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">LeakyBucket</span> <span class="kd">struct</span> <span class="p">{</span>
     <span class="nx">rate</span>       <span class="kt">float64</span> <span class="c1">//固定每秒出水速率
 </span><span class="c1"></span>    <span class="nx">capacity</span>   <span class="kt">float64</span> <span class="c1">//桶的容量
 </span><span class="c1"></span>    <span class="nx">water</span>      <span class="kt">float64</span> <span class="c1">//桶中当前水量
@@ -537,7 +537,7 @@
 <p>实现代码：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -574,7 +574,7 @@
 </span><span class="lnt">35
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">TokenBucket</span> <span class="kd">struct</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">TokenBucket</span> <span class="kd">struct</span> <span class="p">{</span>
     <span class="nx">rate</span>         <span class="kt">int64</span> <span class="c1">//固定的token放入速率, r/s
 </span><span class="c1"></span>    <span class="nx">capacity</span>     <span class="kt">int64</span> <span class="c1">//桶的容量
 </span><span class="c1"></span>    <span class="nx">tokens</span>       <span class="kt">int64</span> <span class="c1">//桶中当前token数量
@@ -702,7 +702,7 @@
             
         </nav>
     </section>
-    <script defer src="/ts/features.b5555d1ae12309fd7a67c0d19ce81e7098647818f6758eb95f88ea9d550d2d2c.js" data-enable-footnotes="true"></script>
+    <script defer src="/ts/features.39c567b3af1363f8abe74bfd650f3d58cb963716b7ad4b3b53f801d3ca585599.js" data-enable-footnotes="true"></script>
 </footer>
     </body>
 </html>

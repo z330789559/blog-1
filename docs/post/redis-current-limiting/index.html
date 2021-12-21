@@ -63,7 +63,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="https://avatars.githubusercontent.com/u/38412458?v=4" />
     
     
-    <link rel="stylesheet" href="/sass/main.min.85d2dd3a54e29956009c7c48e5f5d4bc22b6af329dc58a4fc8919e8c12720daa.css">
+    <link rel="stylesheet" href="/sass/main.min.3b60735c96f5faa623d75aceae8ee0a0c7d19f76a3eed0574c61f7253a4eeb3d.css">
     
 </head>
     <script>
@@ -169,7 +169,7 @@
 <p>以系统限制用户行为为例子，比如一秒内进行某个操作<code>5</code>次，这种行为应该进行限制，滑动窗口就是记录一个滑动的时间窗口内的操作次数，操作次数超过阈值则进行限流。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -193,7 +193,7 @@
 </span><span class="lnt">22
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isActionAllowed</span><span class="o">(</span><span class="n">String</span> <span class="n">userId</span><span class="o">,</span> <span class="n">String</span> <span class="n">actionKey</span><span class="o">,</span> <span class="kt">int</span> <span class="n">period</span><span class="o">,</span> <span class="kt">int</span> <span class="n">maxCount</span><span class="o">)</span> <span class="o">{</span>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isActionAllowed</span><span class="o">(</span><span class="n">String</span> <span class="n">userId</span><span class="o">,</span> <span class="n">String</span> <span class="n">actionKey</span><span class="o">,</span> <span class="kt">int</span> <span class="n">period</span><span class="o">,</span> <span class="kt">int</span> <span class="n">maxCount</span><span class="o">)</span> <span class="o">{</span>
     <span class="c1">// 生成唯一的key
 </span><span class="c1"></span>    <span class="n">String</span> <span class="n">key</span> <span class="o">=</span> <span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&#34;hist:%s:%s&#34;</span><span class="o">,</span> <span class="n">userId</span><span class="o">,</span> <span class="n">actionKey</span><span class="o">);</span>
     <span class="kt">long</span> <span class="n">nowTs</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
@@ -240,7 +240,7 @@
 <p>在<code>redis</code>中官方没有提供相关的实现而是通过第三方的插件进行完成这个算法的，<code>redis-cell</code>是<code>4.0</code>版本提供一个限量模块，作者是来自<code>redis labs</code>的<code>itamar haber</code>，使用的<code>rust</code>语言编写的，使用很简单就API call事情，有兴趣读者可以去看看，本文就水了一篇，溜了。。。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -249,7 +249,7 @@
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell">CL.THROTTLE user123 <span class="m">15</span> <span class="m">30</span> <span class="m">60</span> <span class="m">1</span>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">CL.THROTTLE user123 <span class="m">15</span> <span class="m">30</span> <span class="m">60</span> <span class="m">1</span>
                ▲     ▲  ▲  ▲ ▲
                <span class="p">|</span>     <span class="p">|</span>  <span class="p">|</span>  <span class="p">|</span> └───── apply <span class="m">1</span> token <span class="o">(</span>default <span class="k">if</span> omitted<span class="o">)</span>
                <span class="p">|</span>     <span class="p">|</span>  └──┴─────── <span class="m">30</span> tokens / <span class="m">60</span> seconds
@@ -345,7 +345,7 @@
             
         </nav>
     </section>
-    <script defer src="/ts/features.b5555d1ae12309fd7a67c0d19ce81e7098647818f6758eb95f88ea9d550d2d2c.js" data-enable-footnotes="true"></script>
+    <script defer src="/ts/features.39c567b3af1363f8abe74bfd650f3d58cb963716b7ad4b3b53f801d3ca585599.js" data-enable-footnotes="true"></script>
 </footer>
     </body>
 </html>

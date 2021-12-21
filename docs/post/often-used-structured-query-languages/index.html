@@ -45,7 +45,7 @@
     },
     "datePublished": "2021-09-21",
     "description": "",
-    "wordCount":  171 ,
+    "wordCount":  81 ,
     "mainEntityOfPage": "True",
     "dateModified": "2021-09-21",
     "publisher": {
@@ -63,7 +63,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="https://avatars.githubusercontent.com/u/38412458?v=4" />
     
     
-    <link rel="stylesheet" href="/sass/main.min.85d2dd3a54e29956009c7c48e5f5d4bc22b6af329dc58a4fc8919e8c12720daa.css">
+    <link rel="stylesheet" href="/sass/main.min.3b60735c96f5faa623d75aceae8ee0a0c7d19f76a3eed0574c61f7253a4eeb3d.css">
     
 </head>
     <script>
@@ -165,11 +165,11 @@
 <p>在日常开发过程中查询数据是应用场景最多的，查询就要使用<code>select</code>关键字，如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">tableName</span><span class="p">;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">tableName</span><span class="p">;</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><p>例如有一个表结构如下：</p>
 <p><img loading="lazy" 
@@ -179,21 +179,21 @@
 <p>上面是查询整张表的所有字段数据，如果需要筛选就需要制定其<code>field name</code>如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">select</span> <span class="n">name</span> <span class="k">as</span> <span class="s2">&#34;用户名&#34;</span> <span class="k">from</span> <span class="n">TableName</span><span class="p">;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">select</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="s2">&#34;用户名&#34;</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">TableName</span><span class="p">;</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><p>并且上面使用了<code>as</code>关键字并进行了别名，查询出来数据就按照别名进行展示。</p>
 <p>如果想查询指定的数据,就要使用<code>where</code>子语句，如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">select</span> <span class="o">*</span>  <span class="k">from</span> <span class="n">TableName</span> <span class="k">where</span> <span class="n">ID</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w">  </span><span class="k">from</span><span class="w"> </span><span class="n">TableName</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">ID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><p>那么上的<code>SQL</code>语句查询出来的结果就是上图中<code>ID</code>等于<code>1</code>的一条数据。</p>
 <p>如果需要整理结果集去重复的话在前面加入<code>distinct</code>关键字，就可以去重了。</p>
@@ -211,20 +211,20 @@
 <p>例如我要查询表中年龄最小那个用户的名字，这里不排除年龄是重复的情况，如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">select</span> <span class="n">username</span> <span class="k">from</span> <span class="n">TableName</span>  <span class="k">order</span> <span class="k">by</span> <span class="n">age</span> <span class="k">desc</span> <span class="k">limit</span> <span class="mi">1</span><span class="p">;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">select</span><span class="w"> </span><span class="n">username</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">TableName</span><span class="w">  </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="k">desc</span><span class="w"> </span><span class="k">limit</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><p>上面就是对 <code>age</code>进行降序然后取一条数据。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">TableName</span> <span class="k">order</span> <span class="k">by</span> <span class="n">age</span> <span class="k">ASC</span><span class="p">;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">TableName</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="k">ASC</span><span class="p">;</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><p>对表进行按照<code>age</code>升序排序整理输出结果。</p>
 <p><code>limit</code>支持几种方式，<code>limit 2,5</code>意思是从第<code>2</code>行开始，往后查询<code>5</code>条数据，<code>limit 2 offset 3</code>意思是从<code>3</code>开始往后查询<code>2</code>条数据。</p>
@@ -232,70 +232,70 @@
 <p>字段类型也支持数学运算例如：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">TableName</span> <span class="k">where</span> <span class="p">(</span><span class="n">age</span><span class="o">+</span><span class="mi">10</span><span class="p">)</span> <span class="o">=</span> <span class="mi">32</span><span class="p">;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">TableName</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="p">(</span><span class="n">age</span><span class="o">+</span><span class="mi">10</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">32</span><span class="p">;</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><p>上面一条语句就是查询<code>age</code>加<code>10</code>以后等于<code>32</code>的数据。</p>
 <p>有时候我们需要对这个表进行多个条件限制查询，我们可能就需要使用到<code>OR</code>或者<code>AND</code>进行条件关联查询了，例如：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">select</span> <span class="n">users</span><span class="p">.</span><span class="n">mobile</span><span class="p">,</span> <span class="n">user_address</span><span class="p">.</span><span class="n">mobile</span> <span class="k">as</span> <span class="s2">&#34;用户订单手机号&#34;</span><span class="p">,</span> <span class="n">user_address</span><span class="p">.</span><span class="n">address</span>
-<span class="k">from</span> <span class="n">user_address</span><span class="p">,</span>
-     <span class="n">users</span>
-<span class="k">where</span> <span class="n">user_address</span><span class="p">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="n">users</span><span class="p">.</span><span class="n">user_id</span><span class="p">;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">select</span><span class="w"> </span><span class="n">users</span><span class="p">.</span><span class="n">mobile</span><span class="p">,</span><span class="w"> </span><span class="n">user_address</span><span class="p">.</span><span class="n">mobile</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="s2">&#34;用户订单手机号&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">user_address</span><span class="p">.</span><span class="n">address</span><span class="w">
+</span><span class="w"></span><span class="k">from</span><span class="w"> </span><span class="n">user_address</span><span class="p">,</span><span class="w">
+</span><span class="w">     </span><span class="n">users</span><span class="w">
+</span><span class="w"></span><span class="k">where</span><span class="w"> </span><span class="n">user_address</span><span class="p">.</span><span class="n">user_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">users</span><span class="p">.</span><span class="n">user_id</span><span class="p">;</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><p>上面这个多表关联查询了，条件是<code>user_address</code>表的<code>id</code>要和<code>users</code>表的<code>id</code>相等的数据查询出来。</p>
 <p>多个条件可以使用<code>and</code>关联起来组成一个条件，例如：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">select</span> <span class="n">BookName</span> <span class="k">as</span> <span class="err">书名</span><span class="p">,</span><span class="n">Price</span> <span class="k">as</span> <span class="err">价格</span><span class="p">,</span> <span class="n">Writer</span> <span class="k">AS</span> <span class="err">作者</span> <span class="k">from</span> <span class="n">bookinfo</span> <span class="k">WHERE</span> <span class="k">MONTH</span><span class="p">(</span><span class="n">pDate</span><span class="p">)</span><span class="o">=</span><span class="mi">9</span> <span class="k">and</span> <span class="k">YEAR</span><span class="p">(</span><span class="n">pDate</span><span class="p">)</span><span class="o">=</span><span class="mi">2021</span><span class="p">;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">select</span><span class="w"> </span><span class="n">BookName</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="err">书名</span><span class="p">,</span><span class="n">Price</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="err">价格</span><span class="p">,</span><span class="w"> </span><span class="n">Writer</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="err">作者</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">bookinfo</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="k">MONTH</span><span class="p">(</span><span class="n">pDate</span><span class="p">)</span><span class="o">=</span><span class="mi">9</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="k">YEAR</span><span class="p">(</span><span class="n">pDate</span><span class="p">)</span><span class="o">=</span><span class="mi">2021</span><span class="p">;</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><p>查询图书表里面的出版月份是<code>9</code>月的并且是<code>2021</code>年的<code>9</code>月出版的图书信息。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">TableName</span> <span class="k">where</span> <span class="n">username</span> <span class="o">=</span> <span class="s1">&#39;Leon Ding&#39;</span> <span class="k">or</span> <span class="n">age</span> <span class="o">=</span> <span class="mi">22</span><span class="p">;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">TableName</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">username</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;Leon Ding&#39;</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">22</span><span class="p">;</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><p>上面使用<code>or</code>满足任意一边条件即可就能查询到数据。</p>
 <p>还有一种就是查询在某个范围内的数据，例如：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">select</span> <span class="o">*</span>
-<span class="k">from</span> <span class="n">goods</span>
-<span class="k">where</span> <span class="n">cost_price</span> <span class="k">between</span> <span class="mi">1099</span> <span class="k">and</span> <span class="mi">2880</span><span class="p">;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w">
+</span><span class="w"></span><span class="k">from</span><span class="w"> </span><span class="n">goods</span><span class="w">
+</span><span class="w"></span><span class="k">where</span><span class="w"> </span><span class="n">cost_price</span><span class="w"> </span><span class="k">between</span><span class="w"> </span><span class="mi">1099</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="mi">2880</span><span class="p">;</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><p>上面就是查询成本价在<code>1099-2880</code>之间的商品信息，我们还可以使用<code>not</code>放在<code>between</code>前面，也就是取反的意思。</p>
 <p>多个条件或者通过多个类型来查询可以使用<code>in</code>关键字，例如：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">TableName</span> <span class="n">age</span> <span class="k">in</span> <span class="p">(</span><span class="mi">22</span><span class="p">,</span><span class="mi">18</span><span class="p">);</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">TableName</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="p">(</span><span class="mi">22</span><span class="p">,</span><span class="mi">18</span><span class="p">);</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><p>上面是查年龄是<code>22</code>和<code>18</code>的用户信息。</p>
 
@@ -371,7 +371,7 @@
             
         </nav>
     </section>
-    <script defer src="/ts/features.b5555d1ae12309fd7a67c0d19ce81e7098647818f6758eb95f88ea9d550d2d2c.js" data-enable-footnotes="true"></script>
+    <script defer src="/ts/features.39c567b3af1363f8abe74bfd650f3d58cb963716b7ad4b3b53f801d3ca585599.js" data-enable-footnotes="true"></script>
 </footer>
     </body>
 </html>

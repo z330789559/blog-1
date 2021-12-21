@@ -6,10 +6,27 @@
     <description>Recent content in Posts on 打码匠</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 24 Nov 2021 14:37:48 +0800</lastBuildDate>
-    
-	<atom:link href="http://blog.ibyte.me/post/index.xml" rel="self" type="application/rss+xml" />
-    
+    <lastBuildDate>Tue, 21 Dec 2021 18:14:23 +0800</lastBuildDate><atom:link href="http://blog.ibyte.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Bitcask Kvbase</title>
+      <link>http://blog.ibyte.me/post/bitcask-kvbase/</link>
+      <pubDate>Tue, 21 Dec 2021 18:14:23 +0800</pubDate>
+      
+      <guid>http://blog.ibyte.me/post/bitcask-kvbase/</guid>
+      <description>天上飞的概念，也要落地的实现  Bitcask相信如果你了解或者做过存储相关的工作的，相信或多或少都了解过，它是由basho的bitcask论文所设计的key-value存储引擎，相关的应用有Riak这个数据库，Riak是以 Erlang 开发的一个高度可扩展的分布式数据存储，Riak的实现是基于Amazon的Dynamo论文实现的，说到Dynomo那是另外一篇论文的事情了（如果你想看中文版我上一篇文章就是翻译的Dynamo论文可以找找历史记录），Dynamo他们也根据自己的实际应用做了相应的优化，言归正传，这篇我还是围绕Bitcask存储引擎在KVBase落地的实现写写。
+   Bitcask怎么工作的？  Bitcask是使用RAM 存储指向值的文件指针的哈希映射，索引用于高效写入的日志结构文件系统，二者组合而成的存储引擎，可能光文章描述可能很难理解，我下面画了几幅图。
+Bitcask主要几个组件，我个人认为最重要也就3个组件：
+ Index Map 全局索引映射 Active File 当前可写文件的指针 Compressor 负责脏数据压缩和整理进程  key会存储在内存中以便快速查找，所有的value都存储于磁盘中，这种方法特点是以追加的方式写磁盘，即写操作是有序的，这样可以减少磁磁盘的寻道时间，是一种高吞吐量的写入方案，在更新数据时，也是把新数据追加到文件的后面，然后更新一下数据的文件指针映射即可。
+当写操作发生时，keydir被原子的更新，更新成新的文件上的位置，文件上的老数据还在磁盘上，新的读操作会使用新的keydir，如果在并发大量请求情况下，这个估计会出现性能瓶颈的地方之一，这个坑我会在后面说说怎么去优化。
+Active File是在磁盘上的文件，每条数据对应数据格式如下图：
+每条数据都一条一条以行的形式存储在数据文件里，如图上通过特殊的编码方式就可以得到key的大小和value的大小，然后就可以找到key的位置和value的内容然后反编码解码操作，数据在写入的时候是被编码成二进制的存储的，补充一下CRC是循环校验码，是数据通信领域中最常用的一种差错校验码，毕竟数据库里面的数据有时候需要在网络上进行传输。
+   Bitcask缺陷   这种基于内存的索引的必然有问题的，例如机器重启，内存数据丢了，索引就无法对磁盘数进行映射，还有上面提到的全局的读写必须经过这个keydir进行定位到数据源，另外读取数据的依赖于操作系统内核的文件系统缓存，没有用户态实现，不可控。
+  为了解决重启内存索引数据丢失的问题，Bitcask论文中提到了hint file文件，如果是直接扫描data文件然后来建立索引是一件非常耗时的工作，要调用操作系统打开多个数据文件，然后来回遍历记录，官方解决方案是在一部分data文件记录对应一个hint文件，扫描一个hint file相比去读取data文件要省事的多，里面记录如下：  第二个问题就是数据都是增删改查的，数据被删除是肯定会发生的，那么Bitcask作为一个只追加记录的引擎，怎么解决？随着记录不断增多，数据文件也会变得更大，为了节省空间，bitcask采用merge的方式剔除脏数据，merge期间会影响到服务的访问，如果想保留原始的数据文件，可以使用谷歌的Snappy压缩算法，在磁盘IO和cpu之间做一个权衡，以便使程序跑得更快，Snappy就是这样一种快速的数据压缩算法。对于一个核的i7处理器（64位模式），能达到250M/s以上的处理速度。  针对这个问题，我对KVBase采用的bit桶key标记删除策略，当被删除的key达到一定数量的时候（通过算法去判定是否需要），如果需要就会启动一个独立进程去访问为未被标记的数据，并且开始整理到新的数据文件中，在此期间服务依然可用，整理完成之后我只需要原子操作把内存映射的指针指向新的索引上，这个过程比bitcask论文用的整个合并数据文件要好得多，不会因为整理过程中整个服务被阻塞着，最多就是短暂消耗一点内存空间罢了，整理完成之后清理废弃内存数据和内存空间，这也是牺牲空间换取可用性和时间。我承认这个设计借鉴了Golang原生的map的扩容策略，如果你对go原生的map有了解的话，或者是看过go源代码的话，应该很清楚。
+   KVBase的设计  要知道Bitcask是以追加的方式写磁盘，即写操作是有序的，这样可以减少磁磁盘的寻道时间，是一种高吞吐量的写入设计，写性能肯定是没有得话说的。但是读取数据是通过内存中索引进行查询读取，虽然key的定位是通过hash进行O(1)时间复杂度，但是如果数据存放在老数据文件里面，此时就要调用系统内核api去读取文件，会产生短暂的io开销。
+为了解决读取性能的问题，我在KVBase上加了层cache并且这层cache是支持分布式的，为什么这么做？要知道数据存储问题底层的Bitcask引擎已经解决了，写入数据不就是为了数据不能丢吗？这个问题已经解决了，大部分写数据场景估计也不多，大部分都是读数据场景，所以加一层基于内存的cache为读取数据，提供保障，为了解决内存空间大小没有磁盘空间大的问题，引入一些内存淘汰算法，保证空间问题，当然具体哪个我还在考量，或者像redis那样从内存数据里面随机抽取一部分数据，如果超过4/1的数据即将过期，那么就重复抽样几次：
+底层存储已经和cache被单独抽象出来了，以后就算换掉底层的存储引擎实现也不会影响上层cache，在KVBase我个人认为存储引擎只是为cache服务的，cache被抽象成了分布式的了，意味着后面我可以动态分配数据存储节点，这个就没有什么好讲的了。
+   小结  如果这篇文章对读者有什么启发，那我很高兴，文章也是一种技术分享，如果你对这块感兴趣，有什么想吐槽的，我非常欢迎交流，实质来一起coding。</description>
+    </item>
     
     <item>
       <title>Redis Cluster System Desgin</title>
@@ -198,13 +215,16 @@ HLL的特点就是能花较低的内存占用统计海量的数据，但是缺�
       <guid>http://blog.ibyte.me/post/often-used-structured-query-languages/</guid>
       <description>概 述  在开发过程中，作为一个crud boy来说会使sql来操作数据库增删改查是必不可少的，这篇文章将写写日常开发中常用的sql语句。数据是一个抽象的的定义，所谓的数据库就是把一些元数据通过特定规律整理到一起管理起来，方便通过他特定DDL，DCL，DML这些特定的语句来方便管理数据。
  DDL (data definition languages) 方便开发者通过SQL来定义存储的数据格式，组织数据。 DML (data manipulation languages) 允许用户对数据进行create、delete、insert、updated操作。 DCL (data control languages) 可以来管理用户对数据的访问操作权限，例如检索，更新，删除 &amp;hellip;     查询语句  在日常开发过程中查询数据是应用场景最多的，查询就要使用select关键字，如下：
-1  select * from tableName;   例如有一个表结构如下：
+1  select*fromtableName;  例如有一个表结构如下：
 上面是查询整张表的所有字段数据，如果需要筛选就需要制定其field name如下：
-1  select name as &amp;#34;用户名&amp;#34; from TableName;   并且上面使用了as关键字并进行了别名，查询出来数据就按照别名进行展示。
+1  selectnameas&amp;#34;用户名&amp;#34;fromTableName;  并且上面使用了as关键字并进行了别名，查询出来数据就按照别名进行展示。
 如果想查询指定的数据,就要使用where子语句，如下：
-1  select * from TableName where ID = 1;   那么上的SQL语句查询出来的结果就是上图中ID等于1的一条数据。
+1  select*fromTableNamewhereID=1;  那么上的SQL语句查询出来的结果就是上图中ID等于1的一条数据。
 如果需要整理结果集去重复的话在前面加入distinct关键字，就可以去重了。
-   查询过滤  有时候我们通过条件查询到的数据需要进行其他筛选，这个时候我们就要使用到limit或者order by进行过滤或者重新整理了。</description>
+   查询过滤  有时候我们通过条件查询到的数据需要进行其他筛选，这个时候我们就要使用到limit或者order by进行过滤或者重新整理了。
+例如我要查询表中年龄最小那个用户的名字，这里不排除年龄是重复的情况，如下：
+1  selectusernamefromTableNameorderbyagedesclimit1;  上面就是对 age进行降序然后取一条数据。
+1  select*fromTableNameorderbyageASC;  对表进行按照age升序排序整理输出结果。</description>
     </item>
     
     <item>
@@ -232,7 +252,7 @@ HLL的特点就是能花较低的内存占用统计海量的数据，但是缺�
       <guid>http://blog.ibyte.me/post/rust-lifetime/</guid>
       <description>lifetime寿命  Rust中的每一个引用都有一个有效的作用域，生命周期就是为这个作用域服务的，大部分生命周期编译器可以推断出来，可以是隐式的。但是如果在某些情况下编译器就无法正常推断出来了，需要我们自己手动标注，标注生命周期语法就是&#39;a这样的语法。
    为什么需要生命周期？  例如下面例子就是在两个字符串切片里面查找最长的那个并且返回！
-1 2 3 4 5 6 7 8  // &amp;#39;a 是指3个引用的作用域生命周期要一致 fn find_long_str&amp;lt;&amp;#39;a&amp;gt;(x: &amp;amp;&amp;#39;astr,y: &amp;amp;&amp;#39;astr)-&amp;gt; &amp;amp;&amp;#39;astr{ifx.len()&amp;gt;y.len(){x}else{y}}  上面我就加注了生命周期标识符，如果不加编译器会报错，原因是因为我们这个函数引用的是外部的变量，不能确定引用的变量是否已经被销毁了，那这样就是悬垂引用！
+1 2 3 4 5 6 7 8  // &amp;#39;a 是指3个引用的作用域生命周期要一致 fn find_long_str&amp;lt;&amp;#39;a&amp;gt;(x: &amp;amp;&amp;#39;a str,y: &amp;amp;&amp;#39;a str)-&amp;gt; &amp;amp;&amp;#39;a str {ifx.len()&amp;gt;y.len(){x}else{y}}  上面我就加注了生命周期标识符，如果不加编译器会报错，原因是因为我们这个函数引用的是外部的变量，不能确定引用的变量是否已经被销毁了，那这样就是悬垂引用！
 1 2 3 4 5 6 7 8 9 10  letstr1=String::from(&amp;#34;Hello&amp;#34;);letstr2;letresult;{//let str2 = String::from(&amp;#34; World!&amp;#34;); str2=String::from(&amp;#34; World!&amp;#34;);result=find_long_str(str1.as_str(),&amp;amp;str2);}// 这里借用检测就提示 引用了已经销毁的资源了 println!(&amp;#34;{}&amp;#34;,result);  加了生命周期标识符之后，如果我把let str2 = String::from(&amp;quot; World!&amp;quot;);取消注释放在一个内部作用域里面定义，那么这时调用 find_long_str编译器就会报错，因为我在下面出了作用域还使用了find_long_str返回的结果，而这个结果可能就是str2的内容， 使用这个是违反了所有权规则的，str2离开内部作用域就被销毁了。
 在标注生命周期fn find_long_str&amp;lt;&#39;a&amp;gt;(x: &amp;amp;&#39;a str, y: &amp;amp;&#39;a str) -&amp;gt; &amp;amp;&#39;a str之后编译器就知道输入参数和返回参数生命周期是要一致的，并且返回值生命周期肯定是取生命周期最短的那个的。</description>
     </item>
@@ -311,7 +331,7 @@ storage接口  1 2 3 4 5 6 7 8 9  package sessionx // session storage interface 
  基于 DB 的唯一索引 基于 Memcached的 add 命令 基于 Zookeeper 的临时有序节点 基于 Redis 的NX EX 基于Chubby粗粒度分布式锁服务     Redis的坑你填了几个？   如果在分布式场景中，实现不同客户端的线程对代码和资源的同步访问，保证在多线程下处理共享数据的安全性，就需要用到分布式锁技术，我就来写写基于Redis的一些坑😁。
  在分布式时，在程序中修改已有数据时，需要先读取，然后进行修改保存，此时很容易遇到并发问题。由于修改和保存不是原子操作，在并发场景下，部分对数据的操作可能会丢失，本地锁无法在多个服务器之间生效，这时候保证数据的一致性就需要分布式锁来实现。
 Redis 锁主要利用 Redis 的 setnx 命令实现，
- 加锁命令：SETNX key value，当键不存在时，对键进行设置操作并返回成功，否则返回失败,KEY 是锁的唯一标识，一般按业务来决定命名。 解锁命令：DEL key，通过删除键值对释放锁，以便其他线程可以通过 SETNX 命令来获取锁。 锁超时：EXPIRE key timeout, 设置 key 的超时时间，以保证即使锁没有被显式释放，锁也可以在一定时间后自动释放，避免资源被永远锁住。  1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20  // 伪代码实现 fn main(){letkey: &amp;amp;&amp;#39;staticstr=&amp;#34;sync_lock&amp;#34;;ifup_lock(key,1)==1{// 设置超时 expire(key,30)// .</description>
+ 加锁命令：SETNX key value，当键不存在时，对键进行设置操作并返回成功，否则返回失败,KEY 是锁的唯一标识，一般按业务来决定命名。 解锁命令：DEL key，通过删除键值对释放锁，以便其他线程可以通过 SETNX 命令来获取锁。 锁超时：EXPIRE key timeout, 设置 key 的超时时间，以保证即使锁没有被显式释放，锁也可以在一定时间后自动释放，避免资源被永远锁住。  1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20  // 伪代码实现 fn main(){letkey: &amp;amp;&amp;#39;static str =&amp;#34;sync_lock&amp;#34;;ifup_lock(key,1)==1{// 设置超时 expire(key,30)// .</description>
     </item>
     
     <item>

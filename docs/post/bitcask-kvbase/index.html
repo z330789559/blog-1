@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="theme-color" content="dark">
+    <title>Bitcask Kvbase | 打码匠</title>
+
+    
+    
+    
+    <meta property="og:site_name" content="打码匠 | ibyte.me" />
+    <meta property="og:title" content="Bitcask Kvbase | 打码匠"/>
+    <meta itemprop="name" content="Bitcask Kvbase | 打码匠" />
+    <meta name="twitter:title" content="Bitcask Kvbase | 打码匠" />
+    <meta name="application-name" content="Bitcask Kvbase | 打码匠" />
+
+
+    <meta name="description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles." />
+    <meta name="twitter:description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles."/>
+    <meta itemprop="description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles."/>
+    <meta property="og:description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles." />
+
+    
+
+<meta property="og:type" content="article" />
+<meta property="article:publisher" content="Leon Ding" />
+<meta property="og:article:published_time" content=2021-12-21T18:14:23&#43;0800 />
+<meta property="article:published_time" content=2021-12-21T18:14:23&#43;0800 />
+
+
+
+
+
+<script defer type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "Article",
+    "headline": "Bitcask Kvbase",
+    "author": {
+      "@type": "Person",
+      "name": "Leon Ding"
+    },
+    "datePublished": "2021-12-21",
+    "description": "",
+    "wordCount":  34 ,
+    "mainEntityOfPage": "True",
+    "dateModified": "2021-12-21",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Leon Ding",
+      "logo": {
+        "@type": "imageObject",
+        "url": "http:\/\/blog.ibyte.me\/favicon.ico"
+      }
+    }
+  }
+</script>
+
+
+    <link rel="shortcut icon" type="image/x-icon" href="https://avatars.githubusercontent.com/u/38412458?v=4" />
+    
+    
+    <link rel="stylesheet" href="/sass/main.min.3b60735c96f5faa623d75aceae8ee0a0c7d19f76a3eed0574c61f7253a4eeb3d.css">
+    
+</head>
+    <script>
+    (function() {
+        const colorSchemeKey = 'ThemeColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.userColorScheme = 'dark';
+        } else {
+            document.documentElement.dataset.userColorScheme = 'light';
+        }
+    })();
+</script>
+
+    <body class="dark">
+        <nav class="navbar">
+    <div class="container">
+        <div class="flex">
+            <div>
+                <a class="brand" href="/">
+                    
+                    
+                        <img src="https://avatars.githubusercontent.com/u/38412458?v=4" />
+                    
+                    打码匠
+                    </a>
+            </div>
+            <div class="flex">
+                
+                <a href="https://www.ibyte.me/">🏡 Home</a>
+                
+                <a href="/articles/">📚 Articles</a>
+                
+                <button id="dark-mode-button">
+                  <svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path fill="#FFD983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163 0 1 0 1.643 1.641a1.163 1.163 0 0 0-1.643-1.641zm-16.022 14.38a1.74 1.74 0 0 0 0 2.465a1.742 1.742 0 1 0 0-2.465zm13.968-2.147a2.904 2.904 0 0 1-4.108 0a2.902 2.902 0 0 1 0-4.107a2.902 2.902 0 0 1 4.108 0a2.902 2.902 0 0 1 0 4.107z" fill="#FFCC4D"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)" /></svg>
+                  <svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path fill="#FFD983" d="M16 2s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2V2zm18 14s2 0 2 2s-2 2-2 2h-2s-2 0-2-2s2-2 2-2h2zM4 16s2 0 2 2s-2 2-2 2H2s-2 0-2-2s2-2 2-2h2zm5.121-8.707s1.414 1.414 0 2.828s-2.828 0-2.828 0L4.878 8.708s-1.414-1.414 0-2.829c1.415-1.414 2.829 0 2.829 0l1.414 1.414zm21 21s1.414 1.414 0 2.828s-2.828 0-2.828 0l-1.414-1.414s-1.414-1.414 0-2.828s2.828 0 2.828 0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828l-1.414 1.414zM16 32s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2v-2z"/><circle fill="#FFD983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)" /></svg>
+                </button>
+            </div>
+            </div>
+    </div>
+</nav>
+        <main>
+            
+<div class="container">
+    <article>
+        <header class="article-header">
+            <div class="thumb">
+                <div>
+                    <h1>Bitcask Kvbase</h1>
+                    <div class="post-meta">
+                        <div>
+                            
+                            
+                              
+                            
+                            By Leon Ding | <time>December 21, 2021</time>
+                            | 1 minutes
+                        </div>
+                        <div class="tags">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </article>
+
+    <div class="article-post">
+    <h2 id="天上飞的概念也要落地的实现">
+    <a href="#%e5%a4%a9%e4%b8%8a%e9%a3%9e%e7%9a%84%e6%a6%82%e5%bf%b5%e4%b9%9f%e8%a6%81%e8%90%bd%e5%9c%b0%e7%9a%84%e5%ae%9e%e7%8e%b0" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    天上飞的概念，也要落地的实现
+</h2>
+<p><code>Bitcask</code>相信如果你了解或者做过存储相关的工作的，相信或多或少都了解过，它是由<code>basho</code>的<code>bitcask</code>论文所设计的<code>key-value</code>存储引擎，相关的应用有<code>Riak</code>这个数据库，<code>Riak</code>是以 <code>Erlang</code> 开发的一个高度可扩展的分布式数据存储，<code>Riak</code>的实现是基于<code>Amazon</code>的<code>Dynamo</code>论文实现的，说到<a href="https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf" title="Dynomo">Dynomo</a>那是另外一篇论文的事情了（如果你想看中文版我上一篇文章就是翻译的<code>Dynamo</code>论文可以找找历史记录），<code>Dynamo</code>他们也根据自己的实际应用做了相应的优化，言归正传，这篇我还是围绕<code>Bitcask</code>存储引擎在<code>KVBase</code>落地的实现写写。</p>
+<h2 id="bitcask怎么工作的">
+    <a href="#bitcask%e6%80%8e%e4%b9%88%e5%b7%a5%e4%bd%9c%e7%9a%84" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    Bitcask怎么工作的？
+</h2>
+<p><code>Bitcask</code>是使用<code>RAM</code> 存储指向值的文件指针的哈希映射，索引用于高效写入的日志结构文件系统，二者组合而成的存储引擎，可能光文章描述可能很难理解，我下面画了几幅图。</p>
+<p><code>Bitcask</code>主要几个组件，我个人认为最重要也就<code>3</code>个组件：</p>
+<ul>
+<li><code>Index Map</code> 全局索引映射</li>
+<li><code>Active File</code> 当前可写文件的指针</li>
+<li><code>Compressor</code> 负责脏数据压缩和整理进程</li>
+</ul>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gxkf3rchqzj319e0u0acp.jpg" 
+    alt="Bitcask" 
+     /></p>
+<p><code>key</code>会存储在内存中以便快速查找，所有的<code>value</code>都存储于磁盘中，这种方法特点是以追加的方式写磁盘，即写操作是有序的，这样可以减少磁磁盘的寻道时间，是一种高吞吐量的写入方案，在更新数据时，也是把新数据追加到文件的后面，然后更新一下数据的文件指针映射即可。</p>
+<p>当写操作发生时，<code>keydir</code>被原子的更新，更新成新的文件上的位置，文件上的老数据还在磁盘上，新的读操作会使用新的<code>keydir</code>，如果在并发大量请求情况下，这个估计会出现性能瓶颈的地方之一，这个坑我会在后面说说怎么去优化。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gxkf0pw880j31ei0u0n0k.jpg" 
+    alt="Keydir" 
+     /></p>
+<p><code>Active File</code>是在磁盘上的文件，每条数据对应数据格式如下图：</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gxkffli4bdj31e40u0gpv.jpg" 
+    alt="Data entry" 
+     /></p>
+<p>每条数据都一条一条以行的形式存储在数据文件里，如图上通过特殊的编码方式就可以得到<code>key</code>的大小和<code>value</code>的大小，然后就可以找到<code>key</code>的位置和<code>value</code>的内容然后反编码解码操作，数据在写入的时候是被编码成二进制的存储的，补充一下<code>CRC</code>是<code>循环校验码</code>，是数据通信领域中最常用的一种差错校验码，毕竟数据库里面的数据有时候需要在网络上进行传输。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gxkiflhxcnj314i0u0n12.jpg" 
+    alt="Riak的bitcask数据目录结构文件" 
+     /></p>
+<h2 id="bitcask缺陷">
+    <a href="#bitcask%e7%bc%ba%e9%99%b7" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    Bitcask缺陷
+</h2>
+<blockquote>
+<p>这种基于内存的索引的必然有问题的，例如机器重启，内存数据丢了，索引就无法对磁盘数进行映射，还有上面提到的全局的读写必须经过这个<code>keydir</code>进行定位到数据源，另外读取数据的依赖于操作系统内核的文件系统缓存，没有用户态实现，不可控。</p>
+</blockquote>
+<ol>
+<li>为了解决重启内存索引数据丢失的问题，<code>Bitcask</code>论文中提到了<code>hint file</code>文件，如果是直接扫描<code>data</code>文件然后来建立索引是一件非常耗时的工作，要调用操作系统打开多个数据文件，然后来回遍历记录，官方解决方案是在一部分<code>data</code>文件记录对应一个<code>hint</code>文件，扫描一个<code>hint file</code>相比去读取<code>data</code>文件要省事的多，里面记录如下：</li>
+</ol>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gxkjx7ksnwj31dc0u0go9.jpg" 
+    alt="hint file" 
+     /></p>
+<ol start="2">
+<li>第二个问题就是数据都是增删改查的，数据被删除是肯定会发生的，那么<code>Bitcask</code>作为一个只追加记录的引擎，怎么解决？随着记录不断增多，数据文件也会变得更大，为了节省空间，<code>bitcask</code>采用<code>merge</code>的方式剔除脏数据，<code>merge</code>期间会影响到服务的访问，如果想保留原始的数据文件，可以使用谷歌的<code>Snappy</code>压缩算法，在磁盘<code>IO</code>和<code>cpu</code>之间做一个权衡，以便使程序跑得更快，<code>Snappy</code>就是这样一种快速的数据压缩算法。对于一个核的<code>i7</code>处理器（<code>64</code>位模式），能达到<code>250M/s</code>以上的处理速度。</li>
+</ol>
+<p><strong>针对这个问题，我对<code>KVBase</code>采用的<code>bit</code>桶<code>key</code>标记删除策略，当被删除的<code>key</code>达到一定数量的时候（通过算法去判定是否需要），如果需要就会启动一个独立进程去访问为未被标记的数据，并且开始整理到新的数据文件中，在此期间服务依然可用，整理完成之后我只需要原子操作把内存映射的指针指向新的索引上，这个过程比<code>bitcask</code>论文用的整个合并数据文件要好得多，不会因为整理过程中整个服务被阻塞着，最多就是短暂消耗一点内存空间罢了，整理完成之后清理废弃内存数据和内存空间，这也是牺牲空间换取可用性和时间。我承认这个设计借鉴了<code>Golang</code>原生的<code>map</code>的扩容策略，如果你对<code>go</code>原生的<code>map</code>有了解的话，或者是看过<code>go</code>源代码的话，应该很清楚。</strong></p>
+<h2 id="kvbase的设计">
+    <a href="#kvbase%e7%9a%84%e8%ae%be%e8%ae%a1" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    KVBase的设计
+</h2>
+<p>要知道<code>Bitcask</code>是以追加的方式写磁盘，即写操作是有序的，这样可以减少磁磁盘的寻道时间，是一种高吞吐量的写入设计，写性能肯定是没有得话说的。但是读取数据是通过内存中索引进行查询读取，虽然<code>key</code>的定位是通过<code>hash</code>进行<code>O(1)</code>时间复杂度，但是如果数据存放在老数据文件里面，此时就要调用系统内核<code>api</code>去读取文件，会产生短暂的<code>io</code>开销。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gxklm98csgj31m20u0n33.jpg" 
+    alt="KVBase的设计" 
+     /></p>
+<p>为了解决读取性能的问题，我在<code>KVBase</code>上加了层<code>cache</code>并且这层<code>cache</code>是支持分布式的，为什么这么做？要知道数据存储问题底层的<code>Bitcask</code>引擎已经解决了，写入数据不就是为了数据不能丢吗？这个问题已经解决了，大部分写数据场景估计也不多，大部分都是读数据场景，所以加一层基于内存的<code>cache</code>为读取数据，提供保障，为了解决内存空间大小没有磁盘空间大的问题，引入一些内存淘汰算法，保证空间问题，当然具体哪个我还在考量，或者像<code>redis</code>那样从内存数据里面随机抽取一部分数据，如果超过<code>4/1</code>的数据即将过期，那么就重复抽样几次：</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gxklzr1toyj31h00nmq7n.jpg" 
+    alt="淘汰策略" 
+     /></p>
+<p>底层存储已经和<code>cache</code>被单独抽象出来了，以后就算换掉底层的存储引擎实现也不会影响上层<code>cache</code>，在<code>KVBase</code>我个人认为<code>存储引擎</code>只是为<code>cache</code>服务的，<code>cache</code>被抽象成了分布式的了，意味着后面我可以动态分配数据存储节点，这个就没有什么好讲的了。</p>
+<h2 id="小结">
+    <a href="#%e5%b0%8f%e7%bb%93" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    小结
+</h2>
+<p>如果这篇文章对读者有什么启发，那我很高兴，文章也是一种技术分享，如果你对这块感兴趣，有什么想吐槽的，我非常欢迎交流，实质来一起<code>coding</code>。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gxkmqmjvvrj30kw0qqwgq.jpg" 
+    alt="围观群" 
+     /></p>
+
+    </div>
+</div>
+
+<div class="container">
+    
+    <nav class="flex container suggested">
+        
+        <a rel="prev" href="/post/redis-cluster-system-desgin/" title="Previous post (older)">
+            <span>Previous</span>
+            Redis Cluster System Desgin
+            </a>
+        
+        
+        
+    </nav>
+    
+</div>
+ 
+<div class="container">
+    
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "https-hugo-tania-netlify-app" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (DISQUS) {
+            DISQUS.reset({
+                reload: true
+            })
+        }
+    })
+</script>
+
+</div>
+
+</main>
+
+
+        </main>
+        <footer class="footer flex">
+    <section class="container">
+        <nav class="footer-links">
+            
+            <a href="/index.xml">RSS</a>
+            
+        </nav>
+    </section>
+    <script defer src="/ts/features.39c567b3af1363f8abe74bfd650f3d58cb963716b7ad4b3b53f801d3ca585599.js" data-enable-footnotes="true"></script>
+</footer>
+    </body>
+</html>
