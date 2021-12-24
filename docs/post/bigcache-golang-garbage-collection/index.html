@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="theme-color" content="dark">
+    <title>Bigcache Golang Garbage Collection | 打码匠</title>
+
+    
+    
+    
+    <meta property="og:site_name" content="打码匠 | ibyte.me" />
+    <meta property="og:title" content="Bigcache Golang Garbage Collection | 打码匠"/>
+    <meta itemprop="name" content="Bigcache Golang Garbage Collection | 打码匠" />
+    <meta name="twitter:title" content="Bigcache Golang Garbage Collection | 打码匠" />
+    <meta name="application-name" content="Bigcache Golang Garbage Collection | 打码匠" />
+
+
+    <meta name="description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles." />
+    <meta name="twitter:description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles."/>
+    <meta itemprop="description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles."/>
+    <meta property="og:description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles." />
+
+    
+
+<meta property="og:type" content="article" />
+<meta property="article:publisher" content="Leon Ding" />
+<meta property="og:article:published_time" content=2021-12-24T20:39:56&#43;0800 />
+<meta property="article:published_time" content=2021-12-24T20:39:56&#43;0800 />
+
+
+
+
+
+<script defer type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "Article",
+    "headline": "Bigcache Golang Garbage Collection",
+    "author": {
+      "@type": "Person",
+      "name": "Leon Ding"
+    },
+    "datePublished": "2021-12-24",
+    "description": "",
+    "wordCount":  122 ,
+    "mainEntityOfPage": "True",
+    "dateModified": "2021-12-24",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Leon Ding",
+      "logo": {
+        "@type": "imageObject",
+        "url": "http:\/\/blog.ibyte.me\/favicon.ico"
+      }
+    }
+  }
+</script>
+
+
+    <link rel="shortcut icon" type="image/x-icon" href="https://avatars.githubusercontent.com/u/38412458?v=4" />
+    
+    
+    <link rel="stylesheet" href="/sass/main.min.3b60735c96f5faa623d75aceae8ee0a0c7d19f76a3eed0574c61f7253a4eeb3d.css">
+    
+</head>
+    <script>
+    (function() {
+        const colorSchemeKey = 'ThemeColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.userColorScheme = 'dark';
+        } else {
+            document.documentElement.dataset.userColorScheme = 'light';
+        }
+    })();
+</script>
+
+    <body class="dark">
+        <nav class="navbar">
+    <div class="container">
+        <div class="flex">
+            <div>
+                <a class="brand" href="/">
+                    
+                    
+                        <img src="https://avatars.githubusercontent.com/u/38412458?v=4" />
+                    
+                    打码匠
+                    </a>
+            </div>
+            <div class="flex">
+                
+                <a href="https://www.ibyte.me/">🏡 Home</a>
+                
+                <a href="/articles/">📚 Articles</a>
+                
+                <button id="dark-mode-button">
+                  <svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path fill="#FFD983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163 0 1 0 1.643 1.641a1.163 1.163 0 0 0-1.643-1.641zm-16.022 14.38a1.74 1.74 0 0 0 0 2.465a1.742 1.742 0 1 0 0-2.465zm13.968-2.147a2.904 2.904 0 0 1-4.108 0a2.902 2.902 0 0 1 0-4.107a2.902 2.902 0 0 1 4.108 0a2.902 2.902 0 0 1 0 4.107z" fill="#FFCC4D"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)" /></svg>
+                  <svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path fill="#FFD983" d="M16 2s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2V2zm18 14s2 0 2 2s-2 2-2 2h-2s-2 0-2-2s2-2 2-2h2zM4 16s2 0 2 2s-2 2-2 2H2s-2 0-2-2s2-2 2-2h2zm5.121-8.707s1.414 1.414 0 2.828s-2.828 0-2.828 0L4.878 8.708s-1.414-1.414 0-2.829c1.415-1.414 2.829 0 2.829 0l1.414 1.414zm21 21s1.414 1.414 0 2.828s-2.828 0-2.828 0l-1.414-1.414s-1.414-1.414 0-2.828s2.828 0 2.828 0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828l-1.414 1.414zM16 32s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2v-2z"/><circle fill="#FFD983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)" /></svg>
+                </button>
+            </div>
+            </div>
+    </div>
+</nav>
+        <main>
+            
+<div class="container">
+    <article>
+        <header class="article-header">
+            <div class="thumb">
+                <div>
+                    <h1>Bigcache Golang Garbage Collection</h1>
+                    <div class="post-meta">
+                        <div>
+                            
+                            
+                              
+                            
+                            By Leon Ding | <time>December 24, 2021</time>
+                            | 1 minutes
+                        </div>
+                        <div class="tags">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </article>
+
+    <div class="article-post">
+    <h2 id="为什么有这篇文章">
+    <a href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e6%9c%89%e8%bf%99%e7%af%87%e6%96%87%e7%ab%a0" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    为什么有这篇文章
+</h2>
+<p>某一天在群里摸鱼的时候，看到群里有人问<code>go map</code>的空间回收问题，把截图贴上吧：
+<img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gxcbagpu0lj30nw15e42j.jpg" 
+    alt="一个群友说map的value不是真正意义上删除" 
+     /></p>
+<p>其实一位群友发出的问题引起了我注意，他的问题是：<code>go</code>的<code>map</code>的值调用了<code>delete</code>函数是不是不会立即删除？当然这个问题如果研究过或者深入<code>go</code>的内存分配或者说有了解过<code>go</code>的<code>gc</code>应该知道，这个问题答案。</p>
+<p><strong>关于是<code>分段锁</code>的应用和怎么去优化<code>gc</code>带来的影响，有一个开源项目<code>bigcache</code>在这方面做的比较好。</strong></p>
+<h2 id="bigcache的设计">
+    <a href="#bigcache%e7%9a%84%e8%ae%be%e8%ae%a1" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    BigCache的设计
+</h2>
+<blockquote>
+<p>官方作者介绍：快速，并发，基于内存的缓存库，由于是嵌入式库也省去了网络上的开销，完全基于本地内存，能保存大量数据项的同时并且对<code>go</code>语言的<code>garbage collection</code>进行了优化。</p>
+</blockquote>
+<p>对并发锁的颗粒度减小，并且对<code>gc</code>优化它怎么做的？</p>
+<ol>
+<li>分段锁</li>
+<li>数据二进制存储，避免让<code>gc</code>去嵌套扫描</li>
+<li>加速并发访问</li>
+<li>避免高额的<code>GC</code>开销</li>
+</ol>
+<p>官方在他们<code>blog</code>上列出了，他们当时写这个库的需求：</p>
+<ul>
+<li>处理<code>10k rps</code> (写5000，读5000)</li>
+<li><code>cache</code>对象至少存活<code>10</code>分钟</li>
+<li>更快的响应时间</li>
+<li><code>POST</code>请求的每条 <code>JSON</code> 消息,一有含有<code>ID</code>，二不大于<code>500</code>字节</li>
+<li><code>POST</code>请求添加缓存后，<code>GET</code>能获取到最新结果</li>
+</ul>
+<p><strong>Go map 的问题</strong></p>
+<p>我在网上看到资料有提到一个问题：<a href="https://github.com/golang/go/issues/9477">https://github.com/golang/go/issues/9477</a></p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gxc8j0mmoxj312u0u0n2y.jpg" 
+    alt="问题" 
+     /></p>
+<p>大致看了一下这个说了问题就是，<code>Go 1.3</code>和<code>1.4RC1</code>垃圾回收在扫描一个大的<code>map</code>时需要<code>50-70ms</code>时间，问官方怎么能有什么办法减小这个时间。</p>
+<p>然后<code>1.5</code>版本，如果 <code>map</code> 的 <code>key</code> 或 <code>value</code> 中都不含指针， <code>GC</code> 便会忽略这个 <code>map</code>。</p>
+<p><strong>主要的也就两个结构体<code>cache</code>和<code>cacheShard</code>:</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">cache</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">shards</span> <span class="p">[]</span><span class="o">*</span><span class="nx">cacheShard</span> <span class="c1">// 块map 解决并发锁颗粒度问题
+</span><span class="c1"></span>    <span class="nx">hash</span>   <span class="nx">fnv64a</span> <span class="c1">// 哈希函数
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>源码中的哈希函数用的是<code>fnv64a</code>算法，这个算法的好处是采用位运算的方式在栈上进行运算，避免在堆上分配。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gxc98y338qj31et0u0dkf.jpg" 
+    alt="" 
+     /></p>
+<p><code>shards</code>用来保存<code>cacheShard</code>的，而<code>cacheShard</code>也就是具体存储数据的缓存块，<code>hash</code>会对输入的<code>key</code>进行计算得到<code>cacheShard</code>坐标拿到具体的<code>cacheShard</code>，每个<code>cacheShard</code>都有自己的锁所以才能保证小锁颗粒度。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">cacheShard</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">hashmap</span>     <span class="kd">map</span><span class="p">[</span><span class="kt">uint64</span><span class="p">]</span><span class="kt">uint32</span>	<span class="c1">// 外部索引
+</span><span class="c1"></span>    <span class="nx">entries</span>     <span class="nx">queue</span><span class="p">.</span><span class="nx">BytesQueue</span> <span class="c1">// 存储序列化也就是byte形式存储的数据
+</span><span class="c1"></span>    <span class="nx">lock</span>        <span class="nx">sync</span><span class="p">.</span><span class="nx">RWMutex</span> <span class="c1">// 单个锁
+</span><span class="c1"></span>    <span class="nx">entryBuffer</span> <span class="p">[]</span><span class="kt">byte</span>
+    <span class="nx">onRemove</span>    <span class="nx">onRemoveCallback</span> <span class="c1">// 移除回调函数
+</span><span class="c1"></span>
+    <span class="nx">isVerbose</span>    <span class="kt">bool</span>
+    <span class="nx">statsEnabled</span> <span class="kt">bool</span>
+    <span class="nx">logger</span>       <span class="nx">Logger</span>
+    <span class="nx">clock</span>        <span class="nx">clock</span>
+    <span class="nx">lifeWindow</span>   <span class="kt">uint64</span>
+
+    <span class="nx">hashmapStats</span> <span class="kd">map</span><span class="p">[</span><span class="kt">uint64</span><span class="p">]</span><span class="kt">uint32</span>
+    <span class="nx">stats</span>        <span class="nx">Stats</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>cacheShard</code> 中的<code>hashmap</code>结构的类型<code>map[uint64]uint32</code>，完全和<code>key</code>使用的<code>string</code> 扯不上关系，有经验的老司机一眼就看出这其实是个索引，<code>uint64</code>存储的外部键的哈希值，而后面的<code>uint32</code>用处是存储值的位置，而真正的数据存储在<code>BytesQueue</code>中，通过外部索引的值<code>uint32</code>类型来获取里面的值所在的位置索引，而<code>BytesQueue</code>又是经过二进制序列化的数据，取的时候提供外部索引得到坐标取值，最为妙处的设计就是外部索引不存储指针，也不存储符合结构，使得 <code>garbage collection</code>的影响降到最小。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gxc9jgne0mj32580s4adf.jpg" 
+    alt="BytesQueue" 
+     /></p>
+<p><code>BytesQueue</code>结构体中的<code>array</code>是存储主要数据的<code>byte</code>数组，<code>capacity</code>是使用容量，<code>maxCapacity</code>在创建的时候可以指定最大容量，<code>tail</code>类似链表里面的尾指针，下次插入值可以通过这个指针找到插入的位置，<code>count</code>当前存储的数据条目数，<code>headerBuffer</code>是起到了一个切片发送拷贝时充当零时缓冲区的作用。</p>
+<p>有兴趣自己去看源代码吧：<a href="https://github.com/allegro/bigcache">https://github.com/allegro/bigcache</a></p>
+<h2 id="总结">
+    <a href="#%e6%80%bb%e7%bb%93" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    总结
+</h2>
+<p><code>BigCache</code>的设计真的很妙，当然这个妙首先你得了解<code>go的gc</code>一些工作方式，然后针对这个这些特定，去优化数据结构，<code>BigCache</code>为了减小锁的颗粒度使用了分段分片，然后防止<code>gc</code>对数据进行扫描的耗时，有把数据采用无指针嵌套的二进制方式去存储，能避免<code>gc</code>去针对底层的数据进行引用存活相关的检测耗时，唯一缺点就是<code>BigCache</code>数据不能持久化存储。</p>
+
+    </div>
+</div>
+
+<div class="container">
+    
+    <nav class="flex container suggested">
+        
+        <a rel="prev" href="/post/bitcask-kvbase/" title="Previous post (older)">
+            <span>Previous</span>
+            KVBase storage engine Bitcask
+            </a>
+        
+        
+        
+    </nav>
+    
+</div>
+ 
+<div class="container">
+    
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "https-hugo-tania-netlify-app" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (DISQUS) {
+            DISQUS.reset({
+                reload: true
+            })
+        }
+    })
+</script>
+
+</div>
+
+</main>
+
+
+        </main>
+        <footer class="footer flex">
+    <section class="container">
+        <nav class="footer-links">
+            
+            <a href="/index.xml">RSS</a>
+            
+        </nav>
+    </section>
+    <script defer src="/ts/features.39c567b3af1363f8abe74bfd650f3d58cb963716b7ad4b3b53f801d3ca585599.js" data-enable-footnotes="true"></script>
+</footer>
+    </body>
+</html>

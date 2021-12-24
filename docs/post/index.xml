@@ -6,7 +6,26 @@
     <description>Recent content in Posts on 打码匠</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 21 Dec 2021 18:14:23 +0800</lastBuildDate><atom:link href="http://blog.ibyte.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 24 Dec 2021 20:39:56 +0800</lastBuildDate><atom:link href="http://blog.ibyte.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Bigcache Golang Garbage Collection</title>
+      <link>http://blog.ibyte.me/post/bigcache-golang-garbage-collection/</link>
+      <pubDate>Fri, 24 Dec 2021 20:39:56 +0800</pubDate>
+      
+      <guid>http://blog.ibyte.me/post/bigcache-golang-garbage-collection/</guid>
+      <description>为什么有这篇文章  某一天在群里摸鱼的时候，看到群里有人问go map的空间回收问题，把截图贴上吧： 其实一位群友发出的问题引起了我注意，他的问题是：go的map的值调用了delete函数是不是不会立即删除？当然这个问题如果研究过或者深入go的内存分配或者说有了解过go的gc应该知道，这个问题答案。
+关于是分段锁的应用和怎么去优化gc带来的影响，有一个开源项目bigcache在这方面做的比较好。
+   BigCache的设计   官方作者介绍：快速，并发，基于内存的缓存库，由于是嵌入式库也省去了网络上的开销，完全基于本地内存，能保存大量数据项的同时并且对go语言的garbage collection进行了优化。
+ 对并发锁的颗粒度减小，并且对gc优化它怎么做的？
+ 分段锁 数据二进制存储，避免让gc去嵌套扫描 加速并发访问 避免高额的GC开销  官方在他们blog上列出了，他们当时写这个库的需求：
+ 处理10k rps (写5000，读5000) cache对象至少存活10分钟 更快的响应时间 POST请求的每条 JSON 消息,一有含有ID，二不大于500字节 POST请求添加缓存后，GET能获取到最新结果  Go map 的问题
+我在网上看到资料有提到一个问题：https://github.com/golang/go/issues/9477
+大致看了一下这个说了问题就是，Go 1.3和1.4RC1垃圾回收在扫描一个大的map时需要50-70ms时间，问官方怎么能有什么办法减小这个时间。
+然后1.5版本，如果 map 的 key 或 value 中都不含指针， GC 便会忽略这个 map。
+主要的也就两个结构体cache和cacheShard:
+1 2 3 4  type cache struct { shards []*cacheShard // 块map 解决并发锁颗粒度问题  hash fnv64a // 哈希函数 }   源码中的哈希函数用的是fnv64a算法，这个算法的好处是采用位运算的方式在栈上进行运算，避免在堆上分配。</description>
+    </item>
+    
     <item>
       <title>KVBase storage engine Bitcask</title>
       <link>http://blog.ibyte.me/post/bitcask-kvbase/</link>
