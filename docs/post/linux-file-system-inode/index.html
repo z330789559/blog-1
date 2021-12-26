@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="theme-color" content="dark">
+    <title>Linux File System Inode | 打码匠</title>
+
+    
+    
+    
+    <meta property="og:site_name" content="打码匠 | ibyte.me" />
+    <meta property="og:title" content="Linux File System Inode | 打码匠"/>
+    <meta itemprop="name" content="Linux File System Inode | 打码匠" />
+    <meta name="twitter:title" content="Linux File System Inode | 打码匠" />
+    <meta name="application-name" content="Linux File System Inode | 打码匠" />
+
+
+    <meta name="description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles." />
+    <meta name="twitter:description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles."/>
+    <meta itemprop="description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles."/>
+    <meta property="og:description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles." />
+
+    
+
+<meta property="og:type" content="article" />
+<meta property="article:publisher" content="Leon Ding" />
+<meta property="og:article:published_time" content=2021-12-26T22:18:31&#43;0800 />
+<meta property="article:published_time" content=2021-12-26T22:18:31&#43;0800 />
+
+
+
+
+
+<script defer type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "Article",
+    "headline": "Linux File System Inode",
+    "author": {
+      "@type": "Person",
+      "name": "Leon Ding"
+    },
+    "datePublished": "2021-12-26",
+    "description": "",
+    "wordCount":  64 ,
+    "mainEntityOfPage": "True",
+    "dateModified": "2021-12-26",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Leon Ding",
+      "logo": {
+        "@type": "imageObject",
+        "url": "http:\/\/blog.ibyte.me\/favicon.ico"
+      }
+    }
+  }
+</script>
+
+
+    <link rel="shortcut icon" type="image/x-icon" href="https://avatars.githubusercontent.com/u/38412458?v=4" />
+    
+    
+    <link rel="stylesheet" href="/sass/main.min.3b60735c96f5faa623d75aceae8ee0a0c7d19f76a3eed0574c61f7253a4eeb3d.css">
+    
+</head>
+    <script>
+    (function() {
+        const colorSchemeKey = 'ThemeColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.userColorScheme = 'dark';
+        } else {
+            document.documentElement.dataset.userColorScheme = 'light';
+        }
+    })();
+</script>
+
+    <body class="dark">
+        <nav class="navbar">
+    <div class="container">
+        <div class="flex">
+            <div>
+                <a class="brand" href="/">
+                    
+                    
+                        <img src="https://avatars.githubusercontent.com/u/38412458?v=4" />
+                    
+                    打码匠
+                    </a>
+            </div>
+            <div class="flex">
+                
+                <a href="https://www.ibyte.me/">🏡 Home</a>
+                
+                <a href="/articles/">📚 Articles</a>
+                
+                <button id="dark-mode-button">
+                  <svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path fill="#FFD983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163 0 1 0 1.643 1.641a1.163 1.163 0 0 0-1.643-1.641zm-16.022 14.38a1.74 1.74 0 0 0 0 2.465a1.742 1.742 0 1 0 0-2.465zm13.968-2.147a2.904 2.904 0 0 1-4.108 0a2.902 2.902 0 0 1 0-4.107a2.902 2.902 0 0 1 4.108 0a2.902 2.902 0 0 1 0 4.107z" fill="#FFCC4D"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)" /></svg>
+                  <svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path fill="#FFD983" d="M16 2s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2V2zm18 14s2 0 2 2s-2 2-2 2h-2s-2 0-2-2s2-2 2-2h2zM4 16s2 0 2 2s-2 2-2 2H2s-2 0-2-2s2-2 2-2h2zm5.121-8.707s1.414 1.414 0 2.828s-2.828 0-2.828 0L4.878 8.708s-1.414-1.414 0-2.829c1.415-1.414 2.829 0 2.829 0l1.414 1.414zm21 21s1.414 1.414 0 2.828s-2.828 0-2.828 0l-1.414-1.414s-1.414-1.414 0-2.828s2.828 0 2.828 0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828l-1.414 1.414zM16 32s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2v-2z"/><circle fill="#FFD983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)" /></svg>
+                </button>
+            </div>
+            </div>
+    </div>
+</nav>
+        <main>
+            
+<div class="container">
+    <article>
+        <header class="article-header">
+            <div class="thumb">
+                <div>
+                    <h1>Linux File System Inode</h1>
+                    <div class="post-meta">
+                        <div>
+                            
+                            
+                              
+                            
+                            By Leon Ding | <time>December 26, 2021</time>
+                            | 1 minutes
+                        </div>
+                        <div class="tags">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </article>
+
+    <div class="article-post">
+    <h2 id="文件系统">
+    <a href="#%e6%96%87%e4%bb%b6%e7%b3%bb%e7%bb%9f" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    文件系统
+</h2>
+<p>现在计算机数据存储功能是必不可少的，大家的图片和视频都是数据，但是这些数据是怎么保存在硬盘上的呢？我不知道大家有没有想过？存储介质分类有很多种，例如：机械硬盘、固态硬盘、闪存&hellip;这些都是物理存储介质，怎么让数据保存在里面？不丢失？那么多数据又是怎么在组织起来管理的呢？这时就要说说<code>文件系统</code>了。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gxqgs7d3svj30qq0z2jus.jpg" 
+    alt="传统宏内核系统架构" 
+     /></p>
+<p><code>文件系统</code>就是操作系统给我们抽象一种<code>中间层</code>让我们和物理磁盘可以打交道，文件系统就是负责把用户的文件存到磁盘硬件中，因为即使计算机断电了，磁盘里的数据并不会丢失，所以可以持久化的保存文件。</p>
+<h2 id="怎么工作的">
+    <a href="#%e6%80%8e%e4%b9%88%e5%b7%a5%e4%bd%9c%e7%9a%84" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    怎么工作的？
+</h2>
+<p><code>文件系统</code>怎么工作的？无论底层存储介质是磁盘还是<code>SSD</code>，都被该层抽象为<code> Block</code> 的概念。文件系统在初始化时，会先在挂载的块存储上的第一个位置创建一个 <code>Super Block</code>，文件在抽象之前，每个文件是有元数据信息的，例如：文件名字、文件大小、创建时间、访问时间、归属者、所在组等&hellip;构成元数据信息，好比现实中一本书，书的各种信息。</p>
+<p><code>Linux</code> 最经典的一句话是：<code>一切皆文件!</code>，不仅普通的文件和目录，就连块设备、管道、<code>socket</code> 等，也都是统一交给文件系统管理的，但是这些信息要怎么组织到磁盘上，而且文件可能随着时间推移大小也随着变化，文件可能被拷贝到不同物理介质上，这就给文件系统设计者带来一个大问题？</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gxqhgwkqzgj31mk0u0gwh.jpg" 
+    alt="Mac/Unix" 
+     /></p>
+<p>文件系统会把底层存储的物理硬盘设备，抽象成单单固定大小的块，块区，那这么多快和分区要怎么组织去管理？后面出现了一种基于<code>inode 索引节点</code>的文件组织管理方式。</p>
+<h2 id="文件组织管理方式">
+    <a href="#%e6%96%87%e4%bb%b6%e7%bb%84%e7%bb%87%e7%ae%a1%e7%90%86%e6%96%b9%e5%bc%8f" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    文件组织管理方式
+</h2>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gxri322130j30o60c4t9f.jpg" 
+    alt="Sector" 
+     /></p>
+<p>硬件磁盘会被划分成固定大小块，存储块大小可能是<code>512字节</code>的<code>sector</code>然后8个组成一个<code>4KB</code>的块，这个看具体划分方式了，文件也是对应的这么划分存储的，这么设计的时候那就可以把每个块加上唯一编号，也可以看成文件的<code>名字</code>，然后把块建立一个索引，但是大部分存储文件的都是以<code>mb</code>作为单位的，例如：一部电影可能有<code>4GB</code>大小，这就给快存储设计带来设计挑战，一个<code>4GB</code>的电影就需要<code>100</code>万个<code>4kb</code>的块，但是每个块上还有一个唯一的文件名称或者编号，需要占用<code>8</code>字节的空间，这么一搞那么就需要另外的<code>8mb</code>记录，又带了来这样的问题？</p>
+<p><img loading="lazy" 
+    src="https://files.mdnice.com/user/8699/5d7255ac-cabb-4a1d-93cb-80198ddf280d.png" 
+    alt="一个4gb的电影可能有很多个4kb的块组成" 
+     /></p>
+<p>有了这些问题，文件系统设计者引入一个叫<code>index node</code>的数据结构，文件数据被存储不同块里面，文件的元数据信息就会被存储在<code>inode</code>里面。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gxric8yj52j31ew0e042e.jpg" 
+    alt="Linux 中的文件元数据" 
+     /></p>
+<p><code>inode</code>会被存储在<code>inode table</code>里面的，<code>inode</code>也就是<code>inode table</code>里面条目，<code>inode table</code> 包含该文件系统中所有文件的列表，<code>inode table</code> 中的各个 <code>inode</code> 项具有唯一的编号。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gxrir6neurj30ku066q3i.jpg" 
+    alt="inode table" 
+     /></p>
+<p><code>inode table</code>记录这个<code>inode number</code>对应文件所对应的<code>metadata</code>，如上图所示👆🏻，这样我们就方便管理文件元数据了，每个 <code>inode</code> 都有一个号码，操作系统用 <code>inode</code> 号码来识别不同的文件，这里值得重复一遍，<code>Unix/Linux</code> 系统内部不使用文件名，而使用 <code>inode</code> 号码来识别文件。对于系统来说，文件名只是 <code>inode</code> 号码便于识别的别称一样。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gxrju656f5j30yg048jru.jpg" 
+    alt="linux 下查看文件对应的inode number" 
+     /></p>
+<p>我们在系统调用的时候，发生了什么？实际上，系统内部将这个过程分成三步：</p>
+<ul>
+<li>系统找到文件名对应的 <code>inode number</code></li>
+<li>通过 <code>inode number</code>，获取 <code>inode</code> 信息</li>
+<li>根据 <code>inode</code> 信息，找到文件数据所在的 <code>block</code>，读写数据。</li>
+</ul>
+<h2 id="inode-怎么工作的">
+    <a href="#inode-%e6%80%8e%e4%b9%88%e5%b7%a5%e4%bd%9c%e7%9a%84" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    inode 怎么工作的？
+</h2>
+<p>通过上面的了解，得知了每个文件都对应一个<code>inode</code>，然后管理文件的时候把所有文件块存储在<code>inode</code>里面但是这种不是没有问题的，随着时间文件不断加大，<code>inode</code>就要在创建的时候就预留足够好的空间，才能保证后面文件的各种变化，例如我未来存储文件是<code>4GB</code>，我现在就要去把<code>inode</code>占用大小设置为<code>8mb</code>显然这个不能充分发挥磁盘利用率。如果<code>inode</code>分配小了，未来文件变大了，<code>inode</code>不够用，各种问题。。。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gxrjnpcqhuj311p0u0jsj.jpg" 
+    alt="随着时间变化" 
+     /></p>
+<p><code>Linux</code>系统为了解决这个问题，引入和虚拟内存的那种概念，把<code>inode</code>通过采用分级的方式来组织存储块号，<code>inode</code>为了解决数据变化问题，它引入了<code>3个存储指针设计</code>。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gxrk9tfvhhj314d0u0q5h.jpg" 
+    alt="结构体" 
+     /></p>
+<p><code>inode</code>中保存了<code>3</code>种指针，<code>inode</code>有<code>12</code>个直接指针，间接指针有<code>3</code>，二级指针就<code>1</code>个，可以存储设备的块号，第一个指针为直接指针可以直接指向数据块本身，数据块就是保存数据的块，第二针指针是<code>间接指针</code>，<code>间接指针</code>是在前面的指针指针不够的时候才会启用，<code>间接指针</code>可以看成链表那样，<code>间接指针</code>会指向一个一个级索引块，这块本身又是一个数据块的指针也是只是指向存储数据块，第<code>3</code>类指针，指向一个二级索引块，二级索引块的指针还可以指向新的索引块，这样一来就可以动态划分<code>INODE</code>了。</p>
+<h2 id="小结">
+    <a href="#%e5%b0%8f%e7%bb%93" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    小结
+</h2>
+<p>很多看完说这个有什么用？如果不做系统底层的开发的话，如果你这么想，我只是觉得你很肤浅！😒，看完<code>inode</code>的设计马上就可以联想到一个分布式文件系统雏形，有时候要懂得变通的。例如<code>Google 的GFS</code>系统，当然据我所知<code>gfs</code>已经没有使用了，取代<code>gfs</code>是一个款新的叫<code>Colossus</code>系统，这个系统目前设计细节没有公开，但是我看到有<code>cmu</code>的朋友说<code>Google Infra Team</code>的<code>Larry Greenfield</code>的一个<code>Lecture</code>其中介绍了<code>Larry</code>对<code>GFS</code>的设计初衷理念、优劣势、瓶颈、改进，然后研发了现役系统<code>Colossus (GFS2)</code>系统，当然操作系统的文件系统设计细节远远不止本文所讲的<code>inode</code>，但是<code>inode</code>对组织管理文件起到了很大作用，希望读读者有帮助吧，我也是个人笔记分享。</p>
+
+    </div>
+</div>
+
+<div class="container">
+    
+    <nav class="flex container suggested">
+        
+        <a rel="prev" href="/post/bigcache-golang-garbage-collection/" title="Previous post (older)">
+            <span>Previous</span>
+            Bigcache Golang Garbage Collection
+            </a>
+        
+        
+        
+    </nav>
+    
+</div>
+ 
+<div class="container">
+    
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "https-hugo-tania-netlify-app" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (DISQUS) {
+            DISQUS.reset({
+                reload: true
+            })
+        }
+    })
+</script>
+
+</div>
+
+</main>
+
+
+        </main>
+        <footer class="footer flex">
+    <section class="container">
+        <nav class="footer-links">
+            
+            <a href="/index.xml">RSS</a>
+            
+        </nav>
+    </section>
+    <script defer src="/ts/features.39c567b3af1363f8abe74bfd650f3d58cb963716b7ad4b3b53f801d3ca585599.js" data-enable-footnotes="true"></script>
+</footer>
+    </body>
+</html>

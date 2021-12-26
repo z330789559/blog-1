@@ -5,7 +5,123 @@
     <description>Recent content on 打码匠</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 24 Dec 2021 20:39:56 +0800</lastBuildDate><atom:link href="http://blog.ibyte.me/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 26 Dec 2021 22:18:31 +0800</lastBuildDate><atom:link href="http://blog.ibyte.me/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+    <title>Linux File System Inode</title>
+    <link>http://blog.ibyte.me/post/linux-file-system-inode/</link>
+    <pubDate>Sun, 26 Dec 2021 22:18:31 +0800</pubDate>
+    
+    <guid>http://blog.ibyte.me/post/linux-file-system-inode/</guid>
+    <description>
+        &lt;h2 id=&#34;文件系统&#34;&gt;
+    &lt;a href=&#34;#%e6%96%87%e4%bb%b6%e7%b3%bb%e7%bb%9f&#34; class=&#34;anchor&#34;&gt;
+        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;
+            &lt;path fill-rule=&#34;evenodd&#34;
+                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;
+            &lt;/path&gt;
+        &lt;/svg&gt;
+    &lt;/a&gt;
+    文件系统
+&lt;/h2&gt;
+&lt;p&gt;现在计算机数据存储功能是必不可少的，大家的图片和视频都是数据，但是这些数据是怎么保存在硬盘上的呢？我不知道大家有没有想过？存储介质分类有很多种，例如：机械硬盘、固态硬盘、闪存&amp;hellip;这些都是物理存储介质，怎么让数据保存在里面？不丢失？那么多数据又是怎么在组织起来管理的呢？这时就要说说&lt;code&gt;文件系统&lt;/code&gt;了。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gxqgs7d3svj30qq0z2jus.jpg&#34; 
+    alt=&#34;传统宏内核系统架构&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;文件系统&lt;/code&gt;就是操作系统给我们抽象一种&lt;code&gt;中间层&lt;/code&gt;让我们和物理磁盘可以打交道，文件系统就是负责把用户的文件存到磁盘硬件中，因为即使计算机断电了，磁盘里的数据并不会丢失，所以可以持久化的保存文件。&lt;/p&gt;
+&lt;h2 id=&#34;怎么工作的&#34;&gt;
+    &lt;a href=&#34;#%e6%80%8e%e4%b9%88%e5%b7%a5%e4%bd%9c%e7%9a%84&#34; class=&#34;anchor&#34;&gt;
+        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;
+            &lt;path fill-rule=&#34;evenodd&#34;
+                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;
+            &lt;/path&gt;
+        &lt;/svg&gt;
+    &lt;/a&gt;
+    怎么工作的？
+&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;文件系统&lt;/code&gt;怎么工作的？无论底层存储介质是磁盘还是&lt;code&gt;SSD&lt;/code&gt;，都被该层抽象为&lt;code&gt; Block&lt;/code&gt; 的概念。文件系统在初始化时，会先在挂载的块存储上的第一个位置创建一个 &lt;code&gt;Super Block&lt;/code&gt;，文件在抽象之前，每个文件是有元数据信息的，例如：文件名字、文件大小、创建时间、访问时间、归属者、所在组等&amp;hellip;构成元数据信息，好比现实中一本书，书的各种信息。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Linux&lt;/code&gt; 最经典的一句话是：&lt;code&gt;一切皆文件!&lt;/code&gt;，不仅普通的文件和目录，就连块设备、管道、&lt;code&gt;socket&lt;/code&gt; 等，也都是统一交给文件系统管理的，但是这些信息要怎么组织到磁盘上，而且文件可能随着时间推移大小也随着变化，文件可能被拷贝到不同物理介质上，这就给文件系统设计者带来一个大问题？&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gxqhgwkqzgj31mk0u0gwh.jpg&#34; 
+    alt=&#34;Mac/Unix&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;文件系统会把底层存储的物理硬盘设备，抽象成单单固定大小的块，块区，那这么多快和分区要怎么组织去管理？后面出现了一种基于&lt;code&gt;inode 索引节点&lt;/code&gt;的文件组织管理方式。&lt;/p&gt;
+&lt;h2 id=&#34;文件组织管理方式&#34;&gt;
+    &lt;a href=&#34;#%e6%96%87%e4%bb%b6%e7%bb%84%e7%bb%87%e7%ae%a1%e7%90%86%e6%96%b9%e5%bc%8f&#34; class=&#34;anchor&#34;&gt;
+        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;
+            &lt;path fill-rule=&#34;evenodd&#34;
+                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;
+            &lt;/path&gt;
+        &lt;/svg&gt;
+    &lt;/a&gt;
+    文件组织管理方式
+&lt;/h2&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gxri322130j30o60c4t9f.jpg&#34; 
+    alt=&#34;Sector&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;硬件磁盘会被划分成固定大小块，存储块大小可能是&lt;code&gt;512字节&lt;/code&gt;的&lt;code&gt;sector&lt;/code&gt;然后8个组成一个&lt;code&gt;4KB&lt;/code&gt;的块，这个看具体划分方式了，文件也是对应的这么划分存储的，这么设计的时候那就可以把每个块加上唯一编号，也可以看成文件的&lt;code&gt;名字&lt;/code&gt;，然后把块建立一个索引，但是大部分存储文件的都是以&lt;code&gt;mb&lt;/code&gt;作为单位的，例如：一部电影可能有&lt;code&gt;4GB&lt;/code&gt;大小，这就给快存储设计带来设计挑战，一个&lt;code&gt;4GB&lt;/code&gt;的电影就需要&lt;code&gt;100&lt;/code&gt;万个&lt;code&gt;4kb&lt;/code&gt;的块，但是每个块上还有一个唯一的文件名称或者编号，需要占用&lt;code&gt;8&lt;/code&gt;字节的空间，这么一搞那么就需要另外的&lt;code&gt;8mb&lt;/code&gt;记录，又带了来这样的问题？&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://files.mdnice.com/user/8699/5d7255ac-cabb-4a1d-93cb-80198ddf280d.png&#34; 
+    alt=&#34;一个4gb的电影可能有很多个4kb的块组成&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;有了这些问题，文件系统设计者引入一个叫&lt;code&gt;index node&lt;/code&gt;的数据结构，文件数据被存储不同块里面，文件的元数据信息就会被存储在&lt;code&gt;inode&lt;/code&gt;里面。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gxric8yj52j31ew0e042e.jpg&#34; 
+    alt=&#34;Linux 中的文件元数据&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;inode&lt;/code&gt;会被存储在&lt;code&gt;inode table&lt;/code&gt;里面的，&lt;code&gt;inode&lt;/code&gt;也就是&lt;code&gt;inode table&lt;/code&gt;里面条目，&lt;code&gt;inode table&lt;/code&gt; 包含该文件系统中所有文件的列表，&lt;code&gt;inode table&lt;/code&gt; 中的各个 &lt;code&gt;inode&lt;/code&gt; 项具有唯一的编号。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gxrir6neurj30ku066q3i.jpg&#34; 
+    alt=&#34;inode table&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;inode table&lt;/code&gt;记录这个&lt;code&gt;inode number&lt;/code&gt;对应文件所对应的&lt;code&gt;metadata&lt;/code&gt;，如上图所示👆🏻，这样我们就方便管理文件元数据了，每个 &lt;code&gt;inode&lt;/code&gt; 都有一个号码，操作系统用 &lt;code&gt;inode&lt;/code&gt; 号码来识别不同的文件，这里值得重复一遍，&lt;code&gt;Unix/Linux&lt;/code&gt; 系统内部不使用文件名，而使用 &lt;code&gt;inode&lt;/code&gt; 号码来识别文件。对于系统来说，文件名只是 &lt;code&gt;inode&lt;/code&gt; 号码便于识别的别称一样。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gxrju656f5j30yg048jru.jpg&#34; 
+    alt=&#34;linux 下查看文件对应的inode number&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;我们在系统调用的时候，发生了什么？实际上，系统内部将这个过程分成三步：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;系统找到文件名对应的 &lt;code&gt;inode number&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;通过 &lt;code&gt;inode number&lt;/code&gt;，获取 &lt;code&gt;inode&lt;/code&gt; 信息&lt;/li&gt;
+&lt;li&gt;根据 &lt;code&gt;inode&lt;/code&gt; 信息，找到文件数据所在的 &lt;code&gt;block&lt;/code&gt;，读写数据。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;inode-怎么工作的&#34;&gt;
+    &lt;a href=&#34;#inode-%e6%80%8e%e4%b9%88%e5%b7%a5%e4%bd%9c%e7%9a%84&#34; class=&#34;anchor&#34;&gt;
+        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;
+            &lt;path fill-rule=&#34;evenodd&#34;
+                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;
+            &lt;/path&gt;
+        &lt;/svg&gt;
+    &lt;/a&gt;
+    inode 怎么工作的？
+&lt;/h2&gt;
+&lt;p&gt;通过上面的了解，得知了每个文件都对应一个&lt;code&gt;inode&lt;/code&gt;，然后管理文件的时候把所有文件块存储在&lt;code&gt;inode&lt;/code&gt;里面但是这种不是没有问题的，随着时间文件不断加大，&lt;code&gt;inode&lt;/code&gt;就要在创建的时候就预留足够好的空间，才能保证后面文件的各种变化，例如我未来存储文件是&lt;code&gt;4GB&lt;/code&gt;，我现在就要去把&lt;code&gt;inode&lt;/code&gt;占用大小设置为&lt;code&gt;8mb&lt;/code&gt;显然这个不能充分发挥磁盘利用率。如果&lt;code&gt;inode&lt;/code&gt;分配小了，未来文件变大了，&lt;code&gt;inode&lt;/code&gt;不够用，各种问题。。。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gxrjnpcqhuj311p0u0jsj.jpg&#34; 
+    alt=&#34;随着时间变化&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Linux&lt;/code&gt;系统为了解决这个问题，引入和虚拟内存的那种概念，把&lt;code&gt;inode&lt;/code&gt;通过采用分级的方式来组织存储块号，&lt;code&gt;inode&lt;/code&gt;为了解决数据变化问题，它引入了&lt;code&gt;3个存储指针设计&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gxrk9tfvhhj314d0u0q5h.jpg&#34; 
+    alt=&#34;结构体&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;inode&lt;/code&gt;中保存了&lt;code&gt;3&lt;/code&gt;种指针，&lt;code&gt;inode&lt;/code&gt;有&lt;code&gt;12&lt;/code&gt;个直接指针，间接指针有&lt;code&gt;3&lt;/code&gt;，二级指针就&lt;code&gt;1&lt;/code&gt;个，可以存储设备的块号，第一个指针为直接指针可以直接指向数据块本身，数据块就是保存数据的块，第二针指针是&lt;code&gt;间接指针&lt;/code&gt;，&lt;code&gt;间接指针&lt;/code&gt;是在前面的指针指针不够的时候才会启用，&lt;code&gt;间接指针&lt;/code&gt;可以看成链表那样，&lt;code&gt;间接指针&lt;/code&gt;会指向一个一个级索引块，这块本身又是一个数据块的指针也是只是指向存储数据块，第&lt;code&gt;3&lt;/code&gt;类指针，指向一个二级索引块，二级索引块的指针还可以指向新的索引块，这样一来就可以动态划分&lt;code&gt;INODE&lt;/code&gt;了。&lt;/p&gt;
+&lt;h2 id=&#34;小结&#34;&gt;
+    &lt;a href=&#34;#%e5%b0%8f%e7%bb%93&#34; class=&#34;anchor&#34;&gt;
+        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;
+            &lt;path fill-rule=&#34;evenodd&#34;
+                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;
+            &lt;/path&gt;
+        &lt;/svg&gt;
+    &lt;/a&gt;
+    小结
+&lt;/h2&gt;
+&lt;p&gt;很多看完说这个有什么用？如果不做系统底层的开发的话，如果你这么想，我只是觉得你很肤浅！😒，看完&lt;code&gt;inode&lt;/code&gt;的设计马上就可以联想到一个分布式文件系统雏形，有时候要懂得变通的。例如&lt;code&gt;Google 的GFS&lt;/code&gt;系统，当然据我所知&lt;code&gt;gfs&lt;/code&gt;已经没有使用了，取代&lt;code&gt;gfs&lt;/code&gt;是一个款新的叫&lt;code&gt;Colossus&lt;/code&gt;系统，这个系统目前设计细节没有公开，但是我看到有&lt;code&gt;cmu&lt;/code&gt;的朋友说&lt;code&gt;Google Infra Team&lt;/code&gt;的&lt;code&gt;Larry Greenfield&lt;/code&gt;的一个&lt;code&gt;Lecture&lt;/code&gt;其中介绍了&lt;code&gt;Larry&lt;/code&gt;对&lt;code&gt;GFS&lt;/code&gt;的设计初衷理念、优劣势、瓶颈、改进，然后研发了现役系统&lt;code&gt;Colossus (GFS2)&lt;/code&gt;系统，当然操作系统的文件系统设计细节远远不止本文所讲的&lt;code&gt;inode&lt;/code&gt;，但是&lt;code&gt;inode&lt;/code&gt;对组织管理文件起到了很大作用，希望读读者有帮助吧，我也是个人笔记分享。&lt;/p&gt;
+
+    </description>
+    </item>
+    
     <item>
     <title>Bigcache Golang Garbage Collection</title>
     <link>http://blog.ibyte.me/post/bigcache-golang-garbage-collection/</link>

@@ -6,7 +6,26 @@
     <description>Recent content in Posts on 打码匠</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 24 Dec 2021 20:39:56 +0800</lastBuildDate><atom:link href="http://blog.ibyte.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 26 Dec 2021 22:18:31 +0800</lastBuildDate><atom:link href="http://blog.ibyte.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Linux File System Inode</title>
+      <link>http://blog.ibyte.me/post/linux-file-system-inode/</link>
+      <pubDate>Sun, 26 Dec 2021 22:18:31 +0800</pubDate>
+      
+      <guid>http://blog.ibyte.me/post/linux-file-system-inode/</guid>
+      <description>文件系统  现在计算机数据存储功能是必不可少的，大家的图片和视频都是数据，但是这些数据是怎么保存在硬盘上的呢？我不知道大家有没有想过？存储介质分类有很多种，例如：机械硬盘、固态硬盘、闪存&amp;hellip;这些都是物理存储介质，怎么让数据保存在里面？不丢失？那么多数据又是怎么在组织起来管理的呢？这时就要说说文件系统了。
+文件系统就是操作系统给我们抽象一种中间层让我们和物理磁盘可以打交道，文件系统就是负责把用户的文件存到磁盘硬件中，因为即使计算机断电了，磁盘里的数据并不会丢失，所以可以持久化的保存文件。
+   怎么工作的？  文件系统怎么工作的？无论底层存储介质是磁盘还是SSD，都被该层抽象为 Block 的概念。文件系统在初始化时，会先在挂载的块存储上的第一个位置创建一个 Super Block，文件在抽象之前，每个文件是有元数据信息的，例如：文件名字、文件大小、创建时间、访问时间、归属者、所在组等&amp;hellip;构成元数据信息，好比现实中一本书，书的各种信息。
+Linux 最经典的一句话是：一切皆文件!，不仅普通的文件和目录，就连块设备、管道、socket 等，也都是统一交给文件系统管理的，但是这些信息要怎么组织到磁盘上，而且文件可能随着时间推移大小也随着变化，文件可能被拷贝到不同物理介质上，这就给文件系统设计者带来一个大问题？
+文件系统会把底层存储的物理硬盘设备，抽象成单单固定大小的块，块区，那这么多快和分区要怎么组织去管理？后面出现了一种基于inode 索引节点的文件组织管理方式。
+   文件组织管理方式  硬件磁盘会被划分成固定大小块，存储块大小可能是512字节的sector然后8个组成一个4KB的块，这个看具体划分方式了，文件也是对应的这么划分存储的，这么设计的时候那就可以把每个块加上唯一编号，也可以看成文件的名字，然后把块建立一个索引，但是大部分存储文件的都是以mb作为单位的，例如：一部电影可能有4GB大小，这就给快存储设计带来设计挑战，一个4GB的电影就需要100万个4kb的块，但是每个块上还有一个唯一的文件名称或者编号，需要占用8字节的空间，这么一搞那么就需要另外的8mb记录，又带了来这样的问题？
+有了这些问题，文件系统设计者引入一个叫index node的数据结构，文件数据被存储不同块里面，文件的元数据信息就会被存储在inode里面。
+inode会被存储在inode table里面的，inode也就是inode table里面条目，inode table 包含该文件系统中所有文件的列表，inode table 中的各个 inode 项具有唯一的编号。
+inode table记录这个inode number对应文件所对应的metadata，如上图所示👆🏻，这样我们就方便管理文件元数据了，每个 inode 都有一个号码，操作系统用 inode 号码来识别不同的文件，这里值得重复一遍，Unix/Linux 系统内部不使用文件名，而使用 inode 号码来识别文件。对于系统来说，文件名只是 inode 号码便于识别的别称一样。
+我们在系统调用的时候，发生了什么？实际上，系统内部将这个过程分成三步：
+ 系统找到文件名对应的 inode number 通过 inode number，获取 inode 信息 根据 inode 信息，找到文件数据所在的 block，读写数据。     inode 怎么工作的？  通过上面的了解，得知了每个文件都对应一个inode，然后管理文件的时候把所有文件块存储在inode里面但是这种不是没有问题的，随着时间文件不断加大，inode就要在创建的时候就预留足够好的空间，才能保证后面文件的各种变化，例如我未来存储文件是4GB，我现在就要去把inode占用大小设置为8mb显然这个不能充分发挥磁盘利用率。如果inode分配小了，未来文件变大了，inode不够用，各种问题。。。</description>
+    </item>
+    
     <item>
       <title>Bigcache Golang Garbage Collection</title>
       <link>http://blog.ibyte.me/post/bigcache-golang-garbage-collection/</link>
