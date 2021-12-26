@@ -63,6 +63,10 @@
 &lt;p&gt;硬件磁盘会被划分成固定大小块，存储块大小可能是&lt;code&gt;512字节&lt;/code&gt;的&lt;code&gt;sector&lt;/code&gt;然后8个组成一个&lt;code&gt;4KB&lt;/code&gt;的块，这个看具体划分方式了，文件也是对应的这么划分存储的，这么设计的时候那就可以把每个块加上唯一编号，也可以看成文件的&lt;code&gt;名字&lt;/code&gt;，然后把块建立一个索引，但是大部分存储文件的都是以&lt;code&gt;mb&lt;/code&gt;作为单位的，例如：一部电影可能有&lt;code&gt;4GB&lt;/code&gt;大小，这就给快存储设计带来设计挑战，一个&lt;code&gt;4GB&lt;/code&gt;的电影就需要&lt;code&gt;100&lt;/code&gt;万个&lt;code&gt;4kb&lt;/code&gt;的块，但是每个块上还有一个唯一的文件名称或者编号，需要占用&lt;code&gt;8&lt;/code&gt;字节的空间，这么一搞那么就需要另外的&lt;code&gt;8mb&lt;/code&gt;记录，又带了来这样的问题？&lt;/p&gt;
 &lt;p&gt;&lt;img loading=&#34;lazy&#34; 
     src=&#34;https://files.mdnice.com/user/8699/5d7255ac-cabb-4a1d-93cb-80198ddf280d.png&#34; 
+    alt=&#34;&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gxrf6mm4tej30jw0i8gly.jpg&#34; 
     alt=&#34;一个4gb的电影可能有很多个4kb的块组成&#34; 
      /&gt;&lt;/p&gt;
 &lt;p&gt;有了这些问题，文件系统设计者引入一个叫&lt;code&gt;index node&lt;/code&gt;的数据结构，文件数据被存储不同块里面，文件的元数据信息就会被存储在&lt;code&gt;inode&lt;/code&gt;里面。&lt;/p&gt;
