@@ -1,5 +1,5 @@
 ---
-title: "Redis Cluster System Desgin"
+title: "Redis Cluster System Design"
 date: 2021-11-24T14:37:48+08:00
 ---
 

@@ -185,10 +185,6 @@
      /></p>
 <p>硬件磁盘会被划分成固定大小块，存储块大小可能是<code>512字节</code>的<code>sector</code>然后8个组成一个<code>4KB</code>的块，这个看具体划分方式了，文件也是对应的这么划分存储的，这么设计的时候那就可以把每个块加上唯一编号，也可以看成文件的<code>名字</code>，然后把块建立一个索引，但是大部分存储文件的都是以<code>mb</code>作为单位的，例如：一部电影可能有<code>4GB</code>大小，这就给快存储设计带来设计挑战，一个<code>4GB</code>的电影就需要<code>100</code>万个<code>4kb</code>的块，但是每个块上还有一个唯一的文件名称或者编号，需要占用<code>8</code>字节的空间，这么一搞那么就需要另外的<code>8mb</code>记录，又带了来这样的问题？</p>
 <p><img loading="lazy" 
-    src="https://files.mdnice.com/user/8699/5d7255ac-cabb-4a1d-93cb-80198ddf280d.png" 
-    alt="" 
-     /></p>
-<p><img loading="lazy" 
     src="https://tva1.sinaimg.cn/large/008i3skNgy1gxrf6mm4tej30jw0i8gly.jpg" 
     alt="一个4gb的电影可能有很多个4kb的块组成" 
      /></p>

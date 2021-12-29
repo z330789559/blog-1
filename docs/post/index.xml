@@ -67,11 +67,11 @@ Active File是在磁盘上的文件，每条数据对应数据格式如下图：
     </item>
     
     <item>
-      <title>Redis Cluster System Desgin</title>
-      <link>http://blog.ibyte.me/post/redis-cluster-system-desgin/</link>
+      <title>Redis Cluster System Design</title>
+      <link>http://blog.ibyte.me/post/redis-cluster-system-design/</link>
       <pubDate>Wed, 24 Nov 2021 14:37:48 +0800</pubDate>
       
-      <guid>http://blog.ibyte.me/post/redis-cluster-system-desgin/</guid>
+      <guid>http://blog.ibyte.me/post/redis-cluster-system-design/</guid>
       <description>为什么会出现集群架构？  上一篇写到了redis哨兵模式，这种模式虽然能解决一些并发情况下的数据请求压力问题和可用性问题，主从替换以及故障恢复。哨兵模式只是redis架构在历史演变过程中一个的转折点，哨兵这种模式主从模式的数据都是全量同步的，也就是每个从节点上的数据都是主节点上的数据副本，大家想一想有木有问题？
 是不是太浪费内存了？或者说可不可以把全量的数据拆解成部分数据，然后分布在不同节点上？那么这种有什么好处吗？？？
 如果数据全部存储在一台机子上，全量同步的时候会时间过长，有时候出现了big key情况更是一个问题，网络一波动，本来传输正在进行中，一半断掉了，会增加同步失败的概率。分片的存储好处，是不是可以减低这些风险的，每个节点我存储一部分数据，实质我们可以交叉存储数据块，a节点存储b节点一个副本，b节点存储a节点一个副本，这样就算如果a当掉了，我们是不是可以去b里面拿取副本继续使用，当然这个我是自己的一些看法，我看hdfs就是这么设计的，当然redis没有这个交叉存储策略，但是笔者认为如果在key下功夫也可以达到的，把key以特定格式的命名的格式二次存储也能达到，只是说浪费一点内存吧了。
