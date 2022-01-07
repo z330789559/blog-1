@@ -10,12 +10,10 @@ date: 2022-01-07T23:44:05+08:00
 
 ![Go Project](https://tva1.sinaimg.cn/large/008i3skNgy1gy5c5pc15nj317v0u0n2w.jpg)
 
-
-![普通项目](https://files.mdnice.com/user/8699/0f364320-886a-495a-946c-7d2b457a774c.png)
-
+![普通项目](https://tva1.sinaimg.cn/large/008i3skNgy1gy5c7qb1eej317v0u0tdf.jpg)
 
 
-![rust project icon支持有点问题，不能正常显示rust图标](https://files.mdnice.com/user/8699/08bc8bb0-e28b-4218-a383-a86cdd101b1e.png)
+![rust project icon支持有点问题，不能正常显示rust图标](https://tva1.sinaimg.cn/large/008i3skNgy1gy5jlmonksj316e0u07b6.jpg)
 
 是不是很骚气？？？
 
