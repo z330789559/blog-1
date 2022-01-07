@@ -1,7 +1,6 @@
 ---
 title: "Pretty Terminal"
 date: 2022-01-07T23:44:05+08:00
-draft: true
 ---
 
 
