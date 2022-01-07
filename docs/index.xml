@@ -149,7 +149,7 @@ brew install --cask font-hack-nerd-font
             &lt;/path&gt;
         &lt;/svg&gt;
     &lt;/a&gt;
-    安装 &amp;lt;code&amp;gt;zsh&amp;lt;/code&amp;gt; 和 &amp;lt;code&amp;gt;oh-my-zsh&amp;lt;/code&amp;gt;
+    安装 zsh 和 oh-my-zsh
 &lt;/h2&gt;
 &lt;p&gt;安装&lt;code&gt;zsh&lt;/code&gt;很容易一条命令即可：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;

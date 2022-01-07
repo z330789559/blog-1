@@ -92,7 +92,7 @@ brew install --cask font-hack-nerd-font
 选择好`hack-nerd-font`字体即可。
 
 
-## 安装 `zsh` 和 `oh-my-zsh`
+## 安装 zsh 和 oh-my-zsh
 
 安装`zsh`很容易一条命令即可：
 
