@@ -6,7 +6,26 @@
     <description>Recent content in Posts on 打码匠</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 26 Dec 2021 22:18:31 +0800</lastBuildDate><atom:link href="http://blog.ibyte.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 07 Jan 2022 23:44:05 +0800</lastBuildDate><atom:link href="http://blog.ibyte.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Pretty Terminal</title>
+      <link>http://blog.ibyte.me/post/iterm2-zsh/</link>
+      <pubDate>Fri, 07 Jan 2022 23:44:05 +0800</pubDate>
+      
+      <guid>http://blog.ibyte.me/post/iterm2-zsh/</guid>
+      <description>概述  很多人看到我的终端觉得很酷，问我怎么配置的？今天这篇文章我就来教教大家怎么配置一个骚气的终端，先让大家看看配置好的终端效果图吧：
+是不是很骚气？？？
+   颜色配置   iTerm2：号称 Mac 下最好的终端工具。 Zsh：一款强大的终端工具，自定义可玩性非常高，如果你是Linux用户也可以安装。  1. 第一步安装iTerm2，如果你已经安装了brew软件包管理工具，可以执行下面命令：
+1  brew install iterm2   如果你没有安装brew工具，你可以执行下面命令进行安装：
+1  /bin/bash -c &amp;#34;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)&amp;#34;   但是这里有问题的，那就是大家懂得网络问题，可能dns污染，不能正常访问到GitHub，如果你是Mac用户把你的dns设置为8.8.8.8，如下图：
+配置这个dns之前，你得先有🪜梯子你懂得，在大陆编程，我觉得程序员第一件事就是要解决网络问题，我感觉80%问题都是网络引起的问题。。
+2. 下载和配置主题，首先去设置背景颜色，位置在 iTerm2 -&amp;gt; Preferences -&amp;gt; Profiles -&amp;gt; Terminal。
+把配色设置为xterm-256color。
+3. 虽然 iTerm2 有 7 种自带的配色，像我这种对颜值要求高的，肯定是满足不了我需求了，既然有像我这种有需求的，那肯定有人提供这种高颜值的主题，于是有大神在GitHub开源了一个仓库https://github.com/mbadolato/iTerm2-Color-Schemes，里面收录各种主题配色方案。
+通过终端回到你用户根目录，执行下面命令：
+1 2 3  mkdir ~/.iterm2 &amp;amp;&amp;amp; cd ~/.iterm2 git clone https://github.com/mbadolato/iTerm2-Color-Schemes   然后导入主题到你终端里面：</description>
+    </item>
+    
     <item>
       <title>Linux File System Inode</title>
       <link>http://blog.ibyte.me/post/linux-file-system-inode/</link>
