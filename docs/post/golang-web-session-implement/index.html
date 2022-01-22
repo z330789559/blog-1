@@ -63,7 +63,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="https://avatars.githubusercontent.com/u/38412458?v=4" />
     
     
-    <link rel="stylesheet" href="/sass/main.min.3b60735c96f5faa623d75aceae8ee0a0c7d19f76a3eed0574c61f7253a4eeb3d.css">
+    <link rel="stylesheet" href="/sass/main.min.85d2dd3a54e29956009c7c48e5f5d4bc22b6af329dc58a4fc8919e8c12720daa.css">
     
 </head>
     <script>
@@ -214,7 +214,7 @@
 </ol>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -225,7 +225,7 @@
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">sessionx</span>
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">sessionx</span>
 
 <span class="c1">// session storage interface
 </span><span class="c1"></span><span class="kd">type</span> <span class="nx">storage</span> <span class="kd">interface</span> <span class="p">{</span>
@@ -243,12 +243,12 @@
 </ol>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">memoryStore</span> <span class="kd">struct</span> <span class="p">{</span>
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">memoryStore</span> <span class="kd">struct</span> <span class="p">{</span>
     <span class="nx">sync</span><span class="p">.</span><span class="nx">Map</span>
 <span class="p">}</span>
 </code></pre></td></tr></table>
@@ -257,7 +257,7 @@
 <p>实现<code>storage</code>具体方法如下:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -268,7 +268,7 @@
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="o">*</span><span class="nx">memoryStore</span><span class="p">)</span> <span class="nf">Read</span><span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Session</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="o">*</span><span class="nx">memoryStore</span><span class="p">)</span> <span class="nf">Read</span><span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Session</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
     <span class="k">if</span> <span class="nx">ele</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">m</span><span class="p">.</span><span class="nf">Load</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">ID</span><span class="p">);</span> <span class="nx">ok</span> <span class="p">{</span>
       <span class="c1">// bug 这个不能直接 s = ele 
 </span><span class="c1"></span>      <span class="nx">s</span><span class="p">.</span><span class="nx">Data</span> <span class="p">=</span> <span class="nx">ele</span><span class="p">.(</span><span class="o">*</span><span class="nx">Session</span><span class="p">).</span><span class="nx">Data</span>
@@ -284,7 +284,7 @@
 <p>其他几个函数:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -306,7 +306,7 @@
 </span><span class="lnt">20
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="o">*</span><span class="nx">memoryStore</span><span class="p">)</span> <span class="nf">Create</span><span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Session</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="o">*</span><span class="nx">memoryStore</span><span class="p">)</span> <span class="nf">Create</span><span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Session</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
       <span class="nx">m</span><span class="p">.</span><span class="nf">Store</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">ID</span><span class="p">,</span> <span class="nx">s</span><span class="p">)</span>
       <span class="k">return</span> <span class="kc">nil</span>
 <span class="p">}</span>
@@ -332,7 +332,7 @@
 <p>垃圾回收:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -349,7 +349,7 @@
 </span><span class="lnt">15
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="o">*</span><span class="nx">memoryStore</span><span class="p">)</span> <span class="nf">gc</span><span class="p">()</span> <span class="p">{</span>
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="o">*</span><span class="nx">memoryStore</span><span class="p">)</span> <span class="nf">gc</span><span class="p">()</span> <span class="p">{</span>
     <span class="c1">// recycle your trash every 10 minutes
 </span><span class="c1"></span>    <span class="k">for</span> <span class="p">{</span>
         <span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nx">Minute</span> <span class="o">*</span> <span class="mi">10</span><span class="p">)</span>
@@ -372,7 +372,7 @@
 </ol>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -415,7 +415,7 @@
 </span><span class="lnt">41
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">redisStore</span> <span class="kd">struct</span> <span class="p">{</span>
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">redisStore</span> <span class="kd">struct</span> <span class="p">{</span>
     <span class="nx">sync</span><span class="p">.</span><span class="nx">Mutex</span>
     <span class="nx">sessions</span> <span class="o">*</span><span class="nx">redis</span><span class="p">.</span><span class="nx">Client</span>
 <span class="p">}</span>
@@ -469,7 +469,7 @@
 </ol>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -522,7 +522,7 @@
 </span><span class="lnt">51
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">storeType</span> <span class="kt">uint8</span>
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">storeType</span> <span class="kt">uint8</span>
 
 <span class="kd">const</span> <span class="p">(</span>
     <span class="c1">// memoryStore store type
@@ -582,7 +582,7 @@
 <p>这个结构体是对应着浏览器会话的结构体，设计原则是一个<code>id</code>对应一个<code>session</code>结构体。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -595,7 +595,7 @@
 </span><span class="lnt">11
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Session</span> <span class="kd">struct</span> <span class="p">{</span>
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Session</span> <span class="kd">struct</span> <span class="p">{</span>
     <span class="c1">// 会话ID
 </span><span class="c1"></span>    <span class="nx">ID</span> <span class="kt">string</span>
     <span class="c1">// session超时时间
@@ -611,7 +611,7 @@
 </div><p>具体操作函数:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -667,7 +667,7 @@
 </span><span class="lnt">54
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Get Retrieves the stored element data from the session via the key
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Get Retrieves the stored element data from the session via the key
 </span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Session</span><span class="p">)</span> <span class="nf">Get</span><span class="p">(</span><span class="nx">key</span> <span class="kd">interface</span><span class="p">{})</span> <span class="p">(</span><span class="kd">interface</span><span class="p">{},</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">err</span> <span class="o">:=</span> <span class="nx">mgr</span><span class="p">.</span><span class="nx">store</span><span class="p">.</span><span class="nf">Read</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
     <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
@@ -727,7 +727,7 @@
 <p><strong>Handler方法</strong></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -775,7 +775,7 @@
 </span><span class="lnt">46
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Handler Get session data from the Request
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Handler Get session data from the Request
 </span><span class="c1"></span><span class="kd">func</span> <span class="nf">Handler</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">req</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="o">*</span><span class="nx">Session</span> <span class="p">{</span>
     <span class="c1">// 从请求里面取session
 </span><span class="c1"></span>    <span class="kd">var</span> <span class="nx">session</span> <span class="nx">Session</span>
@@ -842,7 +842,7 @@
 <p>这个过程，正常用户在通过浏览器访问我们编写的网站，但是这个时候有个<code>hack</code>通过<code>arp</code>欺骗，把路由器的流量劫持到他的电脑上，然后黑客通过一些特殊的软件抓包你的网络请求流量信息，在这个过程中如果你<code>sessionid</code>如果存放在<code>cookie</code>中，很有可能被黑客提取处理，如果你这个时候登录了网站，这是黑客就拿到你的登录凭证，然后在登录进行<code>重放</code>也就是使用你的<code>sessionid</code>，从而达到访问你账户相关的数据目的。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -863,7 +863,7 @@
 </span><span class="lnt">19
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Session</span><span class="p">)</span> <span class="nf">MigrateSession</span><span class="p">()</span> <span class="kt">error</span> <span class="p">{</span>
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Session</span><span class="p">)</span> <span class="nf">MigrateSession</span><span class="p">()</span> <span class="kt">error</span> <span class="p">{</span>
     <span class="c1">// 迁移到新内存 防止会话一致引发安全问题
 </span><span class="c1"></span>    <span class="c1">// 这个问题的根源在 sessionid 不变，如果用户在未登录时拿到的是一个 sessionid，登录之后服务端给用户重新换一个 sessionid，就可以防止会话固定攻击了。
 </span><span class="c1"></span>    <span class="nx">s</span><span class="p">.</span><span class="nx">ID</span> <span class="p">=</span> <span class="nf">generateUUID</span><span class="p">()</span>
@@ -899,7 +899,7 @@
 </h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -961,7 +961,7 @@
 </span><span class="lnt">60
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
 
 <span class="kn">import</span> <span class="p">(</span>
     <span class="s">&#34;fmt&#34;</span>
@@ -1126,7 +1126,7 @@
             
         </nav>
     </section>
-    <script defer src="/ts/features.39c567b3af1363f8abe74bfd650f3d58cb963716b7ad4b3b53f801d3ca585599.js" data-enable-footnotes="true"></script>
+    <script defer src="/ts/features.b5555d1ae12309fd7a67c0d19ce81e7098647818f6758eb95f88ea9d550d2d2c.js" data-enable-footnotes="true"></script>
 </footer>
     </body>
 </html>

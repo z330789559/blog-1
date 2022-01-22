@@ -63,7 +63,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="https://avatars.githubusercontent.com/u/38412458?v=4" />
     
     
-    <link rel="stylesheet" href="/sass/main.min.3b60735c96f5faa623d75aceae8ee0a0c7d19f76a3eed0574c61f7253a4eeb3d.css">
+    <link rel="stylesheet" href="/sass/main.min.85d2dd3a54e29956009c7c48e5f5d4bc22b6af329dc58a4fc8919e8c12720daa.css">
     
 </head>
     <script>
@@ -170,11 +170,11 @@
 <p>在你的项目中添加依赖如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-toml" data-lang="toml"><span class="p">[</span><span class="nx">dependencies</span><span class="p">]</span>
+<pre class="chroma"><code class="language-toml" data-lang="toml"><span class="p">[</span><span class="nx">dependencies</span><span class="p">]</span>
 <span class="nx">falsework</span> <span class="p">=</span> <span class="s2">&#34;0.1.3&#34;</span>
 </code></pre></td></tr></table>
 </div>
@@ -190,7 +190,7 @@
 </h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -237,7 +237,7 @@
 </span><span class="lnt">45
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="k">use</span><span class="w"> </span><span class="n">std</span>::<span class="n">error</span>::<span class="n">Error</span><span class="p">;</span><span class="w">
+<pre class="chroma"><code class="language-rust" data-lang="rust"><span class="k">use</span><span class="w"> </span><span class="n">std</span>::<span class="n">error</span>::<span class="n">Error</span><span class="p">;</span><span class="w">
 </span><span class="w"></span><span class="k">use</span><span class="w"> </span><span class="n">falsework</span>::<span class="p">{</span><span class="n">app</span><span class="p">,</span><span class="w"> </span><span class="n">cmd</span><span class="p">};</span><span class="w">
 </span><span class="w">
 </span><span class="w"></span><span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
@@ -255,11 +255,11 @@
 </span><span class="w">    </span><span class="c1">// 构建命令行项
 </span><span class="c1"></span><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">command</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cmd</span>::<span class="n">CommandItem</span><span class="w"> </span><span class="p">{</span><span class="w">
 </span><span class="w">        </span><span class="c1">// run 命令所对应命令行逻辑代码
-</span><span class="c1"></span><span class="w">        </span><span class="n">run</span>: <span class="o">|</span><span class="n">ctx</span><span class="o">|</span><span class="w"> </span>-&gt; <span class="nb">Result</span><span class="o">&lt;</span><span class="p">(),</span><span class="w"> </span><span class="nb">Box</span><span class="o">&lt;</span><span class="k">dyn</span><span class="w"> </span><span class="n">Error</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span><span class="c1"></span><span class="w">        </span><span class="n">run</span>: <span class="o">|</span><span class="n">ctx</span><span class="o">|</span><span class="w"> </span>-&gt; <span class="nb">Result</span><span class="o">&lt;</span><span class="p">(),</span><span class="w"> </span><span class="nb">Box</span><span class="o">&lt;</span><span class="n">dyn</span><span class="w"> </span><span class="n">Error</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
 </span><span class="w">            </span><span class="c1">// 通过上下文获取flag绑定的数据
 </span><span class="c1"></span><span class="w">            </span><span class="kd">let</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">value_of</span><span class="p">(</span><span class="s">&#34;--x&#34;</span><span class="p">).</span><span class="n">parse</span>::<span class="o">&lt;</span><span class="kt">i32</span><span class="o">&gt;</span><span class="p">().</span><span class="n">unwrap</span><span class="p">();</span><span class="w">
 </span><span class="w">            </span><span class="kd">let</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">value_of</span><span class="p">(</span><span class="s">&#34;--y&#34;</span><span class="p">).</span><span class="n">parse</span>::<span class="o">&lt;</span><span class="kt">i32</span><span class="o">&gt;</span><span class="p">().</span><span class="n">unwrap</span><span class="p">();</span><span class="w">
-</span><span class="w">            </span><span class="fm">println!</span><span class="p">(</span><span class="s">&#34;{} + {} = {}&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">y</span><span class="p">);</span><span class="w">
+</span><span class="w">            </span><span class="n">println</span><span class="o">!</span><span class="p">(</span><span class="s">&#34;{} + {} = {}&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">y</span><span class="p">);</span><span class="w">
 </span><span class="w">            </span><span class="c1">// 如果处理发生了错误则调用 cmd::err_msg 会优雅的退出
 </span><span class="c1"></span><span class="w">            </span><span class="c1">// Err(cmd::err_msg(&#34;Application produce error！&#34;));
 </span><span class="c1"></span><span class="w">            </span><span class="nb">Ok</span><span class="p">(())</span><span class="w">
@@ -287,11 +287,11 @@
 </div><p>上面这个例子运行起来结果:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$: ./calculator add --x<span class="o">=</span><span class="m">10</span> --y<span class="o">=</span><span class="m">10</span>
+<pre class="chroma"><code class="language-shell" data-lang="shell">$: ./calculator add --x<span class="o">=</span><span class="m">10</span> --y<span class="o">=</span><span class="m">10</span>
 <span class="m">10</span> + <span class="nv">10</span> <span class="o">=</span> <span class="m">20</span>
 </code></pre></td></tr></table>
 </div>
@@ -301,14 +301,14 @@
 </ol>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$: ./calculator a
+<pre class="chroma"><code class="language-shell" data-lang="shell">$: ./calculator a
 
 You need this <span class="nb">command</span> ?
 	add
@@ -321,7 +321,7 @@ a : The corresponding <span class="nb">command</span> <span class="nb">set</span
 </ol>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -334,7 +334,7 @@ a : The corresponding <span class="nb">command</span> <span class="nb">set</span
 </span><span class="lnt">11
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$: ./calculator add --help
+<pre class="chroma"><code class="language-shell" data-lang="shell">$: ./calculator add --help
 
 Help:
   这是一个加法计算程序需要两个flag参数 --x --y
@@ -350,7 +350,7 @@ Flags:
 </div><p>构建出来主程序预览：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -368,7 +368,7 @@ Flags:
 </span><span class="lnt">16
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$: ./calculator
+<pre class="chroma"><code class="language-shell" data-lang="shell">$: ./calculator
 
 
 A calculator that only supports addition.
@@ -399,7 +399,7 @@ Use <span class="s2">&#34;calculator [command] --help&#34;</span> <span class="k
 <p>有多种构建方式，例如下面的：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -437,7 +437,7 @@ Use <span class="s2">&#34;calculator [command] --help&#34;</span> <span class="k
 </span><span class="lnt">36
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="w">    </span><span class="cp">#[test]</span><span class="w">
+<pre class="chroma"><code class="language-rust" data-lang="rust"><span class="w">    </span><span class="cp">#[test]</span><span class="w">
 </span><span class="w">    </span><span class="k">fn</span> <span class="nf">test_add_commands</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
 </span><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">falsework</span>::<span class="n">app</span>::<span class="n">new</span><span class="p">();</span><span class="w">
 </span><span class="w">
@@ -447,11 +447,11 @@ Use <span class="s2">&#34;calculator [command] --help&#34;</span> <span class="k
 </span><span class="w">            </span><span class="p">.</span><span class="n">description</span><span class="p">(</span><span class="s">&#34;A command line program built with Falsework.&#34;</span><span class="p">);</span><span class="w">
 </span><span class="w">
 </span><span class="w">
-</span><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">command_list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="fm">vec!</span><span class="p">[</span><span class="w">
+</span><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">command_list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vec</span><span class="o">!</span><span class="p">[</span><span class="w">
 </span><span class="w">            </span><span class="n">cmd</span>::<span class="n">CommandItem</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span><span class="w">                </span><span class="n">run</span>: <span class="o">|</span><span class="n">_ctx</span><span class="o">|</span><span class="w"> </span>-&gt; <span class="nb">Result</span><span class="o">&lt;</span><span class="p">(),</span><span class="w"> </span><span class="nb">Box</span><span class="o">&lt;</span><span class="k">dyn</span><span class="w"> </span><span class="n">Error</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span><span class="w">                </span><span class="n">run</span>: <span class="o">|</span><span class="n">_ctx</span><span class="o">|</span><span class="w"> </span>-&gt; <span class="nb">Result</span><span class="o">&lt;</span><span class="p">(),</span><span class="w"> </span><span class="nb">Box</span><span class="o">&lt;</span><span class="n">dyn</span><span class="w"> </span><span class="n">Error</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
 </span><span class="w">                    </span><span class="c1">// _ctx.args 获取命令行参数
-</span><span class="c1"></span><span class="w">                    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&#34;call foo command.&#34;</span><span class="p">);</span><span class="w">
+</span><span class="c1"></span><span class="w">                    </span><span class="n">println</span><span class="o">!</span><span class="p">(</span><span class="s">&#34;call foo command.&#34;</span><span class="p">);</span><span class="w">
 </span><span class="w">                    </span><span class="nb">Ok</span><span class="p">(())</span><span class="w">
 </span><span class="w">                </span><span class="p">},</span><span class="w">
 </span><span class="w">                </span><span class="n">long</span>: <span class="s">&#34;这是一个测试命令，使用foo将调用foo命令。&#34;</span><span class="p">,</span><span class="w">
@@ -459,8 +459,8 @@ Use <span class="s2">&#34;calculator [command] --help&#34;</span> <span class="k
 </span><span class="w">                </span><span class="n">r#use</span>: <span class="s">&#34;foo&#34;</span><span class="p">,</span><span class="w">
 </span><span class="w">            </span><span class="p">},</span><span class="w">
 </span><span class="w">            </span><span class="n">cmd</span>::<span class="n">CommandItem</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span><span class="w">                </span><span class="n">run</span>: <span class="o">|</span><span class="n">_ctx</span><span class="o">|</span><span class="w"> </span>-&gt; <span class="nb">Result</span><span class="o">&lt;</span><span class="p">(),</span><span class="w"> </span><span class="nb">Box</span><span class="o">&lt;</span><span class="k">dyn</span><span class="w"> </span><span class="n">Error</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span><span class="w">                    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&#34;call bar command.&#34;</span><span class="p">);</span><span class="w">
+</span><span class="w">                </span><span class="n">run</span>: <span class="o">|</span><span class="n">_ctx</span><span class="o">|</span><span class="w"> </span>-&gt; <span class="nb">Result</span><span class="o">&lt;</span><span class="p">(),</span><span class="w"> </span><span class="nb">Box</span><span class="o">&lt;</span><span class="n">dyn</span><span class="w"> </span><span class="n">Error</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span><span class="w">                    </span><span class="n">println</span><span class="o">!</span><span class="p">(</span><span class="s">&#34;call bar command.&#34;</span><span class="p">);</span><span class="w">
 </span><span class="w">                    </span><span class="nb">Ok</span><span class="p">(())</span><span class="w">
 </span><span class="w">                </span><span class="p">},</span><span class="w">
 </span><span class="w">                </span><span class="n">long</span>: <span class="s">&#34;这是一个测试命令，使用bar将调用bar命令。&#34;</span><span class="p">,</span><span class="w">
@@ -471,7 +471,7 @@ Use <span class="s2">&#34;calculator [command] --help&#34;</span> <span class="k
 </span><span class="w">
 </span><span class="w">        </span><span class="n">app</span><span class="p">.</span><span class="n">commands</span><span class="p">(</span><span class="n">command_list</span><span class="p">);</span><span class="w">
 </span><span class="w">
-</span><span class="w">        </span><span class="fm">println!</span><span class="p">(</span><span class="s">&#34;{:#?}&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">app</span><span class="p">);</span><span class="w">
+</span><span class="w">        </span><span class="n">println</span><span class="o">!</span><span class="p">(</span><span class="s">&#34;{:#?}&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">app</span><span class="p">);</span><span class="w">
 </span><span class="w">    </span><span class="p">}</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
@@ -586,7 +586,7 @@ Use <span class="s2">&#34;calculator [command] --help&#34;</span> <span class="k
             
         </nav>
     </section>
-    <script defer src="/ts/features.39c567b3af1363f8abe74bfd650f3d58cb963716b7ad4b3b53f801d3ca585599.js" data-enable-footnotes="true"></script>
+    <script defer src="/ts/features.b5555d1ae12309fd7a67c0d19ce81e7098647818f6758eb95f88ea9d550d2d2c.js" data-enable-footnotes="true"></script>
 </footer>
     </body>
 </html>

@@ -63,7 +63,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="https://avatars.githubusercontent.com/u/38412458?v=4" />
     
     
-    <link rel="stylesheet" href="/sass/main.min.3b60735c96f5faa623d75aceae8ee0a0c7d19f76a3eed0574c61f7253a4eeb3d.css">
+    <link rel="stylesheet" href="/sass/main.min.85d2dd3a54e29956009c7c48e5f5d4bc22b6af329dc58a4fc8919e8c12720daa.css">
     
 </head>
     <script>
@@ -161,7 +161,7 @@
 <p><strong>transaction.go 内容:</strong></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -249,7 +249,7 @@
 </span><span class="lnt">86
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
 
 <span class="kn">import</span> <span class="p">(</span>
     <span class="s">&#34;errors&#34;</span>
@@ -338,7 +338,7 @@
 </code></pre></td></tr></table>
 </div>
 </div><p>我们把上面的代码跑起来，<code>go run transaction.go</code></p>
-<pre tabindex="0"><code>[Running] go run &quot;/Users/ding/Desktop/CSRF_Demo/transaction.go&quot;
+<pre><code>[Running] go run &quot;/Users/ding/Desktop/CSRF_Demo/transaction.go&quot;
 2021/03/12 21:50:08 Transaction Server Running....
 </code></pre><p>好了，服务器正常跑起来了，按照我们正常的系统流程是，我们登陆到了系统里面，系统里面有我们的浏览器会话数据，这时我们只想通过系统给出的交易接口操作就可以了，这里为了方便演示我使用<code>postman</code>进行测试。</p>
 <p><img loading="lazy" 
@@ -346,7 +346,7 @@
     alt="操作截图" 
      /></p>
 <p>可以看到我们的交易系统设计的所需的参数，并且我们填写了请求表单数据，并且提交了这个请求。我们去服务器看看日志:</p>
-<pre tabindex="0"><code>[Running] go run &quot;/Users/ding/Desktop/CSRF_Demo/transaction.go&quot;
+<pre><code>[Running] go run &quot;/Users/ding/Desktop/CSRF_Demo/transaction.go&quot;
 2021/03/12 21:50:08 Transaction Server Running....
 2021/03/12 21:54:41 用户 Tom 向用户 John 转账 2000 元.
 </code></pre><p>可以看到有一条转账记录，说明我们操作成功了。</p>
@@ -364,7 +364,7 @@
 <p><strong>csrf.go文件里面内容:</strong></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -382,7 +382,7 @@
 </span><span class="lnt">16
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
 
 <span class="kn">import</span> <span class="p">(</span>
     <span class="s">&#34;log&#34;</span>
@@ -403,10 +403,10 @@
 </div><p>首先我把攻击利用服务器启动 <code>go run csrf.go</code></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="mi">2021</span><span class="o">/</span><span class="mo">03</span><span class="o">/</span><span class="mi">12</span> <span class="mi">22</span><span class="p">:</span><span class="mi">16</span><span class="p">:</span><span class="mi">43</span> <span class="nx">CSRF</span> <span class="nx">Server</span> <span class="nx">Running</span><span class="o">...</span><span class="p">.</span>
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="mi">2021</span><span class="o">/</span><span class="mo">03</span><span class="o">/</span><span class="mi">12</span> <span class="mi">22</span><span class="p">:</span><span class="mi">16</span><span class="p">:</span><span class="mi">43</span> <span class="nx">CSRF</span> <span class="nx">Server</span> <span class="nx">Running</span><span class="o">...</span><span class="p">.</span>
 </code></pre></td></tr></table>
 </div>
 </div><p>然后我在同一浏览器里面访问这个地址<code>http://127.0.0.1:2021/csrf</code>。</p>
@@ -435,7 +435,7 @@
 <p><strong>文件内容如下:</strong></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -452,7 +452,7 @@
 </span><span class="lnt">15
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<pre class="chroma"><code class="language-html" data-lang="html"><span class="cp">&lt;!DOCTYPE html&gt;</span>
 <span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&#34;en&#34;</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
     <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;UTF-8&#34;</span><span class="p">&gt;</span>
@@ -578,7 +578,7 @@
             
         </nav>
     </section>
-    <script defer src="/ts/features.39c567b3af1363f8abe74bfd650f3d58cb963716b7ad4b3b53f801d3ca585599.js" data-enable-footnotes="true"></script>
+    <script defer src="/ts/features.b5555d1ae12309fd7a67c0d19ce81e7098647818f6758eb95f88ea9d550d2d2c.js" data-enable-footnotes="true"></script>
 </footer>
     </body>
 </html>

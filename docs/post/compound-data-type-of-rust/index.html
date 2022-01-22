@@ -63,7 +63,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="https://avatars.githubusercontent.com/u/38412458?v=4" />
     
     
-    <link rel="stylesheet" href="/sass/main.min.3b60735c96f5faa623d75aceae8ee0a0c7d19f76a3eed0574c61f7253a4eeb3d.css">
+    <link rel="stylesheet" href="/sass/main.min.85d2dd3a54e29956009c7c48e5f5d4bc22b6af329dc58a4fc8919e8c12720daa.css">
     
 </head>
     <script>
@@ -175,7 +175,7 @@
 <p><strong>例子：</strong></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -188,35 +188,35 @@
 </span><span class="lnt">11
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+<pre class="chroma"><code class="language-rust" data-lang="rust"><span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
 </span><span class="w">    </span><span class="c1">// 指定数据类型
 </span><span class="c1"></span><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">tup_type</span>:<span class="p">(</span><span class="kt">i8</span><span class="p">,</span><span class="kt">i32</span><span class="p">,</span><span class="kt">bool</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mi">21</span><span class="p">,</span><span class="o">-</span><span class="mi">1024</span><span class="p">,</span><span class="kc">true</span><span class="p">);</span><span class="w">
 </span><span class="w">    </span><span class="c1">// 解构元素
 </span><span class="c1"></span><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="p">(</span><span class="n">one</span><span class="p">,</span><span class="n">two</span><span class="p">,</span><span class="n">three</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tup_type</span><span class="p">;</span><span class="w">
 </span><span class="w">    </span><span class="c1">// 二维的元组
 </span><span class="c1"></span><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">tup_2d</span>:<span class="p">(</span><span class="kt">f64</span><span class="p">,(</span><span class="kt">i8</span><span class="p">,</span><span class="kt">i32</span><span class="p">,</span><span class="kt">bool</span><span class="p">))</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mf">3.1415927</span><span class="p">,(</span><span class="n">one</span><span class="p">,</span><span class="n">two</span><span class="p">,</span><span class="n">three</span><span class="p">));</span><span class="w">
-</span><span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&#34;tup_2d = {:?}&#34;</span><span class="p">,</span><span class="n">tup_2d</span><span class="p">);</span><span class="w">
+</span><span class="w">    </span><span class="n">println</span><span class="o">!</span><span class="p">(</span><span class="s">&#34;tup_2d = {:?}&#34;</span><span class="p">,</span><span class="n">tup_2d</span><span class="p">);</span><span class="w">
 </span><span class="w">    </span><span class="c1">// 索引
-</span><span class="c1"></span><span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&#34;π = {:?}&#34;</span><span class="p">,</span><span class="n">tup_2d</span><span class="p">.</span><span class="mi">0</span><span class="p">);</span><span class="w">
+</span><span class="c1"></span><span class="w">    </span><span class="n">println</span><span class="o">!</span><span class="p">(</span><span class="s">&#34;π = {:?}&#34;</span><span class="p">,</span><span class="n">tup_2d</span><span class="p">.</span><span class="mi">0</span><span class="p">);</span><span class="w">
 </span><span class="w"></span><span class="p">}</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
 </div><p>元组的访问方式有好几种，通过下标去访问，也可以使用解构赋值给新的变量去访问，但是不支持迭代器去访问。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="k">for</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">tup_2d</span><span class="p">.</span><span class="mf">1.</span><span class="n">iter</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span><span class="w">        </span><span class="fm">println!</span><span class="p">(</span><span class="s">&#34;{}&#34;</span><span class="p">,</span><span class="n">v</span><span class="p">)</span><span class="w">
+<pre class="chroma"><code class="language-rust" data-lang="rust"><span class="k">for</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">tup_2d</span><span class="p">.</span><span class="mf">1.</span><span class="n">iter</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span><span class="w">        </span><span class="n">println</span><span class="o">!</span><span class="p">(</span><span class="s">&#34;{}&#34;</span><span class="p">,</span><span class="n">v</span><span class="p">)</span><span class="w">
 </span><span class="w"></span><span class="p">}</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -231,7 +231,7 @@
 </span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">   Compiling playground v0.0.1 <span class="o">(</span>/playground<span class="o">)</span>
+<pre class="chroma"><code class="language-bash" data-lang="bash">   Compiling playground v0.0.1 <span class="o">(</span>/playground<span class="o">)</span>
 error<span class="o">[</span>E0599<span class="o">]</span>: no method named <span class="sb">`</span>iter<span class="sb">`</span> found <span class="k">for</span> tuple <span class="sb">`</span><span class="o">(</span>i8, i32, bool<span class="o">)</span><span class="sb">`</span> in the current scope
   --&gt; src/main.rs:10:23
    <span class="p">|</span>
@@ -250,7 +250,7 @@ To learn more, run the <span class="nb">command</span> again with --verbose.
 <p>但是如果元素是支持实现了<code>Iterator</code>就可以通过<code>.iter()</code>进行迭代访问。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -267,20 +267,20 @@ To learn more, run the <span class="nb">command</span> again with --verbose.
 </span><span class="lnt">15
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">arrays</span>:<span class="p">[</span><span class="kt">usize</span><span class="p">;</span><span class="mi">5</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">;</span><span class="mi">5</span><span class="p">];</span><span class="w">
+<pre class="chroma"><code class="language-rust" data-lang="rust"><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">arrays</span>:<span class="p">[</span><span class="kt">usize</span><span class="p">;</span><span class="mi">5</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">;</span><span class="mi">5</span><span class="p">];</span><span class="w">
 </span><span class="w">    
-</span><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="mi">0</span><span class="o">..</span><span class="mi">5</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="mi">0</span><span class="p">..</span><span class="mi">5</span><span class="w"> </span><span class="p">{</span><span class="w">
 </span><span class="w">        </span><span class="n">arrays</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span><span class="w">
 </span><span class="w">    </span><span class="p">}</span><span class="w">
 </span><span class="w">    
-</span><span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&#34;{:?}&#34;</span><span class="p">,</span><span class="n">arrays</span><span class="p">);</span><span class="w">
+</span><span class="w">    </span><span class="n">println</span><span class="o">!</span><span class="p">(</span><span class="s">&#34;{:?}&#34;</span><span class="p">,</span><span class="n">arrays</span><span class="p">);</span><span class="w">
 </span><span class="w">    
 </span><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">tup_arr</span>:<span class="p">(</span><span class="o">&amp;</span><span class="kt">str</span><span class="p">,[</span><span class="kt">usize</span><span class="p">;</span><span class="mi">5</span><span class="p">])</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="s">&#34;tup_arr&#34;</span><span class="p">,</span><span class="n">arrays</span><span class="p">);</span><span class="w">
 </span><span class="w">    
-</span><span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&#34;{:?}&#34;</span><span class="p">,</span><span class="n">tup_arr</span><span class="p">);</span><span class="w">
+</span><span class="w">    </span><span class="n">println</span><span class="o">!</span><span class="p">(</span><span class="s">&#34;{:?}&#34;</span><span class="p">,</span><span class="n">tup_arr</span><span class="p">);</span><span class="w">
 </span><span class="w">    
 </span><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">tup_arr</span><span class="p">.</span><span class="mf">1.</span><span class="n">iter</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span><span class="w">        </span><span class="fm">println!</span><span class="p">(</span><span class="s">&#34;{}&#34;</span><span class="p">,</span><span class="n">v</span><span class="p">)</span><span class="w">
+</span><span class="w">        </span><span class="n">println</span><span class="o">!</span><span class="p">(</span><span class="s">&#34;{}&#34;</span><span class="p">,</span><span class="n">v</span><span class="p">)</span><span class="w">
 </span><span class="w">    </span><span class="p">}</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
@@ -298,7 +298,7 @@ To learn more, run the <span class="nb">command</span> again with --verbose.
 <p><code>Rust</code>中的数组声明是<code>[T;n]</code>进行的，<code>T</code>是元素类型，<code>n</code>是这组元素有多少个坑位，创建的时候可以去掉类型和大小，程序会自动推断出来。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -315,10 +315,10 @@ To learn more, run the <span class="nb">command</span> again with --verbose.
 </span><span class="lnt">15
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="w">    </span><span class="c1">// 数组
+<pre class="chroma"><code class="language-rust" data-lang="rust"><span class="w">    </span><span class="c1">// 数组
 </span><span class="c1"></span><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">arr</span>:<span class="p">[</span><span class="kt">f32</span><span class="p">;</span><span class="mi">3</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">2.2</span><span class="p">,</span><span class="mf">3.33</span><span class="p">];</span><span class="w">
 </span><span class="w">    
-</span><span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&#34;{:?}&#34;</span><span class="p">,</span><span class="n">arr</span><span class="p">);</span><span class="w">
+</span><span class="w">    </span><span class="n">println</span><span class="o">!</span><span class="p">(</span><span class="s">&#34;{:?}&#34;</span><span class="p">,</span><span class="n">arr</span><span class="p">);</span><span class="w">
 </span><span class="w">    
 </span><span class="w">    </span><span class="c1">// 类型自动推导
 </span><span class="c1"></span><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">arr_infer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s">&#34;Hello&#34;</span><span class="p">,</span><span class="s">&#34;,&#34;</span><span class="p">,</span><span class="s">&#34;World!&#34;</span><span class="p">];</span><span class="w">
@@ -329,7 +329,7 @@ To learn more, run the <span class="nb">command</span> again with --verbose.
 </span><span class="w">        </span><span class="kt">str</span><span class="p">.</span><span class="n">push_str</span><span class="p">(</span><span class="n">v</span><span class="p">);</span><span class="w">
 </span><span class="w">    </span><span class="p">}</span><span class="w">
 </span><span class="w">    
-</span><span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&#34;str = {}&#34;</span><span class="p">,</span><span class="kt">str</span><span class="p">);</span><span class="w">
+</span><span class="w">    </span><span class="n">println</span><span class="o">!</span><span class="p">(</span><span class="s">&#34;str = {}&#34;</span><span class="p">,</span><span class="kt">str</span><span class="p">);</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
 </div><p><a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2018&amp;gist=195d35086371375f182fc67922d81b44">点击查看元组代码案例</a></p>
@@ -346,14 +346,14 @@ To learn more, run the <span class="nb">command</span> again with --verbose.
 <p>枚举类型，如果你之前从事过<code>Java</code>相关的开发应该不陌生，在<code>Rust</code>里面也有<code>枚举</code>类型，枚举类型是一个自定义数据类型，通过<code>enum</code>关键字来声明，<code>body</code>里面可以包含多个自定义的枚举值，枚举可以用来限制某个值或者类型范围。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="w">    </span><span class="cp">#[derive(Debug)]</span><span class="w">
+<pre class="chroma"><code class="language-rust" data-lang="rust"><span class="w">    </span><span class="cp">#[derive(Debug)]</span><span class="w">
 </span><span class="w">    </span><span class="k">enum</span> <span class="nc">Gender</span><span class="w"> </span><span class="p">{</span><span class="w">
 </span><span class="w">        </span><span class="n">Boy</span><span class="p">,</span><span class="w">
 </span><span class="w">        </span><span class="n">Girl</span><span class="p">,</span><span class="w">
@@ -374,7 +374,7 @@ To learn more, run the <span class="nb">command</span> again with --verbose.
 <p>结构体可以把一些自定义的数据类型通过已有的类型组装成一个新的自定义数据类型，通过<code>struct</code>关键字就可以创建一个结构体，结构体字段格式<code>name:type</code>，<code>name</code>是结构体字段名，<code>type</code>是字段的类型，默认是不可变的。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -402,7 +402,7 @@ To learn more, run the <span class="nb">command</span> again with --verbose.
 </span><span class="lnt">26
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+<pre class="chroma"><code class="language-rust" data-lang="rust"><span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
 </span><span class="w">
 </span><span class="w">    </span><span class="c1">// 枚举现在取值范围
 </span><span class="c1"></span><span class="w">    </span><span class="cp">#[derive(Debug)]</span><span class="w">
@@ -413,9 +413,9 @@ To learn more, run the <span class="nb">command</span> again with --verbose.
 </span><span class="w">    
 </span><span class="w">    </span><span class="c1">// 定义一个结构体
 </span><span class="c1"></span><span class="w">    </span><span class="cp">#[derive(Debug)]</span><span class="w">
-</span><span class="w">    </span><span class="k">struct</span> <span class="nc">Programmer</span><span class="o">&lt;&#39;</span><span class="na">skill</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span><span class="w">    </span><span class="k">struct</span> <span class="nc">Programmer</span><span class="o">&lt;</span><span class="na">&#39;skill</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
 </span><span class="w">        </span><span class="n">name</span>: <span class="nb">String</span><span class="p">,</span><span class="w">
-</span><span class="w">        </span><span class="n">skill</span>: <span class="p">[</span><span class="o">&amp;&#39;</span><span class="na">skill</span><span class="w"> </span><span class="kt">str</span><span class="p">;</span><span class="w"> </span><span class="mi">3</span><span class="p">],</span><span class="w">
+</span><span class="w">        </span><span class="n">skill</span>: <span class="p">[</span><span class="o">&amp;</span><span class="na">&#39;skill</span><span class="w"> </span><span class="kt">str</span><span class="p">;</span><span class="w"> </span><span class="mi">3</span><span class="p">],</span><span class="w">
 </span><span class="w">        </span><span class="n">sex</span>: <span class="nc">Gender</span><span class="p">,</span><span class="w">
 </span><span class="w">    </span><span class="p">}</span><span class="w">
 </span><span class="w">    
@@ -426,14 +426,14 @@ To learn more, run the <span class="nb">command</span> again with --verbose.
 </span><span class="c1"></span><span class="w">        </span><span class="n">sex</span>:<span class="nc">Gender</span>::<span class="n">Boy</span><span class="p">,</span><span class="w"> </span><span class="c1">// 通过枚举限制参数类型
 </span><span class="c1"></span><span class="w">    </span><span class="p">};</span><span class="w">
 </span><span class="w">    
-</span><span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&#34;engineer = {:?}&#34;</span><span class="p">,</span><span class="n">engineer</span><span class="p">);</span><span class="w">
+</span><span class="w">    </span><span class="n">println</span><span class="o">!</span><span class="p">(</span><span class="s">&#34;engineer = {:?}&#34;</span><span class="p">,</span><span class="n">engineer</span><span class="p">);</span><span class="w">
 </span><span class="w"></span><span class="p">}</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
 </div><p>有了自定义的类型了也就是<code>struct</code>就可以通过自定义的类型来处理一些特殊的需求了，例如下面的代码定义了一个元素类型为<code>Programmer</code>长度为<code>2</code>的数组。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -452,7 +452,7 @@ To learn more, run the <span class="nb">command</span> again with --verbose.
 </span><span class="lnt">17
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">Doris</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Programmer</span><span class="w"> </span><span class="p">{</span><span class="w">
+<pre class="chroma"><code class="language-rust" data-lang="rust"><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">Doris</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Programmer</span><span class="w"> </span><span class="p">{</span><span class="w">
 </span><span class="w">        </span><span class="n">name</span>: <span class="nb">String</span>::<span class="n">from</span><span class="p">(</span><span class="s">&#34;Doris&#34;</span><span class="p">),</span><span class="w">
 </span><span class="w">        </span><span class="n">skill</span>: <span class="p">[</span><span class="s">&#34;Vue&#34;</span><span class="p">,</span><span class="s">&#34;TypeScript&#34;</span><span class="p">,</span><span class="s">&#34;JavaScript&#34;</span><span class="p">],</span><span class="w">
 </span><span class="w">        </span><span class="n">sex</span>:<span class="nc">Gender</span>::<span class="n">Girl</span><span class="p">,</span><span class="w">
@@ -467,7 +467,7 @@ To learn more, run the <span class="nb">command</span> again with --verbose.
 </span><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">employees</span>:<span class="p">[</span><span class="n">Programmer</span><span class="p">;</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">Doris</span><span class="p">,</span><span class="n">Jaco</span><span class="p">];</span><span class="w">
 </span><span class="w">    
 </span><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">employees</span><span class="p">.</span><span class="n">iter</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span><span class="w">        </span><span class="fm">println!</span><span class="p">(</span><span class="s">&#34;{:?}&#34;</span><span class="p">,</span><span class="n">e</span><span class="p">)</span><span class="w">
+</span><span class="w">        </span><span class="n">println</span><span class="o">!</span><span class="p">(</span><span class="s">&#34;{:?}&#34;</span><span class="p">,</span><span class="n">e</span><span class="p">)</span><span class="w">
 </span><span class="w">    </span><span class="p">}</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
@@ -556,7 +556,7 @@ To learn more, run the <span class="nb">command</span> again with --verbose.
             
         </nav>
     </section>
-    <script defer src="/ts/features.39c567b3af1363f8abe74bfd650f3d58cb963716b7ad4b3b53f801d3ca585599.js" data-enable-footnotes="true"></script>
+    <script defer src="/ts/features.b5555d1ae12309fd7a67c0d19ce81e7098647818f6758eb95f88ea9d550d2d2c.js" data-enable-footnotes="true"></script>
 </footer>
     </body>
 </html>
