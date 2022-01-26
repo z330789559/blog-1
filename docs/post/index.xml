@@ -6,13 +6,9 @@
     <description>Recent content in Posts on 打码匠</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 26 Jan 2022 23:26:59 +0800</lastBuildDate>
-    
-	<atom:link href="http://blog.ibyte.me/post/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Wed, 26 Jan 2022 23:26:59 +0800</lastBuildDate><atom:link href="http://blog.ibyte.me/post/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Distributed System Cap Theory</title>
+      <title>Distributed System CAP Theory</title>
       <link>http://blog.ibyte.me/post/distributed-system-cap-theory/</link>
       <pubDate>Wed, 26 Jan 2022 23:26:59 +0800</pubDate>
       
@@ -333,13 +329,16 @@ HLL的特点就是能花较低的内存占用统计海量的数据，但是缺�
       <guid>http://blog.ibyte.me/post/often-used-structured-query-languages/</guid>
       <description>概 述  在开发过程中，作为一个crud boy来说会使sql来操作数据库增删改查是必不可少的，这篇文章将写写日常开发中常用的sql语句。数据是一个抽象的的定义，所谓的数据库就是把一些元数据通过特定规律整理到一起管理起来，方便通过他特定DDL，DCL，DML这些特定的语句来方便管理数据。
  DDL (data definition languages) 方便开发者通过SQL来定义存储的数据格式，组织数据。 DML (data manipulation languages) 允许用户对数据进行create、delete、insert、updated操作。 DCL (data control languages) 可以来管理用户对数据的访问操作权限，例如检索，更新，删除 &amp;hellip;     查询语句  在日常开发过程中查询数据是应用场景最多的，查询就要使用select关键字，如下：
-1  select * from tableName;   例如有一个表结构如下：
+1  select*fromtableName;  例如有一个表结构如下：
 上面是查询整张表的所有字段数据，如果需要筛选就需要制定其field name如下：
-1  select name as &amp;#34;用户名&amp;#34; from TableName;   并且上面使用了as关键字并进行了别名，查询出来数据就按照别名进行展示。
+1  selectnameas&amp;#34;用户名&amp;#34;fromTableName;  并且上面使用了as关键字并进行了别名，查询出来数据就按照别名进行展示。
 如果想查询指定的数据,就要使用where子语句，如下：
-1  select * from TableName where ID = 1;   那么上的SQL语句查询出来的结果就是上图中ID等于1的一条数据。
+1  select*fromTableNamewhereID=1;  那么上的SQL语句查询出来的结果就是上图中ID等于1的一条数据。
 如果需要整理结果集去重复的话在前面加入distinct关键字，就可以去重了。
-   查询过滤  有时候我们通过条件查询到的数据需要进行其他筛选，这个时候我们就要使用到limit或者order by进行过滤或者重新整理了。</description>
+   查询过滤  有时候我们通过条件查询到的数据需要进行其他筛选，这个时候我们就要使用到limit或者order by进行过滤或者重新整理了。
+例如我要查询表中年龄最小那个用户的名字，这里不排除年龄是重复的情况，如下：
+1  selectusernamefromTableNameorderbyagedesclimit1;  上面就是对 age进行降序然后取一条数据。
+1  select*fromTableNameorderbyageASC;  对表进行按照age升序排序整理输出结果。</description>
     </item>
     
     <item>
@@ -367,7 +366,7 @@ HLL的特点就是能花较低的内存占用统计海量的数据，但是缺�
       <guid>http://blog.ibyte.me/post/rust-lifetime/</guid>
       <description>lifetime寿命  Rust中的每一个引用都有一个有效的作用域，生命周期就是为这个作用域服务的，大部分生命周期编译器可以推断出来，可以是隐式的。但是如果在某些情况下编译器就无法正常推断出来了，需要我们自己手动标注，标注生命周期语法就是&#39;a这样的语法。
    为什么需要生命周期？  例如下面例子就是在两个字符串切片里面查找最长的那个并且返回！
-1 2 3 4 5 6 7 8  // &amp;#39;a 是指3个引用的作用域生命周期要一致 fn find_long_str&amp;lt;&amp;#39;a&amp;gt;(x: &amp;amp;&amp;#39;astr,y: &amp;amp;&amp;#39;astr)-&amp;gt; &amp;amp;&amp;#39;astr{ifx.len()&amp;gt;y.len(){x}else{y}}  上面我就加注了生命周期标识符，如果不加编译器会报错，原因是因为我们这个函数引用的是外部的变量，不能确定引用的变量是否已经被销毁了，那这样就是悬垂引用！
+1 2 3 4 5 6 7 8  // &amp;#39;a 是指3个引用的作用域生命周期要一致 fn find_long_str&amp;lt;&amp;#39;a&amp;gt;(x: &amp;amp;&amp;#39;a str,y: &amp;amp;&amp;#39;a str)-&amp;gt; &amp;amp;&amp;#39;a str {ifx.len()&amp;gt;y.len(){x}else{y}}  上面我就加注了生命周期标识符，如果不加编译器会报错，原因是因为我们这个函数引用的是外部的变量，不能确定引用的变量是否已经被销毁了，那这样就是悬垂引用！
 1 2 3 4 5 6 7 8 9 10  letstr1=String::from(&amp;#34;Hello&amp;#34;);letstr2;letresult;{//let str2 = String::from(&amp;#34; World!&amp;#34;); str2=String::from(&amp;#34; World!&amp;#34;);result=find_long_str(str1.as_str(),&amp;amp;str2);}// 这里借用检测就提示 引用了已经销毁的资源了 println!(&amp;#34;{}&amp;#34;,result);  加了生命周期标识符之后，如果我把let str2 = String::from(&amp;quot; World!&amp;quot;);取消注释放在一个内部作用域里面定义，那么这时调用 find_long_str编译器就会报错，因为我在下面出了作用域还使用了find_long_str返回的结果，而这个结果可能就是str2的内容， 使用这个是违反了所有权规则的，str2离开内部作用域就被销毁了。
 在标注生命周期fn find_long_str&amp;lt;&#39;a&amp;gt;(x: &amp;amp;&#39;a str, y: &amp;amp;&#39;a str) -&amp;gt; &amp;amp;&#39;a str之后编译器就知道输入参数和返回参数生命周期是要一致的，并且返回值生命周期肯定是取生命周期最短的那个的。</description>
     </item>
@@ -446,7 +445,7 @@ storage接口  1 2 3 4 5 6 7 8 9  package sessionx // session storage interface 
  基于 DB 的唯一索引 基于 Memcached的 add 命令 基于 Zookeeper 的临时有序节点 基于 Redis 的NX EX 基于Chubby粗粒度分布式锁服务     Redis的坑你填了几个？   如果在分布式场景中，实现不同客户端的线程对代码和资源的同步访问，保证在多线程下处理共享数据的安全性，就需要用到分布式锁技术，我就来写写基于Redis的一些坑😁。
  在分布式时，在程序中修改已有数据时，需要先读取，然后进行修改保存，此时很容易遇到并发问题。由于修改和保存不是原子操作，在并发场景下，部分对数据的操作可能会丢失，本地锁无法在多个服务器之间生效，这时候保证数据的一致性就需要分布式锁来实现。
 Redis 锁主要利用 Redis 的 setnx 命令实现，
- 加锁命令：SETNX key value，当键不存在时，对键进行设置操作并返回成功，否则返回失败,KEY 是锁的唯一标识，一般按业务来决定命名。 解锁命令：DEL key，通过删除键值对释放锁，以便其他线程可以通过 SETNX 命令来获取锁。 锁超时：EXPIRE key timeout, 设置 key 的超时时间，以保证即使锁没有被显式释放，锁也可以在一定时间后自动释放，避免资源被永远锁住。  1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20  // 伪代码实现 fn main(){letkey: &amp;amp;&amp;#39;staticstr=&amp;#34;sync_lock&amp;#34;;ifup_lock(key,1)==1{// 设置超时 expire(key,30)// .</description>
+ 加锁命令：SETNX key value，当键不存在时，对键进行设置操作并返回成功，否则返回失败,KEY 是锁的唯一标识，一般按业务来决定命名。 解锁命令：DEL key，通过删除键值对释放锁，以便其他线程可以通过 SETNX 命令来获取锁。 锁超时：EXPIRE key timeout, 设置 key 的超时时间，以保证即使锁没有被显式释放，锁也可以在一定时间后自动释放，避免资源被永远锁住。  1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20  // 伪代码实现 fn main(){letkey: &amp;amp;&amp;#39;static str =&amp;#34;sync_lock&amp;#34;;ifup_lock(key,1)==1{// 设置超时 expire(key,30)// .</description>
     </item>
     
     <item>

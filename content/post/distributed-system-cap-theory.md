@@ -1,5 +1,5 @@
 ---
-title: "Distributed System Cap Theory"
+title: "Distributed System CAP Theory"
 date: 2022-01-26T23:26:59+08:00
 ---
 ## 前言

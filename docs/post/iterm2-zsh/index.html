@@ -63,7 +63,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="https://avatars.githubusercontent.com/u/38412458?v=4" />
     
     
-    <link rel="stylesheet" href="/sass/main.min.85d2dd3a54e29956009c7c48e5f5d4bc22b6af329dc58a4fc8919e8c12720daa.css">
+    <link rel="stylesheet" href="/sass/main.min.3b60735c96f5faa623d75aceae8ee0a0c7d19f76a3eed0574c61f7253a4eeb3d.css">
     
 </head>
     <script>
@@ -177,19 +177,19 @@
 <p><strong>1. 第一步安装<code>iTerm2</code>，如果你已经安装了<code>brew</code>软件包管理工具，可以执行下面命令：</strong></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">brew install iterm2
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">brew install iterm2
 </code></pre></td></tr></table>
 </div>
 </div><p>如果你没有安装<code>brew</code>工具，你可以执行下面命令进行安装：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">/bin/bash -c <span class="s2">&#34;</span><span class="k">$(</span>curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh<span class="k">)</span><span class="s2">&#34;</span>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">/bin/bash -c <span class="s2">&#34;</span><span class="k">$(</span>curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh<span class="k">)</span><span class="s2">&#34;</span>
 </code></pre></td></tr></table>
 </div>
 </div><p>但是这里有问题的，那就是大家懂得<code>网络问题</code>，可能<code>dns</code>污染，不能正常访问到<code>GitHub</code>，如果你是<code>Mac</code>用户把你的<code>dns</code>设置为<code>8.8.8.8</code>，如下图：</p>
@@ -208,12 +208,12 @@
 <p>通过终端回到你用户根目录，执行下面命令：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">mkdir ~/.iterm2 <span class="o">&amp;&amp;</span> <span class="nb">cd</span> ~/.iterm2
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">mkdir ~/.iterm2 <span class="o">&amp;&amp;</span> <span class="nb">cd</span> ~/.iterm2
 
 git clone https://github.com/mbadolato/iTerm2-Color-Schemes
 </code></pre></td></tr></table>
@@ -247,12 +247,12 @@ git clone https://github.com/mbadolato/iTerm2-Color-Schemes
 <p>这个字体项目地址：<code>https://github.com/ryanoasis/nerd-fonts</code>，你可以看着说明自己配。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">brew tap homebrew/cask-fonts
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">brew tap homebrew/cask-fonts
 
 brew install --cask font-hack-nerd-font
 </code></pre></td></tr></table>
@@ -277,21 +277,21 @@ brew install --cask font-hack-nerd-font
 <p>安装<code>zsh</code>很容易一条命令即可：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">brew install zsh
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">brew install zsh
 </code></pre></td></tr></table>
 </div>
 </div><p>然后需要把默认的<code>shell</code>更改成<code>zsh</code>：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">sudo sh -c <span class="s2">&#34;echo </span><span class="k">$(</span>which zsh<span class="k">)</span><span class="s2"> &gt;&gt; /etc/shells&#34;</span>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">sudo sh -c <span class="s2">&#34;echo </span><span class="k">$(</span>which zsh<span class="k">)</span><span class="s2"> &gt;&gt; /etc/shells&#34;</span>
 
 chsh -s <span class="k">$(</span>which zsh<span class="k">)</span>
 </code></pre></td></tr></table>
@@ -299,10 +299,10 @@ chsh -s <span class="k">$(</span>which zsh<span class="k">)</span>
 </div><p>中途可能需要密码，你需要输入你的<code>root</code>密码，剩下就是安装<code>oh-my-zsh</code>，它可以帮你管理配置<code>zsh</code>，执行下面命令：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">sh -c <span class="s2">&#34;</span><span class="k">$(</span>curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh<span class="k">)</span><span class="s2">&#34;</span>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">sh -c <span class="s2">&#34;</span><span class="k">$(</span>curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh<span class="k">)</span><span class="s2">&#34;</span>
 </code></pre></td></tr></table>
 </div>
 </div><p><img loading="lazy" 
@@ -329,28 +329,28 @@ chsh -s <span class="k">$(</span>which zsh<span class="k">)</span>
 <p>你只需要把这个主题项目下载到本机，然后配置到你配置文件里面，命令如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">git clone https://github.com/bhilburn/powerlevel9k.git ~/.oh-my-zsh/custom/themes/powerlevel9k
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">git clone https://github.com/bhilburn/powerlevel9k.git ~/.oh-my-zsh/custom/themes/powerlevel9k
 </code></pre></td></tr></table>
 </div>
 </div><p>然后改配置文件里面的主题目录：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">ZSH_THEME</span><span class="o">=</span><span class="s2">&#34;powerlevel9k/powerlevel9k&#34;</span>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">ZSH_THEME</span><span class="o">=</span><span class="s2">&#34;powerlevel9k/powerlevel9k&#34;</span>
 </code></pre></td></tr></table>
 </div>
 </div><p>你们可以自定义，你只需要配置配置正确即可，使用 <code>source</code> 命令生效配置，刷新环境变量：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nb">source</span> ~/.zshrc
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="nb">source</span> ~/.zshrc
 </code></pre></td></tr></table>
 </div>
 </div><p><img loading="lazy" 
@@ -457,7 +457,7 @@ chsh -s <span class="k">$(</span>which zsh<span class="k">)</span>
             
         </nav>
     </section>
-    <script defer src="/ts/features.b5555d1ae12309fd7a67c0d19ce81e7098647818f6758eb95f88ea9d550d2d2c.js" data-enable-footnotes="true"></script>
+    <script defer src="/ts/features.39c567b3af1363f8abe74bfd650f3d58cb963716b7ad4b3b53f801d3ca585599.js" data-enable-footnotes="true"></script>
 </footer>
     </body>
 </html>

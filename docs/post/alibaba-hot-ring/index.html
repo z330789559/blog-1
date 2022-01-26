@@ -63,7 +63,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="https://avatars.githubusercontent.com/u/38412458?v=4" />
     
     
-    <link rel="stylesheet" href="/sass/main.min.85d2dd3a54e29956009c7c48e5f5d4bc22b6af329dc58a4fc8919e8c12720daa.css">
+    <link rel="stylesheet" href="/sass/main.min.3b60735c96f5faa623d75aceae8ee0a0c7d19f76a3eed0574c61f7253a4eeb3d.css">
     
 </head>
     <script>
@@ -301,7 +301,7 @@
     alt="插入操作" 
      /></p>
 <p><code>Update</code> 和 <code>Insertion</code> 并发引发的数据丢失，怎么看这个图，假设<code>B</code>为热点数据，程序每次找的<code>B</code>必须经过<code>A</code>，因为<code>A</code>在环路上是在<code>B</code>前面，那么<code>访问B多少次A就是多少次</code>，那么这个不是理想的，那就让<code>hard</code>指针指向<code>A</code>让<code>B</code>之间没有其他的值。</p>
-<p>在链<code>A-&gt;B-&gt;D</code>上，线程<code>1</code>进行插入<code>C</code>的操作，同时线程<code>2</code>进行<code>RCU</code>更新<code>B</code>的操作，尝试更新为<code>B</code>&rsquo;。线程<code>1</code>修改B的指针指向<code>C</code>，完成插入。而线程<code>2</code>修改<code>A</code>的指针指向<code>B</code>'完成更新。两个线程并发修改不同的内存，均可成功返回。但是这时遍历整条链<code>(A-&gt;B'-&gt;D)</code>，将发现<code>C</code>无法被遍历到，导致正确性问题。当线程<code>2</code>更新<code>B</code>时，首先需要将<code>B</code>的<code>Occupied</code>标志位置位。线程<code>1</code>插入<code>C</code>需要修改<code>B</code>的指针(<code>Next Item Address</code>)，若发现<code>Occupied</code>标志位已置位，则需要重新遍历链表，尝试插入，通过使并发操作竞争修改同一内存地址，保证并发操作的正确性，利用相同原理保证了头指针移动操作，与<code>CRUD</code>操作的并发正确性，因此实现了<code>HotRing</code>的无锁并发访问。</p>
+<p>在链<code>A-&gt;B-&gt;D</code>上，线程<code>1</code>进行插入<code>C</code>的操作，同时线程<code>2</code>进行<code>RCU</code>更新<code>B</code>的操作，尝试更新为<code>B</code>'。线程<code>1</code>修改B的指针指向<code>C</code>，完成插入。而线程<code>2</code>修改<code>A</code>的指针指向<code>B</code>&lsquo;完成更新。两个线程并发修改不同的内存，均可成功返回。但是这时遍历整条链<code>(A-&gt;B'-&gt;D)</code>，将发现<code>C</code>无法被遍历到，导致正确性问题。当线程<code>2</code>更新<code>B</code>时，首先需要将<code>B</code>的<code>Occupied</code>标志位置位。线程<code>1</code>插入<code>C</code>需要修改<code>B</code>的指针(<code>Next Item Address</code>)，若发现<code>Occupied</code>标志位已置位，则需要重新遍历链表，尝试插入，通过使并发操作竞争修改同一内存地址，保证并发操作的正确性，利用相同原理保证了头指针移动操作，与<code>CRUD</code>操作的并发正确性，因此实现了<code>HotRing</code>的无锁并发访问。</p>
 <p><strong>更多细节自己去看论文吧，上面部分总结。</strong></p>
 <h2 id="论文资料">
     <a href="#%e8%ae%ba%e6%96%87%e8%b5%84%e6%96%99" class="anchor">
@@ -389,7 +389,7 @@
             
         </nav>
     </section>
-    <script defer src="/ts/features.b5555d1ae12309fd7a67c0d19ce81e7098647818f6758eb95f88ea9d550d2d2c.js" data-enable-footnotes="true"></script>
+    <script defer src="/ts/features.39c567b3af1363f8abe74bfd650f3d58cb963716b7ad4b3b53f801d3ca585599.js" data-enable-footnotes="true"></script>
 </footer>
     </body>
 </html>
