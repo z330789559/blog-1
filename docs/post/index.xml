@@ -6,7 +6,21 @@
     <description>Recent content in Posts on 打码匠</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 26 Jan 2022 23:26:59 +0800</lastBuildDate><atom:link href="http://blog.ibyte.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 05 Feb 2022 23:09:23 +0800</lastBuildDate><atom:link href="http://blog.ibyte.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Gws Design Instruction</title>
+      <link>http://blog.ibyte.me/post/gws-design-instruction/</link>
+      <pubDate>Sat, 05 Feb 2022 23:09:23 +0800</pubDate>
+      
+      <guid>http://blog.ibyte.me/post/gws-design-instruction/</guid>
+      <description>各位新年快乐，这几天把之前写的一个session库重构了一下，顺便写一下升级和使用说明，如果你是一个萌新Gopher，可以看看源代码可以帮助你对Go编码技能提升，源代码也就不到800行左右，如果对你有帮助点一个star⭐️，谢谢🤗 ~
+  https://github.com/auula/gws     GWS  Go&amp;rsquo;s web session library.
+    介 绍  GWS是一个Go语言实现的WEB会话库，支持本地会话存储，也支持Redis远程服务器分布式存储，并且为了可扩展存储实现，预留工厂，方便开发者自定义实现存储来保存会话数据。
+   安 装  开发者你只需要安装本库到你到项目里面，在你的项目里面执行下面命令即可安装：
+1  go get -u github.com/auula/gws      使用示例  首先要声明一点，gws是支持多种存储介质保存session数据的，你可以自定义实现gws.Storage存储接口，来使用你自定义存储，接口代码如下:
+1 2 3 4 5 6 7 8 9 10  // Storage global session data store interface. // You can customize the storage medium by implementing this interface.</description>
+    </item>
+    
     <item>
       <title>Distributed System CAP Theory</title>
       <link>http://blog.ibyte.me/post/distributed-system-cap-theory/</link>
