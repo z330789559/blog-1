@@ -6,7 +6,26 @@
     <description>Recent content in Posts on 打码匠</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 05 Feb 2022 23:09:23 +0800</lastBuildDate><atom:link href="http://blog.ibyte.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 07 Feb 2022 19:42:49 +0800</lastBuildDate><atom:link href="http://blog.ibyte.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>GWS System Design</title>
+      <link>http://blog.ibyte.me/post/gws-system-design/</link>
+      <pubDate>Mon, 07 Feb 2022 19:42:49 +0800</pubDate>
+      
+      <guid>http://blog.ibyte.me/post/gws-system-design/</guid>
+      <description>概 述  前面一篇文章我介绍了如何使用gws来管理的你的session，但是目前session总体我自己code review下来发现了一些分布式系统才会出现的数据一致性问题，这个我会在本文里面介绍一下，并且会给出解决方案，在一下版本里面解决。
+本篇文章我主讲单机的实现和总体gws一些设计相关的内容，本文会从什么是session？为什么要有session？session怎么工作的？gws是如何管理session的？这些方面来全面剖析具体的实现，并且在文末介绍任何解决分布式场景下数据不一致的问题。
+   session是什么？  提姆·柏內茲-李於1989年在歐洲核子研究組織所发明了HTTP协议，由于在设计之初就是无状态的，客户端和服务器通讯，服务器是无法确认请求是从哪个客户端发过来的，当我们向服务器发送请求后，服务器解析此请求，然后返回对应的响应，服务器负责完成整个过程。 这个过程是完全独立的，服务器不会记录前后状态的变化，也就是缺少状态记录，所以有了session这个概念，session会借助浏览器的cookie来配合客户端和服务器之间的身份鉴权工作，我不会去讲一些细节，了解这些不管你是前端工程师还是后端工程师，这些基础知识必须掌握的，只有你知道它工作机制了，你才能动手去解决问题，当然API操作员可以不需要了解。。
+   session请求过程  当浏览器打开我们编写的服务的时候，如果这个请求是第一次过来，gws会去查询请求里面的sessionid，如果没有这个session数据，会马上生成一个sessionid并且在存储介质上创建一个会话数据保存，然后通知浏览器告诉下次请求带上sessionid方便浏览器和服务器之间鉴权工作。
+   gws如何设计的  GWS在设计的时候就考虑到要支持多种存储，然后对外调用者暴露的就是GetSession函数，或者内置的NewSession这两个函数，具体的实现可以去看源代码，只能通过这两个函数得到Session操作对象，防止开发者自定义创建，必须按照gws规则来。
+GetSession层负责从request里面解析得到具体的session，具体存储实现也是通过接口分离的，具体实现要看具体的Session的gws.Storage的接口了，让第三方开发者方便实现自己的存储介质，单机存储是没有什么技术含量的，重点是分布式这一块。
+   分布式会话  当我们单个应用节点，不能很好支持业务发展的时候，往往大部分系统都会往分布式系统架构发展，例如最简单解决方案就是NGINX加Web Service组成一个大规模负载均衡集群，虽然NGINX解决了c10k问题了，但是分布式会话问题又来了，这就是为什么要需要分布式会话共享，一个浏览器请求打过来，可能被NGINX负载均衡算法打到不同的应用节点上，这时就带来来了分布式共享会话问题。
+gws虽然提供了redis去共享会话数据问题，但是或者自定义数据共享存储实现，但是只要是分布式系统，又会引入数据不一致问题，看下面这张图：
+看上图黄色部分，我们有客户端请求同时去请求服务器，当然这个情况很少见，但是不是不可能出现的，拿到的数据session相同的，但是红色部分，客户端（这个客户端不单是指定是浏览器，也可能是gws里面的存储层实现的客户端），然后去设置存储服务器，如果没有分布式锁控制的话，马上数据会被后面哪一个覆盖掉。
+针对分布式数据竞争问题，要么引入分布式数据一致性算法，要么引入一个公共的分布式锁签发服务器，当然如果你可以在session保存一些不常用的数据信息，只是一个标识符鉴权问题不去存储强一致性的数据，可以允许数据不一致情况，可以去缓解数据不一致带来的数据不一致问题，针对这个问题，我准备在后面的实现加入版本控制和续租，也就是每个session里面有一条唯一的版本信息，类似于git那样的设计。
+   小 结  不要看就一个就一个session问题，如果牵扯到分布式系统设计问题，又是一个很大的问题，如果能解决分布式session数据一致性问题，去实现一个分布式会话控制中心，也是一个不错的想法，希望本篇文章能帮助到读者，另外gws后面会持续更新中，有什么想法朋友可以关注一下https://github.com/auula/gws这个项目，本项目使用go语言实现，目前来看还是一个go的session库，但是笔者后面想发展成一个分布式会话管理器项目。</description>
+    </item>
+    
     <item>
       <title>Gws Design Instruction</title>
       <link>http://blog.ibyte.me/post/gws-design-instruction/</link>

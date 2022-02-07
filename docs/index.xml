@@ -5,7 +5,105 @@
     <description>Recent content on 打码匠</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 05 Feb 2022 23:09:23 +0800</lastBuildDate><atom:link href="http://blog.ibyte.me/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 07 Feb 2022 19:42:49 +0800</lastBuildDate><atom:link href="http://blog.ibyte.me/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+    <title>GWS System Design</title>
+    <link>http://blog.ibyte.me/post/gws-system-design/</link>
+    <pubDate>Mon, 07 Feb 2022 19:42:49 +0800</pubDate>
+    
+    <guid>http://blog.ibyte.me/post/gws-system-design/</guid>
+    <description>
+        &lt;h2 id=&#34;概-述&#34;&gt;
+    &lt;a href=&#34;#%e6%a6%82-%e8%bf%b0&#34; class=&#34;anchor&#34;&gt;
+        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;
+            &lt;path fill-rule=&#34;evenodd&#34;
+                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;
+            &lt;/path&gt;
+        &lt;/svg&gt;
+    &lt;/a&gt;
+    概 述
+&lt;/h2&gt;
+&lt;p&gt;前面一篇文章我介绍了如何使用&lt;code&gt;gws&lt;/code&gt;来管理的你的&lt;code&gt;session&lt;/code&gt;，但是目前&lt;code&gt;session&lt;/code&gt;总体我自己&lt;code&gt;code review&lt;/code&gt;下来发现了一些分布式系统才会出现的数据一致性问题，这个我会在本文里面介绍一下，并且会给出解决方案，在一下版本里面解决。&lt;/p&gt;
+&lt;p&gt;本篇文章我主讲单机的实现和总体&lt;code&gt;gws&lt;/code&gt;一些设计相关的内容，本文会从什么是&lt;code&gt;session&lt;/code&gt;？为什么要有&lt;code&gt;session&lt;/code&gt;？&lt;code&gt;session&lt;/code&gt;怎么工作的？&lt;code&gt;gws&lt;/code&gt;是如何管理&lt;code&gt;session&lt;/code&gt;的？这些方面来全面剖析具体的实现，并且在文末介绍任何解决分布式场景下数据不一致的问题。&lt;/p&gt;
+&lt;h2 id=&#34;session是什么&#34;&gt;
+    &lt;a href=&#34;#session%e6%98%af%e4%bb%80%e4%b9%88&#34; class=&#34;anchor&#34;&gt;
+        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;
+            &lt;path fill-rule=&#34;evenodd&#34;
+                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;
+            &lt;/path&gt;
+        &lt;/svg&gt;
+    &lt;/a&gt;
+    session是什么？
+&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;提姆·柏內茲-李於&lt;/code&gt;1989年在歐洲核子研究組織所发明了&lt;code&gt;HTTP&lt;/code&gt;协议，由于在设计之初就是无状态的，客户端和服务器通讯，服务器是无法确认请求是从哪个客户端发过来的，当我们向服务器发送请求后，服务器解析此请求，然后返回对应的响应，服务器负责完成整个过程。 这个过程是完全独立的，服务器不会记录前后状态的变化，也就是缺少状态记录，所以有了&lt;code&gt;session&lt;/code&gt;这个概念，&lt;code&gt;session&lt;/code&gt;会借助浏览器的&lt;code&gt;cookie&lt;/code&gt;来配合客户端和服务器之间的身份鉴权工作，我不会去讲一些细节，了解这些不管你是前端工程师还是后端工程师，这些基础知识必须掌握的，只有你知道它工作机制了，你才能动手去解决问题，当然&lt;code&gt;API&lt;/code&gt;操作员可以不需要了解。。&lt;/p&gt;
+&lt;h2 id=&#34;session请求过程&#34;&gt;
+    &lt;a href=&#34;#session%e8%af%b7%e6%b1%82%e8%bf%87%e7%a8%8b&#34; class=&#34;anchor&#34;&gt;
+        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;
+            &lt;path fill-rule=&#34;evenodd&#34;
+                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;
+            &lt;/path&gt;
+        &lt;/svg&gt;
+    &lt;/a&gt;
+    session请求过程
+&lt;/h2&gt;
+&lt;p&gt;当浏览器打开我们编写的服务的时候，如果这个请求是第一次过来，&lt;code&gt;gws&lt;/code&gt;会去查询请求里面的&lt;code&gt;sessionid&lt;/code&gt;，如果没有这个&lt;code&gt;session&lt;/code&gt;数据，会马上生成一个&lt;code&gt;sessionid&lt;/code&gt;并且在存储介质上创建一个会话数据保存，然后通知浏览器告诉下次请求带上&lt;code&gt;sessionid&lt;/code&gt;方便浏览器和服务器之间鉴权工作。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gz53tu399mj317g0u0dhe.jpg&#34; 
+    alt=&#34;一个请求过程&#34; 
+     /&gt;&lt;/p&gt;
+&lt;h2 id=&#34;gws如何设计的&#34;&gt;
+    &lt;a href=&#34;#gws%e5%a6%82%e4%bd%95%e8%ae%be%e8%ae%a1%e7%9a%84&#34; class=&#34;anchor&#34;&gt;
+        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;
+            &lt;path fill-rule=&#34;evenodd&#34;
+                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;
+            &lt;/path&gt;
+        &lt;/svg&gt;
+    &lt;/a&gt;
+    gws如何设计的
+&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;GWS&lt;/code&gt;在设计的时候就考虑到要支持多种存储，然后对外调用者暴露的就是&lt;code&gt;GetSession&lt;/code&gt;函数，或者内置的&lt;code&gt;NewSession&lt;/code&gt;这两个函数，具体的实现可以去看源代码，只能通过这两个函数得到&lt;code&gt;Session&lt;/code&gt;操作对象，防止开发者自定义创建，必须按照&lt;code&gt;gws&lt;/code&gt;规则来。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gz53y33hzwj317g0u00un.jpg&#34; 
+    alt=&#34;GWS层次架构图&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;GetSession&lt;/code&gt;层负责从&lt;code&gt;request&lt;/code&gt;里面解析得到具体的&lt;code&gt;session&lt;/code&gt;，具体存储实现也是通过接口分离的，具体实现要看具体的&lt;code&gt;Session&lt;/code&gt;的&lt;code&gt;gws.Storage&lt;/code&gt;的接口了，让第三方开发者方便实现自己的&lt;code&gt;存储介质&lt;/code&gt;，单机存储是没有什么技术含量的，重点是分布式这一块。&lt;/p&gt;
+&lt;h2 id=&#34;分布式会话&#34;&gt;
+    &lt;a href=&#34;#%e5%88%86%e5%b8%83%e5%bc%8f%e4%bc%9a%e8%af%9d&#34; class=&#34;anchor&#34;&gt;
+        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;
+            &lt;path fill-rule=&#34;evenodd&#34;
+                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;
+            &lt;/path&gt;
+        &lt;/svg&gt;
+    &lt;/a&gt;
+    分布式会话
+&lt;/h2&gt;
+&lt;p&gt;当我们单个应用节点，不能很好支持业务发展的时候，往往大部分系统都会往分布式系统架构发展，例如最简单解决方案就是&lt;code&gt;NGINX&lt;/code&gt;加&lt;code&gt;Web Service&lt;/code&gt;组成一个大规模负载均衡集群，虽然&lt;code&gt;NGINX&lt;/code&gt;解决了&lt;code&gt;c10k&lt;/code&gt;问题了，但是分布式会话问题又来了，这就是为什么要需要分布式会话共享，一个浏览器请求打过来，可能被&lt;code&gt;NGINX&lt;/code&gt;负载均衡算法打到不同的应用节点上，这时就带来来了分布式共享会话问题。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gz55f5phqwj31890u0mz6.jpg&#34; 
+    alt=&#34;分布式会话&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;gws&lt;/code&gt;虽然提供了&lt;code&gt;redis&lt;/code&gt;去共享会话数据问题，但是或者自定义数据共享存储实现，但是只要是分布式系统，又会引入数据不一致问题，看下面这张图：&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/008i3skNgy1gz55w2lpn2j31890u041e.jpg&#34; 
+    alt=&#34;分布式会话数据竞争&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;看上图黄色部分，我们有客户端请求同时去请求服务器，当然这个情况很少见，但是不是不可能出现的，拿到的数据&lt;code&gt;session&lt;/code&gt;相同的，但是红色部分，客户端（这个客户端不单是指定是浏览器，也可能是&lt;code&gt;gws&lt;/code&gt;里面的存储层实现的客户端），然后去设置存储服务器，如果没有分布式锁控制的话，马上数据会被后面哪一个覆盖掉。&lt;/p&gt;
+&lt;p&gt;针对分布式数据竞争问题，要么引入分布式数据一致性算法，要么引入一个公共的分布式锁签发服务器，当然如果你可以在&lt;code&gt;session&lt;/code&gt;保存一些不常用的数据信息，只是一个标识符鉴权问题不去存储强一致性的数据，可以允许数据不一致情况，可以去缓解数据不一致带来的数据不一致问题，针对这个问题，我准备在后面的实现加入版本控制和续租，也就是每个&lt;code&gt;session&lt;/code&gt;里面有一条唯一的版本信息，类似于&lt;code&gt;git&lt;/code&gt;那样的设计。&lt;/p&gt;
+&lt;h2 id=&#34;小-结&#34;&gt;
+    &lt;a href=&#34;#%e5%b0%8f-%e7%bb%93&#34; class=&#34;anchor&#34;&gt;
+        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;
+            &lt;path fill-rule=&#34;evenodd&#34;
+                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;
+            &lt;/path&gt;
+        &lt;/svg&gt;
+    &lt;/a&gt;
+    小 结
+&lt;/h2&gt;
+&lt;p&gt;不要看就一个就一个&lt;code&gt;session&lt;/code&gt;问题，如果牵扯到分布式系统设计问题，又是一个很大的问题，如果能解决分布式&lt;code&gt;session&lt;/code&gt;数据一致性问题，去实现一个&lt;code&gt;分布式会话&lt;/code&gt;控制中心，也是一个不错的想法，希望本篇文章能帮助到读者，另外&lt;code&gt;gws&lt;/code&gt;后面会持续更新中，有什么想法朋友可以关注一下&lt;code&gt;https://github.com/auula/gws&lt;/code&gt;这个项目，本项目使用&lt;code&gt;go&lt;/code&gt;语言实现，目前来看还是一个&lt;code&gt;go&lt;/code&gt;的&lt;code&gt;session&lt;/code&gt;库，但是笔者后面想发展成一个分布式会话管理器项目。&lt;/p&gt;
+
+    </description>
+    </item>
+    
     <item>
     <title>Gws Design Instruction</title>
     <link>http://blog.ibyte.me/post/gws-design-instruction/</link>

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="theme-color" content="dark">
+    <title>GWS System Design | 打码匠</title>
+
+    
+    
+    
+    <meta property="og:site_name" content="打码匠 | ibyte.me" />
+    <meta property="og:title" content="GWS System Design | 打码匠"/>
+    <meta itemprop="name" content="GWS System Design | 打码匠" />
+    <meta name="twitter:title" content="GWS System Design | 打码匠" />
+    <meta name="application-name" content="GWS System Design | 打码匠" />
+
+
+    <meta name="description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles." />
+    <meta name="twitter:description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles."/>
+    <meta itemprop="description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles."/>
+    <meta property="og:description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles." />
+
+    
+
+<meta property="og:type" content="article" />
+<meta property="article:publisher" content="Leon Ding" />
+<meta property="og:article:published_time" content=2022-02-07T19:42:49&#43;0800 />
+<meta property="article:published_time" content=2022-02-07T19:42:49&#43;0800 />
+
+
+
+
+
+<script defer type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "Article",
+    "headline": "GWS System Design",
+    "author": {
+      "@type": "Person",
+      "name": "Leon Ding"
+    },
+    "datePublished": "2022-02-07",
+    "description": "",
+    "wordCount":  22 ,
+    "mainEntityOfPage": "True",
+    "dateModified": "2022-02-07",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Leon Ding",
+      "logo": {
+        "@type": "imageObject",
+        "url": "http:\/\/blog.ibyte.me\/favicon.ico"
+      }
+    }
+  }
+</script>
+
+
+    <link rel="shortcut icon" type="image/x-icon" href="https://avatars.githubusercontent.com/u/38412458?v=4" />
+    
+    
+    <link rel="stylesheet" href="/sass/main.min.3b60735c96f5faa623d75aceae8ee0a0c7d19f76a3eed0574c61f7253a4eeb3d.css">
+    
+</head>
+    <script>
+    (function() {
+        const colorSchemeKey = 'ThemeColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.userColorScheme = 'dark';
+        } else {
+            document.documentElement.dataset.userColorScheme = 'light';
+        }
+    })();
+</script>
+
+    <body class="dark">
+        <nav class="navbar">
+    <div class="container">
+        <div class="flex">
+            <div>
+                <a class="brand" href="/">
+                    
+                    
+                        <img src="https://avatars.githubusercontent.com/u/38412458?v=4" />
+                    
+                    打码匠
+                    </a>
+            </div>
+            <div class="flex">
+                
+                <a href="https://www.ibyte.me/">🏡 Home</a>
+                
+                <a href="/articles/">📚 Articles</a>
+                
+                <button id="dark-mode-button">
+                  <svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path fill="#FFD983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163 0 1 0 1.643 1.641a1.163 1.163 0 0 0-1.643-1.641zm-16.022 14.38a1.74 1.74 0 0 0 0 2.465a1.742 1.742 0 1 0 0-2.465zm13.968-2.147a2.904 2.904 0 0 1-4.108 0a2.902 2.902 0 0 1 0-4.107a2.902 2.902 0 0 1 4.108 0a2.902 2.902 0 0 1 0 4.107z" fill="#FFCC4D"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)" /></svg>
+                  <svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path fill="#FFD983" d="M16 2s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2V2zm18 14s2 0 2 2s-2 2-2 2h-2s-2 0-2-2s2-2 2-2h2zM4 16s2 0 2 2s-2 2-2 2H2s-2 0-2-2s2-2 2-2h2zm5.121-8.707s1.414 1.414 0 2.828s-2.828 0-2.828 0L4.878 8.708s-1.414-1.414 0-2.829c1.415-1.414 2.829 0 2.829 0l1.414 1.414zm21 21s1.414 1.414 0 2.828s-2.828 0-2.828 0l-1.414-1.414s-1.414-1.414 0-2.828s2.828 0 2.828 0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828l-1.414 1.414zM16 32s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2v-2z"/><circle fill="#FFD983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)" /></svg>
+                </button>
+            </div>
+            </div>
+    </div>
+</nav>
+        <main>
+            
+<div class="container">
+    <article>
+        <header class="article-header">
+            <div class="thumb">
+                <div>
+                    <h1>GWS System Design</h1>
+                    <div class="post-meta">
+                        <div>
+                            
+                            
+                              
+                            
+                            By Leon Ding | <time>February 07, 2022</time>
+                            | 1 minutes
+                        </div>
+                        <div class="tags">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </article>
+
+    <div class="article-post">
+    <h2 id="概-述">
+    <a href="#%e6%a6%82-%e8%bf%b0" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    概 述
+</h2>
+<p>前面一篇文章我介绍了如何使用<code>gws</code>来管理的你的<code>session</code>，但是目前<code>session</code>总体我自己<code>code review</code>下来发现了一些分布式系统才会出现的数据一致性问题，这个我会在本文里面介绍一下，并且会给出解决方案，在一下版本里面解决。</p>
+<p>本篇文章我主讲单机的实现和总体<code>gws</code>一些设计相关的内容，本文会从什么是<code>session</code>？为什么要有<code>session</code>？<code>session</code>怎么工作的？<code>gws</code>是如何管理<code>session</code>的？这些方面来全面剖析具体的实现，并且在文末介绍任何解决分布式场景下数据不一致的问题。</p>
+<h2 id="session是什么">
+    <a href="#session%e6%98%af%e4%bb%80%e4%b9%88" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    session是什么？
+</h2>
+<p><code>提姆·柏內茲-李於</code>1989年在歐洲核子研究組織所发明了<code>HTTP</code>协议，由于在设计之初就是无状态的，客户端和服务器通讯，服务器是无法确认请求是从哪个客户端发过来的，当我们向服务器发送请求后，服务器解析此请求，然后返回对应的响应，服务器负责完成整个过程。 这个过程是完全独立的，服务器不会记录前后状态的变化，也就是缺少状态记录，所以有了<code>session</code>这个概念，<code>session</code>会借助浏览器的<code>cookie</code>来配合客户端和服务器之间的身份鉴权工作，我不会去讲一些细节，了解这些不管你是前端工程师还是后端工程师，这些基础知识必须掌握的，只有你知道它工作机制了，你才能动手去解决问题，当然<code>API</code>操作员可以不需要了解。。</p>
+<h2 id="session请求过程">
+    <a href="#session%e8%af%b7%e6%b1%82%e8%bf%87%e7%a8%8b" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    session请求过程
+</h2>
+<p>当浏览器打开我们编写的服务的时候，如果这个请求是第一次过来，<code>gws</code>会去查询请求里面的<code>sessionid</code>，如果没有这个<code>session</code>数据，会马上生成一个<code>sessionid</code>并且在存储介质上创建一个会话数据保存，然后通知浏览器告诉下次请求带上<code>sessionid</code>方便浏览器和服务器之间鉴权工作。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gz53tu399mj317g0u0dhe.jpg" 
+    alt="一个请求过程" 
+     /></p>
+<h2 id="gws如何设计的">
+    <a href="#gws%e5%a6%82%e4%bd%95%e8%ae%be%e8%ae%a1%e7%9a%84" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    gws如何设计的
+</h2>
+<p><code>GWS</code>在设计的时候就考虑到要支持多种存储，然后对外调用者暴露的就是<code>GetSession</code>函数，或者内置的<code>NewSession</code>这两个函数，具体的实现可以去看源代码，只能通过这两个函数得到<code>Session</code>操作对象，防止开发者自定义创建，必须按照<code>gws</code>规则来。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gz53y33hzwj317g0u00un.jpg" 
+    alt="GWS层次架构图" 
+     /></p>
+<p><code>GetSession</code>层负责从<code>request</code>里面解析得到具体的<code>session</code>，具体存储实现也是通过接口分离的，具体实现要看具体的<code>Session</code>的<code>gws.Storage</code>的接口了，让第三方开发者方便实现自己的<code>存储介质</code>，单机存储是没有什么技术含量的，重点是分布式这一块。</p>
+<h2 id="分布式会话">
+    <a href="#%e5%88%86%e5%b8%83%e5%bc%8f%e4%bc%9a%e8%af%9d" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    分布式会话
+</h2>
+<p>当我们单个应用节点，不能很好支持业务发展的时候，往往大部分系统都会往分布式系统架构发展，例如最简单解决方案就是<code>NGINX</code>加<code>Web Service</code>组成一个大规模负载均衡集群，虽然<code>NGINX</code>解决了<code>c10k</code>问题了，但是分布式会话问题又来了，这就是为什么要需要分布式会话共享，一个浏览器请求打过来，可能被<code>NGINX</code>负载均衡算法打到不同的应用节点上，这时就带来来了分布式共享会话问题。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gz55f5phqwj31890u0mz6.jpg" 
+    alt="分布式会话" 
+     /></p>
+<p><code>gws</code>虽然提供了<code>redis</code>去共享会话数据问题，但是或者自定义数据共享存储实现，但是只要是分布式系统，又会引入数据不一致问题，看下面这张图：</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/008i3skNgy1gz55w2lpn2j31890u041e.jpg" 
+    alt="分布式会话数据竞争" 
+     /></p>
+<p>看上图黄色部分，我们有客户端请求同时去请求服务器，当然这个情况很少见，但是不是不可能出现的，拿到的数据<code>session</code>相同的，但是红色部分，客户端（这个客户端不单是指定是浏览器，也可能是<code>gws</code>里面的存储层实现的客户端），然后去设置存储服务器，如果没有分布式锁控制的话，马上数据会被后面哪一个覆盖掉。</p>
+<p>针对分布式数据竞争问题，要么引入分布式数据一致性算法，要么引入一个公共的分布式锁签发服务器，当然如果你可以在<code>session</code>保存一些不常用的数据信息，只是一个标识符鉴权问题不去存储强一致性的数据，可以允许数据不一致情况，可以去缓解数据不一致带来的数据不一致问题，针对这个问题，我准备在后面的实现加入版本控制和续租，也就是每个<code>session</code>里面有一条唯一的版本信息，类似于<code>git</code>那样的设计。</p>
+<h2 id="小-结">
+    <a href="#%e5%b0%8f-%e7%bb%93" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    小 结
+</h2>
+<p>不要看就一个就一个<code>session</code>问题，如果牵扯到分布式系统设计问题，又是一个很大的问题，如果能解决分布式<code>session</code>数据一致性问题，去实现一个<code>分布式会话</code>控制中心，也是一个不错的想法，希望本篇文章能帮助到读者，另外<code>gws</code>后面会持续更新中，有什么想法朋友可以关注一下<code>https://github.com/auula/gws</code>这个项目，本项目使用<code>go</code>语言实现，目前来看还是一个<code>go</code>的<code>session</code>库，但是笔者后面想发展成一个分布式会话管理器项目。</p>
+
+    </div>
+</div>
+
+<div class="container">
+    
+    <nav class="flex container suggested">
+        
+        <a rel="prev" href="/post/gws-design-instruction/" title="Previous post (older)">
+            <span>Previous</span>
+            Gws Design Instruction
+            </a>
+        
+        
+        
+    </nav>
+    
+</div>
+ 
+<div class="container">
+    
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "https-hugo-tania-netlify-app" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (DISQUS) {
+            DISQUS.reset({
+                reload: true
+            })
+        }
+    })
+</script>
+
+</div>
+
+</main>
+
+
+        </main>
+        <footer class="footer flex">
+    <section class="container">
+        <nav class="footer-links">
+            
+            <a href="/index.xml">RSS</a>
+            
+        </nav>
+    </section>
+    <script defer src="/ts/features.39c567b3af1363f8abe74bfd650f3d58cb963716b7ad4b3b53f801d3ca585599.js" data-enable-footnotes="true"></script>
+</footer>
+    </body>
+</html>
