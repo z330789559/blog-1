@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="theme-color" content="dark">
+    <title>Bottle Storage Engine Design | 打码匠</title>
+
+    
+    
+    
+    <meta property="og:site_name" content="打码匠 | ibyte.me" />
+    <meta property="og:title" content="Bottle Storage Engine Design | 打码匠"/>
+    <meta itemprop="name" content="Bottle Storage Engine Design | 打码匠" />
+    <meta name="twitter:title" content="Bottle Storage Engine Design | 打码匠" />
+    <meta name="application-name" content="Bottle Storage Engine Design | 打码匠" />
+
+
+    <meta name="description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles." />
+    <meta name="twitter:description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles."/>
+    <meta itemprop="description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles."/>
+    <meta property="og:description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles." />
+
+    
+
+<meta property="og:type" content="article" />
+<meta property="article:publisher" content="Leon Ding" />
+<meta property="og:article:published_time" content=2022-02-20T18:51:18&#43;0800 />
+<meta property="article:published_time" content=2022-02-20T18:51:18&#43;0800 />
+
+
+
+
+
+<script defer type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "Article",
+    "headline": "Bottle Storage Engine Design",
+    "author": {
+      "@type": "Person",
+      "name": "Leon Ding"
+    },
+    "datePublished": "2022-02-20",
+    "description": "",
+    "wordCount":  130 ,
+    "mainEntityOfPage": "True",
+    "dateModified": "2022-02-20",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Leon Ding",
+      "logo": {
+        "@type": "imageObject",
+        "url": "http:\/\/blog.ibyte.me\/favicon.ico"
+      }
+    }
+  }
+</script>
+
+
+    <link rel="shortcut icon" type="image/x-icon" href="https://avatars.githubusercontent.com/u/38412458?v=4" />
+    
+    
+    <link rel="stylesheet" href="/sass/main.min.3b60735c96f5faa623d75aceae8ee0a0c7d19f76a3eed0574c61f7253a4eeb3d.css">
+    
+</head>
+    <script>
+    (function() {
+        const colorSchemeKey = 'ThemeColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.userColorScheme = 'dark';
+        } else {
+            document.documentElement.dataset.userColorScheme = 'light';
+        }
+    })();
+</script>
+
+    <body class="dark">
+        <nav class="navbar">
+    <div class="container">
+        <div class="flex">
+            <div>
+                <a class="brand" href="/">
+                    
+                    
+                        <img src="https://avatars.githubusercontent.com/u/38412458?v=4" />
+                    
+                    打码匠
+                    </a>
+            </div>
+            <div class="flex">
+                
+                <a href="https://www.ibyte.me/">🏡 Home</a>
+                
+                <a href="/articles/">📚 Articles</a>
+                
+                <button id="dark-mode-button">
+                  <svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path fill="#FFD983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163 0 1 0 1.643 1.641a1.163 1.163 0 0 0-1.643-1.641zm-16.022 14.38a1.74 1.74 0 0 0 0 2.465a1.742 1.742 0 1 0 0-2.465zm13.968-2.147a2.904 2.904 0 0 1-4.108 0a2.902 2.902 0 0 1 0-4.107a2.902 2.902 0 0 1 4.108 0a2.902 2.902 0 0 1 0 4.107z" fill="#FFCC4D"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)" /></svg>
+                  <svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path fill="#FFD983" d="M16 2s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2V2zm18 14s2 0 2 2s-2 2-2 2h-2s-2 0-2-2s2-2 2-2h2zM4 16s2 0 2 2s-2 2-2 2H2s-2 0-2-2s2-2 2-2h2zm5.121-8.707s1.414 1.414 0 2.828s-2.828 0-2.828 0L4.878 8.708s-1.414-1.414 0-2.829c1.415-1.414 2.829 0 2.829 0l1.414 1.414zm21 21s1.414 1.414 0 2.828s-2.828 0-2.828 0l-1.414-1.414s-1.414-1.414 0-2.828s2.828 0 2.828 0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828l-1.414 1.414zM16 32s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2v-2z"/><circle fill="#FFD983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)" /></svg>
+                </button>
+            </div>
+            </div>
+    </div>
+</nav>
+        <main>
+            
+<div class="container">
+    <article>
+        <header class="article-header">
+            <div class="thumb">
+                <div>
+                    <h1>Bottle Storage Engine Design</h1>
+                    <div class="post-meta">
+                        <div>
+                            
+                            
+                              
+                            
+                            By Leon Ding | <time>February 20, 2022</time>
+                            | 1 minutes
+                        </div>
+                        <div class="tags">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </article>
+
+    <div class="article-post">
+    <h2 id="什么是bottle">
+    <a href="#%e4%bb%80%e4%b9%88%e6%98%afbottle" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    什么是Bottle？
+</h2>
+<blockquote>
+<p>首先要说明的是<code>Bottle</code>是一款<code>KV</code>嵌入式存储引擎，并非是一款<code>KV</code>数据库，我知道很多人看到了<code>KV</code>认为是数据库，当然不是了，很多人会把这些搞混淆掉，<code>KV</code>存储可以用来存储很多东西，而并非是数据库这一领域。可以这么理解数据库是一台汽车，那么<code>Bottle</code>是一台车的发动机。可以简单理解<code>Bottle</code>是一个对操作系统文件系统的<code>KV</code>用户态抽象化封装，可以基于<code>Bottle</code>做为存储层，在<code>Bottle</code>层之上封装一些数据结构和对外服务的存储协议就可以实现一个数据库。</p>
+</blockquote>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/e6c9d24egy1gzfrmt7qo4j21c20u0tai.jpg" 
+    alt="层次结构" 
+     /></p>
+<p>为什么叫<code>Bottle</code>？我觉得这个项目的主要的功能就是存储，存储？存储不就是可以装东西，存储数据，所以我就联想到了<code>魔瓶</code>这个词，于是我想到了<code>Klein Bottle</code>，克莱因瓶如果是搞数学的应该很熟悉，克莱因瓶可以从一个平面达到另外一个平面，所以我就选择<code>Bottle</code>作为存储引擎的名字。</p>
+<h2 id="存储模型日志结构合并树">
+    <a href="#%e5%ad%98%e5%82%a8%e6%a8%a1%e5%9e%8b%e6%97%a5%e5%bf%97%e7%bb%93%e6%9e%84%e5%90%88%e5%b9%b6%e6%a0%91" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    存储模型：日志结构合并树
+</h2>
+<p><code>Bottle</code>采用的是类似于<code>lsm tree</code>数据结构，也就是<code>LSM-Tree</code>，全称<code>Log Structured-Merge Tree</code>，这种存储结构特点就是每条数据记录都是以顺序写的方式追加，我相信大家都用过各个语言里面日志记录包，这个存储模型也是类似于这样的，记录就和打印日志一样记录到数据存储文件中，这种顺序写的方式能充分发挥磁盘<code>IO</code>性能。</p>
+<p><img loading="lazy" 
+    src="https://files.mdnice.com/user/8699/b1ec4de8-0ce1-4057-b180-5bb362f8005e.png" 
+    alt="性能对比" 
+     /></p>
+<p>这个数据文件组织结构最早应用有<code>Google</code>的<code>BigTable</code>，<code>Facebook Cassandra</code>当然目前属于<code>Apache</code>了， <code>LevelDB</code>这些存储项目上。</p>
+<blockquote>
+<p><code>LSM</code>的理论是：在内存足够大的时候，每次写入的数据被先零时放置在内存中，因此不需要每次有数据更新就必须将数据写入到磁盘中，因此可以先将最新的数据驻留在内存中，等到积累到最后多之后，再使用归并排序的方式将内存内的数据合并追加到磁盘队尾。</p>
+</blockquote>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/e6c9d24egy1gzj7hokxhpj219x0u00vn.jpg" 
+    alt="lsm读写流程" 
+     /></p>
+<ol>
+<li>
+<p>写入流程就是：先将操作通过日志追加的方式写入到<code>wal</code>里面，这个是防止宕机数据恢复使用，然后将写入的数据存储到内存的<code>memtable</code>中，该表的实现可以是红黑树或者跳跃表，这种可以方便范围查找。</p>
+</li>
+<li>
+<p>数据整理：当<code>memtable</code>达到内存阈值的时候，会将该部分数据形成快照，并新生产一个<code>memtable</code>用来处理后续的请求，在磁盘的<code>sstable</code>分了几个层级，被写满的的<code>memtable</code>将会和这些<code>sstable</code>层进行合并，每层的<code>sstable</code>达到阈值的时候也会不断的向下合并，在这个过程中就是在清除掉被标记删除掉的数据。</p>
+</li>
+<li>
+<p>查询过程：先查询<code>memtable</code>以及<code>immutable memtable</code>，找到就返回毕竟内存中是最新的记录，如果没有找到，那么就一层一层得往下查找到数据为止，这个过程有点像你把你一堆书叠起来，找一本你要的书，你只能从最上层往下面查找，知道找到或者找不到进行返回。</p>
+</li>
+</ol>
+<blockquote>
+<p>看完我写的这个流程，很明显<code>lsm</code>的特点就是对写友好，但是会存在磁盘文件占用不断加大问题，需要定期合并清理，但是查找的性能就一般了，如果数据比较新还好，如果写入的比较久，那么不能像<code>B+Tree</code>那样找一次就能确定，很有可能要不断的下推查找，可以使用<code>Bloom filter</code>进行友化，在查询的时候先经过布隆过滤器。</p>
+</blockquote>
+<h2 id="bottle存储模型设计">
+    <a href="#bottle%e5%ad%98%e5%82%a8%e6%a8%a1%e5%9e%8b%e8%ae%be%e8%ae%a1" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    Bottle存储模型设计
+</h2>
+<p>看完上面的<code>lsm tree</code>的设计，有没有什么办法在写和读方面做到平衡呢，也就是写性能也快，读性能也快，能不能读取的时候只经过一次索引查找就能定位到数据所存在的文件呢？然后一次<code>io</code>操作就就读取到数据呢？</p>
+<p>我想大家都了解过数据结构吧，数据结构里面什么结构在大数据量下查询速度最快呢？如果我说基于散列算法的哈希表，应该没有人反对吧，只要你的散列算法和你的散列槽位，和扩容策略设计的够好，我相信性能也不会太差。</p>
+<blockquote>
+<p>其实我们所说的这个<code>kv</code>存储，其实这个<code>key</code>是不是相当于我们常用的编程语言里面的<code>map</code>的键，然后<code>value</code>的就是存储方式不同了，结合上面的<code>lsm tree</code>的特征，我们是不是可以优化一下，或者说重新设计一下，把索引换成基于散列算法的索引，通过散列计算得到<code>value</code>的位置呢？</p>
+</blockquote>
+<p>这方面存储引擎设计，已经有前人做过尝试并且应用，<code>Riak</code>这个数据库就是基于以上想法，设计一个<code>bitcask</code>存储模型，他们设计论文有：</p>
+<ul>
+<li><a href="https://riak.com/assets/bitcask-intro.pdf">https://riak.com/assets/bitcask-intro.pdf</a></li>
+</ul>
+<p><code>Bottle</code>的实现就是基于这篇论文里面所提出的存储解决方案，一个<code>Bottle</code>的实例其实就是一个目录，<code>Bottle</code>那个进程会对这个目录有操作所有权，在任何时候都只有一个文件是<code>active</code>状态用于被主线程来写入数据记录。</p>
+<p>当<code>active</code>文件达到空间阈值它将被关闭，然后一个新的文件设置为<code>active</code>继续接收新的写入请求，被关闭的文件状态被设置为只读并且把操作系统的文件句柄在内存里面添加对应映射，方便后面数据查询读取使用。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/e6c9d24egy1gzjby5wxv3j219e0u0gnt.jpg" 
+    alt="一个Bottle实例" 
+     /></p>
+<p>这里我就不讲废话了，如果对<code>bitcask</code>工作原理感兴趣的话，可以去查看这篇文章：<a href="https://blog.ibyte.me/post/bitcask-kvbase/">https://blog.ibyte.me/post/bitcask-kvbase/</a></p>
+<h2 id="索引怎么选">
+    <a href="#%e7%b4%a2%e5%bc%95%e6%80%8e%e4%b9%88%e9%80%89" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    索引怎么选？
+</h2>
+<p>如果读者看完我上面给出的链接里面的资料，你会发现，<code>索引</code>对存储的性能起到关键作用，数据的读取存储快慢，都依赖于索引，像目前采用的<code>bitcask</code>论文中说的基于散列定位的。</p>
+<p><strong>读完它最大缺点就是索引数据全部在内存，设计内存数据索引结构时要考虑每一个索引和记录关系占用，然后计算预计系统整体数据的量占用的内存大小，然后索引数据要持久化，并且如果是基于散列索引那么不不支持范围扫描，如果要支持范围扫描可以考虑<code>Adaptive Radix Tree(自适应前缀树)</code>，或者跳表这样的结构做索引。</strong></p>
+<p>索引有什么选择？</p>
+<ul>
+<li><code>Adaptive Radix Tree</code></li>
+<li><code>Skip List</code></li>
+<li><code>Hash Table</code></li>
+<li><code>Adaptive Hash Index, AHI</code></li>
+</ul>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/e6c9d24egy1gzk5mvnwzej215a0cywft.jpg" 
+    alt="不同结构对比" 
+     /></p>
+<p>基数树这个在一些<code>web</code>路由框架里面用的比较多，文件目录啊，网站路径，做路由匹配的，当然也可以来搞存储索引，但是工作量代码量很大，也不轻量级。</p>
+<ul>
+<li><a href="github.com/gammazero/radixtree">github.com/gammazero/radixtree</a></li>
+</ul>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/e6c9d24egy1gzk5ra5825j20m80dwdgy.jpg" 
+    alt="基数树" 
+     /></p>
+<p><code>radix tree</code>可以被认为是一棵简洁版的前缀树，拥有共同前缀的节点也共享同一个父节点，下面是一个<code>GET</code>方法对应的路由树的结构：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="nx">Priority</span>   <span class="nx">Path</span>             <span class="nx">Handle</span>
+<span class="mi">9</span>          <span class="err">\</span>                <span class="o">*</span><span class="p">&lt;</span><span class="mi">1</span><span class="p">&gt;</span>
+<span class="mi">3</span>          <span class="err">├</span><span class="nx">s</span>               <span class="kc">nil</span>
+<span class="mi">2</span>          <span class="p">|</span><span class="err">├</span><span class="nx">earch</span><span class="err">\</span>         <span class="o">*</span><span class="p">&lt;</span><span class="mi">2</span><span class="p">&gt;</span>
+<span class="mi">1</span>          <span class="p">|</span><span class="err">└</span><span class="nx">upport</span><span class="err">\</span>        <span class="o">*</span><span class="p">&lt;</span><span class="mi">3</span><span class="p">&gt;</span>
+<span class="mi">2</span>          <span class="err">├</span><span class="nx">blog</span><span class="err">\</span>           <span class="o">*</span><span class="p">&lt;</span><span class="mi">4</span><span class="p">&gt;</span>
+<span class="mi">1</span>          <span class="p">|</span>    <span class="err">└</span><span class="p">:</span><span class="nx">post</span>      <span class="kc">nil</span>
+<span class="mi">1</span>          <span class="p">|</span>         <span class="err">└\</span>     <span class="o">*</span><span class="p">&lt;</span><span class="mi">5</span><span class="p">&gt;</span>
+<span class="mi">2</span>          <span class="err">├</span><span class="nx">about</span><span class="o">-</span><span class="nx">us</span><span class="err">\</span>       <span class="o">*</span><span class="p">&lt;</span><span class="mi">6</span><span class="p">&gt;</span>
+<span class="mi">1</span>          <span class="p">|</span>        <span class="err">└</span><span class="nx">team</span><span class="err">\</span>  <span class="o">*</span><span class="p">&lt;</span><span class="mi">7</span><span class="p">&gt;</span>
+<span class="mi">1</span>          <span class="err">└</span><span class="nx">contact</span><span class="err">\</span>        <span class="o">*</span><span class="p">&lt;</span><span class="mi">8</span><span class="p">&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>*&lt;num&gt;</code>是方法<code>handler</code>对应的指针，从根节点遍历到叶子节点我们就能得到完整的路由表，图中的示例实现了以下路由：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="nf">GET</span><span class="p">(</span><span class="s">&#34;/&#34;</span><span class="p">,</span> <span class="nx">func1</span><span class="p">)</span>
+<span class="nf">GET</span><span class="p">(</span><span class="s">&#34;/search/&#34;</span><span class="p">,</span> <span class="nx">func2</span><span class="p">)</span>
+<span class="nf">GET</span><span class="p">(</span><span class="s">&#34;/support/&#34;</span><span class="p">,</span> <span class="nx">func3</span><span class="p">)</span>
+<span class="nf">GET</span><span class="p">(</span><span class="s">&#34;/blog/&#34;</span><span class="p">,</span> <span class="nx">func4</span><span class="p">)</span>
+<span class="nf">GET</span><span class="p">(</span><span class="s">&#34;/blog/:post/&#34;</span><span class="p">,</span> <span class="nx">func5</span><span class="p">)</span>
+<span class="nf">GET</span><span class="p">(</span><span class="s">&#34;/about-us/&#34;</span><span class="p">,</span> <span class="nx">func6</span><span class="p">)</span>
+<span class="nf">GET</span><span class="p">(</span><span class="s">&#34;/about-us/team/&#34;</span><span class="p">,</span> <span class="nx">func7</span><span class="p">)</span>
+<span class="nf">GET</span><span class="p">(</span><span class="s">&#34;/contact/&#34;</span><span class="p">,</span> <span class="nx">func8</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>怎么批量配，例如下面一个例子，我去访问我的仓库地址，<code>GitHub</code>服务器是怎么知道的我仓库的？ 例如：<code>github.com/auula/:repo</code></p>
+<p><code>:repo</code>是真实的<code>:repo</code>的一个占位符（就是一个参数，这里体现了<code>radix tree</code>相较于<code>hash-map</code>的一个优点，树结构允许我们的路径中存在动态的部分<code>参数</code>。</p>
+<p><strong>如果要支持范围搜索，那么基数树是一个很好选择，但是工作量代码量难度，远超于基于<code>Hash Table</code>的。</strong></p>
+<h2 id="脏数据合并怎么搞">
+    <a href="#%e8%84%8f%e6%95%b0%e6%8d%ae%e5%90%88%e5%b9%b6%e6%80%8e%e4%b9%88%e6%90%9e" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    脏数据合并怎么搞?
+</h2>
+
+    </div>
+</div>
+
+<div class="container">
+    
+    <nav class="flex container suggested">
+        
+        <a rel="prev" href="/post/gws-system-design/" title="Previous post (older)">
+            <span>Previous</span>
+            GWS System Design
+            </a>
+        
+        
+        
+    </nav>
+    
+</div>
+ 
+<div class="container">
+    
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "https-hugo-tania-netlify-app" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (DISQUS) {
+            DISQUS.reset({
+                reload: true
+            })
+        }
+    })
+</script>
+
+</div>
+
+</main>
+
+
+        </main>
+        <footer class="footer flex">
+    <section class="container">
+        <nav class="footer-links">
+            
+            <a href="/index.xml">RSS</a>
+            
+        </nav>
+    </section>
+    <script defer src="/ts/features.39c567b3af1363f8abe74bfd650f3d58cb963716b7ad4b3b53f801d3ca585599.js" data-enable-footnotes="true"></script>
+</footer>
+    </body>
+</html>

@@ -5,7 +5,195 @@
     <description>Recent content on 打码匠</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 07 Feb 2022 19:42:49 +0800</lastBuildDate><atom:link href="http://blog.ibyte.me/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 20 Feb 2022 18:51:18 +0800</lastBuildDate><atom:link href="http://blog.ibyte.me/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+    <title>Bottle Storage Engine Design</title>
+    <link>http://blog.ibyte.me/post/bottle-storage-engine-design/</link>
+    <pubDate>Sun, 20 Feb 2022 18:51:18 +0800</pubDate>
+    
+    <guid>http://blog.ibyte.me/post/bottle-storage-engine-design/</guid>
+    <description>
+        &lt;h2 id=&#34;什么是bottle&#34;&gt;
+    &lt;a href=&#34;#%e4%bb%80%e4%b9%88%e6%98%afbottle&#34; class=&#34;anchor&#34;&gt;
+        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;
+            &lt;path fill-rule=&#34;evenodd&#34;
+                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;
+            &lt;/path&gt;
+        &lt;/svg&gt;
+    &lt;/a&gt;
+    什么是Bottle？
+&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;首先要说明的是&lt;code&gt;Bottle&lt;/code&gt;是一款&lt;code&gt;KV&lt;/code&gt;嵌入式存储引擎，并非是一款&lt;code&gt;KV&lt;/code&gt;数据库，我知道很多人看到了&lt;code&gt;KV&lt;/code&gt;认为是数据库，当然不是了，很多人会把这些搞混淆掉，&lt;code&gt;KV&lt;/code&gt;存储可以用来存储很多东西，而并非是数据库这一领域。可以这么理解数据库是一台汽车，那么&lt;code&gt;Bottle&lt;/code&gt;是一台车的发动机。可以简单理解&lt;code&gt;Bottle&lt;/code&gt;是一个对操作系统文件系统的&lt;code&gt;KV&lt;/code&gt;用户态抽象化封装，可以基于&lt;code&gt;Bottle&lt;/code&gt;做为存储层，在&lt;code&gt;Bottle&lt;/code&gt;层之上封装一些数据结构和对外服务的存储协议就可以实现一个数据库。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/e6c9d24egy1gzfrmt7qo4j21c20u0tai.jpg&#34; 
+    alt=&#34;层次结构&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;为什么叫&lt;code&gt;Bottle&lt;/code&gt;？我觉得这个项目的主要的功能就是存储，存储？存储不就是可以装东西，存储数据，所以我就联想到了&lt;code&gt;魔瓶&lt;/code&gt;这个词，于是我想到了&lt;code&gt;Klein Bottle&lt;/code&gt;，克莱因瓶如果是搞数学的应该很熟悉，克莱因瓶可以从一个平面达到另外一个平面，所以我就选择&lt;code&gt;Bottle&lt;/code&gt;作为存储引擎的名字。&lt;/p&gt;
+&lt;h2 id=&#34;存储模型日志结构合并树&#34;&gt;
+    &lt;a href=&#34;#%e5%ad%98%e5%82%a8%e6%a8%a1%e5%9e%8b%e6%97%a5%e5%bf%97%e7%bb%93%e6%9e%84%e5%90%88%e5%b9%b6%e6%a0%91&#34; class=&#34;anchor&#34;&gt;
+        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;
+            &lt;path fill-rule=&#34;evenodd&#34;
+                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;
+            &lt;/path&gt;
+        &lt;/svg&gt;
+    &lt;/a&gt;
+    存储模型：日志结构合并树
+&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;Bottle&lt;/code&gt;采用的是类似于&lt;code&gt;lsm tree&lt;/code&gt;数据结构，也就是&lt;code&gt;LSM-Tree&lt;/code&gt;，全称&lt;code&gt;Log Structured-Merge Tree&lt;/code&gt;，这种存储结构特点就是每条数据记录都是以顺序写的方式追加，我相信大家都用过各个语言里面日志记录包，这个存储模型也是类似于这样的，记录就和打印日志一样记录到数据存储文件中，这种顺序写的方式能充分发挥磁盘&lt;code&gt;IO&lt;/code&gt;性能。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://files.mdnice.com/user/8699/b1ec4de8-0ce1-4057-b180-5bb362f8005e.png&#34; 
+    alt=&#34;性能对比&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;这个数据文件组织结构最早应用有&lt;code&gt;Google&lt;/code&gt;的&lt;code&gt;BigTable&lt;/code&gt;，&lt;code&gt;Facebook Cassandra&lt;/code&gt;当然目前属于&lt;code&gt;Apache&lt;/code&gt;了， &lt;code&gt;LevelDB&lt;/code&gt;这些存储项目上。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;LSM&lt;/code&gt;的理论是：在内存足够大的时候，每次写入的数据被先零时放置在内存中，因此不需要每次有数据更新就必须将数据写入到磁盘中，因此可以先将最新的数据驻留在内存中，等到积累到最后多之后，再使用归并排序的方式将内存内的数据合并追加到磁盘队尾。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/e6c9d24egy1gzj7hokxhpj219x0u00vn.jpg&#34; 
+    alt=&#34;lsm读写流程&#34; 
+     /&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;写入流程就是：先将操作通过日志追加的方式写入到&lt;code&gt;wal&lt;/code&gt;里面，这个是防止宕机数据恢复使用，然后将写入的数据存储到内存的&lt;code&gt;memtable&lt;/code&gt;中，该表的实现可以是红黑树或者跳跃表，这种可以方便范围查找。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;数据整理：当&lt;code&gt;memtable&lt;/code&gt;达到内存阈值的时候，会将该部分数据形成快照，并新生产一个&lt;code&gt;memtable&lt;/code&gt;用来处理后续的请求，在磁盘的&lt;code&gt;sstable&lt;/code&gt;分了几个层级，被写满的的&lt;code&gt;memtable&lt;/code&gt;将会和这些&lt;code&gt;sstable&lt;/code&gt;层进行合并，每层的&lt;code&gt;sstable&lt;/code&gt;达到阈值的时候也会不断的向下合并，在这个过程中就是在清除掉被标记删除掉的数据。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;查询过程：先查询&lt;code&gt;memtable&lt;/code&gt;以及&lt;code&gt;immutable memtable&lt;/code&gt;，找到就返回毕竟内存中是最新的记录，如果没有找到，那么就一层一层得往下查找到数据为止，这个过程有点像你把你一堆书叠起来，找一本你要的书，你只能从最上层往下面查找，知道找到或者找不到进行返回。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;blockquote&gt;
+&lt;p&gt;看完我写的这个流程，很明显&lt;code&gt;lsm&lt;/code&gt;的特点就是对写友好，但是会存在磁盘文件占用不断加大问题，需要定期合并清理，但是查找的性能就一般了，如果数据比较新还好，如果写入的比较久，那么不能像&lt;code&gt;B+Tree&lt;/code&gt;那样找一次就能确定，很有可能要不断的下推查找，可以使用&lt;code&gt;Bloom filter&lt;/code&gt;进行友化，在查询的时候先经过布隆过滤器。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;bottle存储模型设计&#34;&gt;
+    &lt;a href=&#34;#bottle%e5%ad%98%e5%82%a8%e6%a8%a1%e5%9e%8b%e8%ae%be%e8%ae%a1&#34; class=&#34;anchor&#34;&gt;
+        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;
+            &lt;path fill-rule=&#34;evenodd&#34;
+                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;
+            &lt;/path&gt;
+        &lt;/svg&gt;
+    &lt;/a&gt;
+    Bottle存储模型设计
+&lt;/h2&gt;
+&lt;p&gt;看完上面的&lt;code&gt;lsm tree&lt;/code&gt;的设计，有没有什么办法在写和读方面做到平衡呢，也就是写性能也快，读性能也快，能不能读取的时候只经过一次索引查找就能定位到数据所存在的文件呢？然后一次&lt;code&gt;io&lt;/code&gt;操作就就读取到数据呢？&lt;/p&gt;
+&lt;p&gt;我想大家都了解过数据结构吧，数据结构里面什么结构在大数据量下查询速度最快呢？如果我说基于散列算法的哈希表，应该没有人反对吧，只要你的散列算法和你的散列槽位，和扩容策略设计的够好，我相信性能也不会太差。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;其实我们所说的这个&lt;code&gt;kv&lt;/code&gt;存储，其实这个&lt;code&gt;key&lt;/code&gt;是不是相当于我们常用的编程语言里面的&lt;code&gt;map&lt;/code&gt;的键，然后&lt;code&gt;value&lt;/code&gt;的就是存储方式不同了，结合上面的&lt;code&gt;lsm tree&lt;/code&gt;的特征，我们是不是可以优化一下，或者说重新设计一下，把索引换成基于散列算法的索引，通过散列计算得到&lt;code&gt;value&lt;/code&gt;的位置呢？&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;这方面存储引擎设计，已经有前人做过尝试并且应用，&lt;code&gt;Riak&lt;/code&gt;这个数据库就是基于以上想法，设计一个&lt;code&gt;bitcask&lt;/code&gt;存储模型，他们设计论文有：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://riak.com/assets/bitcask-intro.pdf&#34;&gt;https://riak.com/assets/bitcask-intro.pdf&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;code&gt;Bottle&lt;/code&gt;的实现就是基于这篇论文里面所提出的存储解决方案，一个&lt;code&gt;Bottle&lt;/code&gt;的实例其实就是一个目录，&lt;code&gt;Bottle&lt;/code&gt;那个进程会对这个目录有操作所有权，在任何时候都只有一个文件是&lt;code&gt;active&lt;/code&gt;状态用于被主线程来写入数据记录。&lt;/p&gt;
+&lt;p&gt;当&lt;code&gt;active&lt;/code&gt;文件达到空间阈值它将被关闭，然后一个新的文件设置为&lt;code&gt;active&lt;/code&gt;继续接收新的写入请求，被关闭的文件状态被设置为只读并且把操作系统的文件句柄在内存里面添加对应映射，方便后面数据查询读取使用。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/e6c9d24egy1gzjby5wxv3j219e0u0gnt.jpg&#34; 
+    alt=&#34;一个Bottle实例&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;这里我就不讲废话了，如果对&lt;code&gt;bitcask&lt;/code&gt;工作原理感兴趣的话，可以去查看这篇文章：&lt;a href=&#34;https://blog.ibyte.me/post/bitcask-kvbase/&#34;&gt;https://blog.ibyte.me/post/bitcask-kvbase/&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;索引怎么选&#34;&gt;
+    &lt;a href=&#34;#%e7%b4%a2%e5%bc%95%e6%80%8e%e4%b9%88%e9%80%89&#34; class=&#34;anchor&#34;&gt;
+        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;
+            &lt;path fill-rule=&#34;evenodd&#34;
+                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;
+            &lt;/path&gt;
+        &lt;/svg&gt;
+    &lt;/a&gt;
+    索引怎么选？
+&lt;/h2&gt;
+&lt;p&gt;如果读者看完我上面给出的链接里面的资料，你会发现，&lt;code&gt;索引&lt;/code&gt;对存储的性能起到关键作用，数据的读取存储快慢，都依赖于索引，像目前采用的&lt;code&gt;bitcask&lt;/code&gt;论文中说的基于散列定位的。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;读完它最大缺点就是索引数据全部在内存，设计内存数据索引结构时要考虑每一个索引和记录关系占用，然后计算预计系统整体数据的量占用的内存大小，然后索引数据要持久化，并且如果是基于散列索引那么不不支持范围扫描，如果要支持范围扫描可以考虑&lt;code&gt;Adaptive Radix Tree(自适应前缀树)&lt;/code&gt;，或者跳表这样的结构做索引。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;索引有什么选择？&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Adaptive Radix Tree&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Skip List&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Hash Table&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Adaptive Hash Index, AHI&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/e6c9d24egy1gzk5mvnwzej215a0cywft.jpg&#34; 
+    alt=&#34;不同结构对比&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;基数树这个在一些&lt;code&gt;web&lt;/code&gt;路由框架里面用的比较多，文件目录啊，网站路径，做路由匹配的，当然也可以来搞存储索引，但是工作量代码量很大，也不轻量级。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;github.com/gammazero/radixtree&#34;&gt;github.com/gammazero/radixtree&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; 
+    src=&#34;https://tva1.sinaimg.cn/large/e6c9d24egy1gzk5ra5825j20m80dwdgy.jpg&#34; 
+    alt=&#34;基数树&#34; 
+     /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;radix tree&lt;/code&gt;可以被认为是一棵简洁版的前缀树，拥有共同前缀的节点也共享同一个父节点，下面是一个&lt;code&gt;GET&lt;/code&gt;方法对应的路由树的结构：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span class=&#34;nx&#34;&gt;Priority&lt;/span&gt;   &lt;span class=&#34;nx&#34;&gt;Path&lt;/span&gt;             &lt;span class=&#34;nx&#34;&gt;Handle&lt;/span&gt;
+&lt;span class=&#34;mi&#34;&gt;9&lt;/span&gt;          &lt;span class=&#34;err&#34;&gt;\&lt;/span&gt;                &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;span class=&#34;mi&#34;&gt;3&lt;/span&gt;          &lt;span class=&#34;err&#34;&gt;├&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;s&lt;/span&gt;               &lt;span class=&#34;kc&#34;&gt;nil&lt;/span&gt;
+&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;          &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;├&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;earch&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;\&lt;/span&gt;         &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;          &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;└&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;upport&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;\&lt;/span&gt;        &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;          &lt;span class=&#34;err&#34;&gt;├&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;blog&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;\&lt;/span&gt;           &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;          &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;    &lt;span class=&#34;err&#34;&gt;└&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;post&lt;/span&gt;      &lt;span class=&#34;kc&#34;&gt;nil&lt;/span&gt;
+&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;          &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;         &lt;span class=&#34;err&#34;&gt;└\&lt;/span&gt;     &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;          &lt;span class=&#34;err&#34;&gt;├&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;about&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;us&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;\&lt;/span&gt;       &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;6&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;          &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;        &lt;span class=&#34;err&#34;&gt;└&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;team&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;\&lt;/span&gt;  &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;7&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;          &lt;span class=&#34;err&#34;&gt;└&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;contact&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;\&lt;/span&gt;        &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;8&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;code&gt;*&amp;lt;num&amp;gt;&lt;/code&gt;是方法&lt;code&gt;handler&lt;/code&gt;对应的指针，从根节点遍历到叶子节点我们就能得到完整的路由表，图中的示例实现了以下路由：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;8
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span class=&#34;nf&#34;&gt;GET&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;/&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;func1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;GET&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;/search/&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;func2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;GET&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;/support/&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;func3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;GET&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;/blog/&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;func4&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;GET&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;/blog/:post/&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;func5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;GET&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;/about-us/&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;func6&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;GET&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;/about-us/team/&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;func7&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;GET&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;/contact/&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;func8&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;怎么批量配，例如下面一个例子，我去访问我的仓库地址，&lt;code&gt;GitHub&lt;/code&gt;服务器是怎么知道的我仓库的？ 例如：&lt;code&gt;github.com/auula/:repo&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;:repo&lt;/code&gt;是真实的&lt;code&gt;:repo&lt;/code&gt;的一个占位符（就是一个参数，这里体现了&lt;code&gt;radix tree&lt;/code&gt;相较于&lt;code&gt;hash-map&lt;/code&gt;的一个优点，树结构允许我们的路径中存在动态的部分&lt;code&gt;参数&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;如果要支持范围搜索，那么基数树是一个很好选择，但是工作量代码量难度，远超于基于&lt;code&gt;Hash Table&lt;/code&gt;的。&lt;/strong&gt;&lt;/p&gt;
+&lt;h2 id=&#34;脏数据合并怎么搞&#34;&gt;
+    &lt;a href=&#34;#%e8%84%8f%e6%95%b0%e6%8d%ae%e5%90%88%e5%b9%b6%e6%80%8e%e4%b9%88%e6%90%9e&#34; class=&#34;anchor&#34;&gt;
+        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;
+            &lt;path fill-rule=&#34;evenodd&#34;
+                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;
+            &lt;/path&gt;
+        &lt;/svg&gt;
+    &lt;/a&gt;
+    脏数据合并怎么搞?
+&lt;/h2&gt;
+
+    </description>
+    </item>
+    
     <item>
     <title>GWS System Design</title>
     <link>http://blog.ibyte.me/post/gws-system-design/</link>
