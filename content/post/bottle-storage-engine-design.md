@@ -15,7 +15,8 @@ date: 2022-02-20T18:51:18+08:00
 
 `Bottle`采用的是类似于`lsm tree`数据结构，也就是`LSM-Tree`，全称`Log Structured-Merge Tree`，这种存储结构特点就是每条数据记录都是以顺序写的方式追加，我相信大家都用过各个语言里面日志记录包，这个存储模型也是类似于这样的，记录就和打印日志一样记录到数据存储文件中，这种顺序写的方式能充分发挥磁盘`IO`性能。
 
-![性能对比](https://files.mdnice.com/user/8699/b1ec4de8-0ce1-4057-b180-5bb362f8005e.png)
+
+![性能对比](https://tva1.sinaimg.cn/large/e6c9d24egy1gzk6ej82y1j208c07ft8w.jpg)
 
 这个数据文件组织结构最早应用有`Google`的`BigTable`，`Facebook Cassandra`当然目前属于`Apache`了， `LevelDB`这些存储项目上。
 
