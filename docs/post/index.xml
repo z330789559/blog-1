@@ -6,7 +6,23 @@
     <description>Recent content in Posts on 打码匠</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 20 Feb 2022 18:51:18 +0800</lastBuildDate><atom:link href="http://blog.ibyte.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 08 Mar 2022 14:58:14 +0800</lastBuildDate><atom:link href="http://blog.ibyte.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Bottle Release V1.0.0</title>
+      <link>http://blog.ibyte.me/post/bottle-release-v1.0.0/</link>
+      <pubDate>Tue, 08 Mar 2022 14:58:14 +0800</pubDate>
+      
+      <guid>http://blog.ibyte.me/post/bottle-release-v1.0.0/</guid>
+      <description>Hi (๑╹◡╹)ﾉ”，各位Gopher本人最近又用Go造了一个轮子，一个超级轻量级KV存储引擎，欢迎👏🏻各位Gopher进行评测。
+ 主页介绍：https://bottle.ibyte.me (PC效果更加😋)
+项目地址：https://github.com/auula/bottle
+   特 性   嵌入的存储引擎 数据可以加密存储 可以自定义实现存储加密器 即使数据文件被拷贝，也保证存储数据的安全 未来索引数据结构也可以支持自定义实现     简 介  首先要说明的是Bottle是一款KV嵌入式存储引擎，并非是一款KV数据库，我知道很多人看到了KV认为是数据库，当然不是了，很多人会把这些搞混淆掉，KV 存储可以用来存储很多东西，而并非是数据库这一领域。可以这么理解数据库是一台汽车，那么Bottle是一台车的发动机。可以简单理解Bottle是一个对操作系统文件系统的KV抽象化封装，可以基于Bottle 做为存储层，在Bottle层之上封装一些数据结构和对外服务的协议就可以实现一个数据库。
+本项目功能实现完全基于 bitcask 论文所实现，另外本项目所用到一些知识和卡内基梅隆大学的CMU 15-445: Database Systems课程内容很接近，这门课由数据库领域的大牛Andy Pavlo讲授，有感兴趣的朋友可以去看看这套课，如果觉得不错你可以给我按一颗小星⭐谢谢。
+   安装Bottle  你只需要在你的项目中安装Bottle模块即可使用：
+1  go get -u github.com/auula/bottle      基本API  如何操作一个Bottle实例代码:
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65  package main import ( &amp;#34;fmt&amp;#34; &amp;#34;github.</description>
+    </item>
+    
     <item>
       <title>Bottle Storage Engine Design</title>
       <link>http://blog.ibyte.me/post/bottle-storage-engine-design/</link>
