@@ -13,12 +13,12 @@
       <pubDate>Wed, 16 Mar 2022 22:30:06 +0800</pubDate>
       
       <guid>http://blog.ibyte.me/post/golang-generic-programming/</guid>
-      <description>Go1.8 泛型  最近随着Go 1.18版本发布了，也就是Go正式支持generic编程了，这个版本的发布将会给你Go编程开发体验带来巨大变动，估计后面一些开源库也会陆续重构，对Go语言从发布至今应该是一次最大改动。
+      <description>Go1.18 泛型  最近随着Go 1.18版本发布了，也就是Go正式支持generic编程了，这个版本的发布将会给你Go编程开发体验带来巨大变动，估计后面一些开源库也会陆续重构，对Go语言从发布至今应该是一次最大改动。
    Generic Programming  在之前的版本中Go语言想做一些通用的数据类型的编程操作的时候，可能大部分还是使用interface来进行编程，但是代码里面会出现各种断言操作，并且还有预判出可能需要的数据类型，重复编写一些只是类型不一样的代码块，如下图就是之前在社区里面经常流行一张关于Go泛型编程调侃图👇🏻，只是数据参数类型不一样，但是具体逻辑代码又是一样的，会使得开发者我们重复编写一些代码块：
 当然之前版本Go语言标准库中提供一个text/template包，这个包如果开发者自己能力很强可以通过自己写一些代码块，然后通过模板引擎去生成相关的代码，一些第三方的框架代码生成就是这个原理，例如官方的go generate命令。
 其实泛型编程，可以简单理解毕昇发明的活字印刷术一样，我在编写程序的时候把一些通用的代码逻辑写好，只是可能运行的时候数据类型可能不同而已，只需要开发者定义好预计数据类型，然后其他事情交给Go编译器。
 我本人也是对Go泛型编程也是很期待，在2020的时候我在实现一些通用的算法和数据结构时就遇到了一些重复代码逻辑的问题，并且向官方询问过，当时官方给了我一些泛型的设计草案，后面这个草案一直在改动，直到现在终于发布了。
- https://go.googlesource.com/proposal/+/refs/heads/master/design/43651-type-parameters.md     体验一把泛型  首先需要使用泛型的话，你的Go语言版本需要升级到1.8这个语义化版本，如下图我已经升级到这个版本了。
+ https://go.googlesource.com/proposal/+/refs/heads/master/design/43651-type-parameters.md     体验一把泛型  首先需要使用泛型的话，你的Go语言版本需要升级到1.18这个语义化版本，如下图我已经升级到这个版本了。
 下面我写一段冒泡排序的代码，但是这个bubbleSort函数参数类型只能为int64，也就是说我们只能传入一个类型为int64切片，如果我需要传入其他类型的数据，那么我们就需要重新写一个函数逻辑是相同的代码片段但是类型又不同，这就是没有泛型带来的痛苦。
 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19  package main import &amp;#34;fmt&amp;#34; func bubbleSort(sequence []int64) { for i := 0; i &amp;lt; len(sequence)-1; i++ { for j := 0; j &amp;lt; len(sequence)-1-i; j++ { if sequence[j] &amp;gt; sequence[j+1] { sequence[j], sequence[j+1] = sequence[j+1], sequence[j] } } } } func main() { var sequence = []int64{12, 11, 100, 99, 88, 23} bubbleSort(sequence) fmt.</description>
     </item>

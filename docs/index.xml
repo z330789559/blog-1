@@ -17,15 +17,15 @@
     src=&#34;https://tva1.sinaimg.cn/large/e6c9d24egy1h0c3879fsyj21hc0u077g.jpg&#34; 
     alt=&#34;&#34; 
      /&gt;&lt;/p&gt;
-&lt;h3 id=&#34;go18-泛型&#34;&gt;
-    &lt;a href=&#34;#go18-%e6%b3%9b%e5%9e%8b&#34; class=&#34;anchor&#34;&gt;
+&lt;h3 id=&#34;go118-泛型&#34;&gt;
+    &lt;a href=&#34;#go118-%e6%b3%9b%e5%9e%8b&#34; class=&#34;anchor&#34;&gt;
         &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;
             &lt;path fill-rule=&#34;evenodd&#34;
                 d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;
             &lt;/path&gt;
         &lt;/svg&gt;
     &lt;/a&gt;
-    Go1.8 泛型
+    Go1.18 泛型
 &lt;/h3&gt;
 &lt;p&gt;最近随着&lt;code&gt;Go 1.18&lt;/code&gt;版本发布了，也就是&lt;code&gt;Go&lt;/code&gt;正式支持&lt;code&gt;generic&lt;/code&gt;编程了，这个版本的发布将会给你&lt;code&gt;Go&lt;/code&gt;编程开发体验带来巨大变动，估计后面一些开源库也会陆续重构，对&lt;code&gt;Go&lt;/code&gt;语言从发布至今应该是一次最大改动。&lt;/p&gt;
 &lt;p&gt;&lt;img loading=&#34;lazy&#34; 
@@ -71,10 +71,10 @@
     &lt;/a&gt;
     体验一把泛型
 &lt;/h3&gt;
-&lt;p&gt;首先需要使用泛型的话，你的&lt;code&gt;Go&lt;/code&gt;语言版本需要升级到&lt;code&gt;1.8&lt;/code&gt;这个语义化版本，如下图我已经升级到这个版本了。&lt;/p&gt;
+&lt;p&gt;首先需要使用泛型的话，你的&lt;code&gt;Go&lt;/code&gt;语言版本需要升级到&lt;code&gt;1.18&lt;/code&gt;这个语义化版本，如下图我已经升级到这个版本了。&lt;/p&gt;
 &lt;p&gt;&lt;img loading=&#34;lazy&#34; 
     src=&#34;https://tva1.sinaimg.cn/large/e6c9d24egy1h0bt5i9kanj21mc0ikwhg.jpg&#34; 
-    alt=&#34;升级到Go1.8&#34; 
+    alt=&#34;升级到Go1.18&#34; 
      /&gt;&lt;/p&gt;
 &lt;p&gt;下面我写一段冒泡排序的代码，但是这个&lt;code&gt;bubbleSort&lt;/code&gt;函数参数类型只能为&lt;code&gt;int64&lt;/code&gt;，也就是说我们只能传入一个类型为&lt;code&gt;int64&lt;/code&gt;切片，如果我需要传入其他类型的数据，那么我们就需要重新写一个函数逻辑是相同的代码片段但是类型又不同，这就是没有泛型带来的痛苦。&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
