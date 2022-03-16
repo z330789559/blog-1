@@ -45,7 +45,7 @@
     },
     "datePublished": "2022-03-16",
     "description": "",
-    "wordCount":  533 ,
+    "wordCount":  620 ,
     "mainEntityOfPage": "True",
     "dateModified": "2022-03-16",
     "publisher": {
@@ -437,7 +437,60 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>另外一种就是特殊比较约束，也就是上面我所的<code>Java</code>里面的<code>&lt;T extends Comparable&gt;</code>，比如有时候我们需要限制某个参数是否可以比较或者支持某特征某个行为，例如可比较<code>comparable</code>关键字：</p>
+</div><p>好了，通过上面一通操作，就知道了<code>Go</code>泛型怎么玩了，下面我把刚刚最开始那个排序算法通过泛型改写一下如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nx">bubbleSortByGeneric</span><span class="p">[</span><span class="nx">T</span> <span class="kt">int64</span> <span class="p">|</span> <span class="kt">float64</span><span class="p">](</span><span class="nx">sequence</span> <span class="p">[]</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">sequence</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="nx">j</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="p">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">sequence</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="nx">i</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="nx">sequence</span><span class="p">[</span><span class="nx">j</span><span class="p">]</span> <span class="p">&gt;</span> <span class="nx">sequence</span><span class="p">[</span><span class="nx">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="p">{</span>
+                <span class="nx">sequence</span><span class="p">[</span><span class="nx">j</span><span class="p">],</span> <span class="nx">sequence</span><span class="p">[</span><span class="nx">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="p">=</span> <span class="nx">sequence</span><span class="p">[</span><span class="nx">j</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="nx">sequence</span><span class="p">[</span><span class="nx">j</span><span class="p">]</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>其实这个排序算法已经改写成了泛型版本，并且约束了参数的数据类型也可以认为类型的行为特征约束：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">sequence1</span> <span class="p">=</span> <span class="p">[]</span><span class="kt">int64</span><span class="p">{</span><span class="mi">100</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">66</span><span class="p">,</span> <span class="mi">78</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">}</span>
+    <span class="nf">bubbleSortByGeneric</span><span class="p">(</span><span class="nx">sequence1</span><span class="p">)</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">sequence1</span><span class="p">)</span>
+    <span class="kd">var</span> <span class="nx">sequence2</span> <span class="p">=</span> <span class="p">[]</span><span class="kt">float64</span><span class="p">{</span><span class="mf">120.13</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="mf">112.3</span><span class="p">,</span> <span class="mf">66.5</span><span class="p">,</span> <span class="mf">78.12</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mi">8</span><span class="p">}</span>
+    <span class="nf">bubbleSortByGeneric</span><span class="p">(</span><span class="nx">sequence2</span><span class="p">)</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">sequence2</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>结果为下图：</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/e6c9d24egy1h0c40vlvtaj21k00juwio.jpg" 
+    alt="运行结果" 
+     /></p>
+<p>另外一种就是特殊比较约束，也就是上面我所的<code>Java</code>里面的<code>&lt;T extends Comparable&gt;</code>，比如有时候我们需要限制某个参数是否可以比较或者支持某特征某个行为，例如可比较<code>comparable</code>关键字：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -513,7 +566,7 @@
 </code></pre></td></tr></table>
 </div>
 </div><p>上面的<code>comparable</code>关键字就可以限制<code>map</code>是否为可比较的类型了，说到这里我估计过不了多久某些卷王肯定又要跑去分析一下<code>comparable</code>底层实现了，我其实挺反感这样的卷王的，我不知道某些没事做的就跑去分析一下底层代码实现卷王有什么优越感？？？除了面试八股一下，难到你要去实现<code>GO</code>编译器吗？</p>
-<p>不用分析了，我顺带说一下，其实<code>comparable</code>底层实现也就是基于一个<code>interface</code>的，只是里面有一个行为方法而已，<code>Go</code>内置的可比较数据类型在更新之后会默认实现<code>comparable</code>，这个如果大家使用其他编程语言的泛型，想一想也就知道怎么实现了，好了本篇关于<code>go</code>泛型文章就写到这里了。</p>
+<p>不用分析了，我顺带说一下，其实<code>comparable</code>底层实现也就是基于一个<code>interface</code>的，只是里面有一个行为方法而已，<code>Go</code>内置的可比较数据类型在更新之后会默认实现<code>comparable</code>，这个如果大家使用其他编程语言的泛型，想一想也就知道怎么实现了，当前一些开发集成环境还没有更好支持，可能格式化代码存在一些问题，不过可以忽略，泛型程序写起来还是挺流畅的，好了本篇关于<code>go</code>泛型文章就写到这里了。</p>
 
     </div>
 </div>

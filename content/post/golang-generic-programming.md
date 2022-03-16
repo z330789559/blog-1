@@ -163,6 +163,40 @@ func main() {
 }
 ```
 
+好了，通过上面一通操作，就知道了`Go`泛型怎么玩了，下面我把刚刚最开始那个排序算法通过泛型改写一下如下：
+
+
+```go
+func bubbleSortByGeneric[T int64 | float64](sequence []T) {
+    for i := 0; i < len(sequence)-1; i++ {
+        for j := 0; j < len(sequence)-1-i; j++ {
+            if sequence[j] > sequence[j+1] {
+                sequence[j], sequence[j+1] = sequence[j+1], sequence[j]
+            }
+        }
+    }
+}
+```
+
+其实这个排序算法已经改写成了泛型版本，并且约束了参数的数据类型也可以认为类型的行为特征约束：
+
+```go
+func main() {
+    var sequence1 = []int64{100, 23, 14, 66, 78, 12, 8}
+    bubbleSortByGeneric(sequence1)
+    fmt.Println(sequence1)
+    var sequence2 = []float64{120.13, 2.3, 112.3, 66.5, 78.12, 1.2, 8}
+    bubbleSortByGeneric(sequence2)
+    fmt.Println(sequence2)
+}
+````
+
+结果为下图：
+
+![运行结果](https://tva1.sinaimg.cn/large/e6c9d24egy1h0c40vlvtaj21k00juwio.jpg)
+
+
+
 另外一种就是特殊比较约束，也就是上面我所的`Java`里面的`<T extends Comparable>`，比如有时候我们需要限制某个参数是否可以比较或者支持某特征某个行为，例如可比较`comparable`关键字：
 
 ```go
@@ -203,4 +237,5 @@ func main() {
 ```
 上面的`comparable`关键字就可以限制`map`是否为可比较的类型了，说到这里我估计过不了多久某些卷王肯定又要跑去分析一下`comparable`底层实现了，我其实挺反感这样的卷王的，我不知道某些没事做的就跑去分析一下底层代码实现卷王有什么优越感？？？除了面试八股一下，难到你要去实现`GO`编译器吗？
 
-不用分析了，我顺带说一下，其实`comparable`底层实现也就是基于一个`interface`的，只是里面有一个行为方法而已，`Go`内置的可比较数据类型在更新之后会默认实现`comparable`，这个如果大家使用其他编程语言的泛型，想一想也就知道怎么实现了，好了本篇关于`go`泛型文章就写到这里了。
+
+不用分析了，我顺带说一下，其实`comparable`底层实现也就是基于一个`interface`的，只是里面有一个行为方法而已，`Go`内置的可比较数据类型在更新之后会默认实现`comparable`，这个如果大家使用其他编程语言的泛型，想一想也就知道怎么实现了，当前一些开发集成环境还没有更好支持，可能格式化代码存在一些问题，不过可以忽略，泛型程序写起来还是挺流畅的，好了本篇关于`go`泛型文章就写到这里了。
