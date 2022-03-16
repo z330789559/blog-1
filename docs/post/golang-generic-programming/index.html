@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="theme-color" content="dark">
+    <title>Golang Generic Programming | 打码匠</title>
+
+    
+    
+    
+    <meta property="og:site_name" content="打码匠 | ibyte.me" />
+    <meta property="og:title" content="Golang Generic Programming | 打码匠"/>
+    <meta itemprop="name" content="Golang Generic Programming | 打码匠" />
+    <meta name="twitter:title" content="Golang Generic Programming | 打码匠" />
+    <meta name="application-name" content="Golang Generic Programming | 打码匠" />
+
+
+    <meta name="description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles." />
+    <meta name="twitter:description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles."/>
+    <meta itemprop="description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles."/>
+    <meta property="og:description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles." />
+
+    
+
+<meta property="og:type" content="article" />
+<meta property="article:publisher" content="Leon Ding" />
+<meta property="og:article:published_time" content=2022-03-16T22:30:06&#43;0800 />
+<meta property="article:published_time" content=2022-03-16T22:30:06&#43;0800 />
+
+
+
+
+
+<script defer type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "Article",
+    "headline": "Golang Generic Programming",
+    "author": {
+      "@type": "Person",
+      "name": "Leon Ding"
+    },
+    "datePublished": "2022-03-16",
+    "description": "",
+    "wordCount":  533 ,
+    "mainEntityOfPage": "True",
+    "dateModified": "2022-03-16",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Leon Ding",
+      "logo": {
+        "@type": "imageObject",
+        "url": "http:\/\/blog.ibyte.me\/favicon.ico"
+      }
+    }
+  }
+</script>
+
+
+    <link rel="shortcut icon" type="image/x-icon" href="https://avatars.githubusercontent.com/u/38412458?v=4" />
+    
+    
+    <link rel="stylesheet" href="/sass/main.min.3b60735c96f5faa623d75aceae8ee0a0c7d19f76a3eed0574c61f7253a4eeb3d.css">
+    
+</head>
+    <script>
+    (function() {
+        const colorSchemeKey = 'ThemeColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.userColorScheme = 'dark';
+        } else {
+            document.documentElement.dataset.userColorScheme = 'light';
+        }
+    })();
+</script>
+
+    <body class="dark">
+        <nav class="navbar">
+    <div class="container">
+        <div class="flex">
+            <div>
+                <a class="brand" href="/">
+                    
+                    
+                        <img src="https://avatars.githubusercontent.com/u/38412458?v=4" />
+                    
+                    打码匠
+                    </a>
+            </div>
+            <div class="flex">
+                
+                <a href="https://www.ibyte.me/">🏡 Home</a>
+                
+                <a href="/articles/">📚 Articles</a>
+                
+                <button id="dark-mode-button">
+                  <svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path fill="#FFD983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163 0 1 0 1.643 1.641a1.163 1.163 0 0 0-1.643-1.641zm-16.022 14.38a1.74 1.74 0 0 0 0 2.465a1.742 1.742 0 1 0 0-2.465zm13.968-2.147a2.904 2.904 0 0 1-4.108 0a2.902 2.902 0 0 1 0-4.107a2.902 2.902 0 0 1 4.108 0a2.902 2.902 0 0 1 0 4.107z" fill="#FFCC4D"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)" /></svg>
+                  <svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path fill="#FFD983" d="M16 2s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2V2zm18 14s2 0 2 2s-2 2-2 2h-2s-2 0-2-2s2-2 2-2h2zM4 16s2 0 2 2s-2 2-2 2H2s-2 0-2-2s2-2 2-2h2zm5.121-8.707s1.414 1.414 0 2.828s-2.828 0-2.828 0L4.878 8.708s-1.414-1.414 0-2.829c1.415-1.414 2.829 0 2.829 0l1.414 1.414zm21 21s1.414 1.414 0 2.828s-2.828 0-2.828 0l-1.414-1.414s-1.414-1.414 0-2.828s2.828 0 2.828 0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828l-1.414 1.414zM16 32s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2v-2z"/><circle fill="#FFD983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)" /></svg>
+                </button>
+            </div>
+            </div>
+    </div>
+</nav>
+        <main>
+            
+<div class="container">
+    <article>
+        <header class="article-header">
+            <div class="thumb">
+                <div>
+                    <h1>Golang Generic Programming</h1>
+                    <div class="post-meta">
+                        <div>
+                            
+                            
+                              
+                            
+                            By Leon Ding | <time>March 16, 2022</time>
+                            | 3 minutes
+                        </div>
+                        <div class="tags">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </article>
+
+    <div class="article-post">
+    <p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/e6c9d24egy1h0c3879fsyj21hc0u077g.jpg" 
+    alt="" 
+     /></p>
+<h3 id="go18-泛型">
+    <a href="#go18-%e6%b3%9b%e5%9e%8b" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    Go1.8 泛型
+</h3>
+<p>最近随着<code>Go 1.18</code>版本发布了，也就是<code>Go</code>正式支持<code>generic</code>编程了，这个版本的发布将会给你<code>Go</code>编程开发体验带来巨大变动，估计后面一些开源库也会陆续重构，对<code>Go</code>语言从发布至今应该是一次最大改动。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/e6c9d24egy1h0brghg5tuj20u00x077u.jpg" 
+    alt="官方推特消息" 
+     /></p>
+<h3 id="generic-programming">
+    <a href="#generic-programming" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    Generic Programming
+</h3>
+<p>在之前的版本中<code>Go</code>语言想做一些通用的数据类型的编程操作的时候，可能大部分还是使用<code>interface</code>来进行编程，但是代码里面会出现各种断言操作，并且还有预判出可能需要的数据类型，重复编写一些只是<code>类型</code>不一样的代码块，如下图就是之前在社区里面经常流行一张关于<code>Go</code>泛型编程调侃图👇🏻，只是数据参数类型不一样，但是具体逻辑代码又是一样的，会使得开发者我们重复编写一些代码块：</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/e6c9d24egy1h0brydd6vcg20f40gcdvr.gif" 
+    alt="在没有泛型编程之前的Go" 
+     /></p>
+<p>当然之前版本<code>Go</code>语言标准库中提供一个<code>text/template</code>包，这个包如果开发者自己能力很强可以通过自己写一些代码块，然后通过模板引擎去生成相关的代码，一些第三方的框架代码生成就是这个原理，例如官方的<code>go generate</code>命令。</p>
+<p>其实泛型编程，可以简单理解毕昇发明的活字印刷术一样，我在编写程序的时候把一些通用的代码逻辑写好，只是可能运行的时候数据类型可能不同而已，只需要开发者定义好预计数据类型，然后其他事情交给<code>Go</code>编译器。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/e6c9d24egy1h0bsmrbukyg20b706bqv5.gif" 
+    alt="类似于原理" 
+     /></p>
+<p>我本人也是对<code>Go</code>泛型编程也是很期待，在<code>2020</code>的时候我在实现一些通用的算法和数据结构时就遇到了一些重复代码逻辑的问题，并且向官方询问过，当时官方给了我一些泛型的设计草案，后面这个草案一直在改动，直到现在终于发布了。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/e6c9d24egy1h0bssx0finj211l0u0q6z.jpg" 
+    alt="issue" 
+     /></p>
+<ul>
+<li><a href="https://go.googlesource.com/proposal/+/refs/heads/master/design/43651-type-parameters.md">https://go.googlesource.com/proposal/+/refs/heads/master/design/43651-type-parameters.md</a></li>
+</ul>
+<h3 id="体验一把泛型">
+    <a href="#%e4%bd%93%e9%aa%8c%e4%b8%80%e6%8a%8a%e6%b3%9b%e5%9e%8b" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    体验一把泛型
+</h3>
+<p>首先需要使用泛型的话，你的<code>Go</code>语言版本需要升级到<code>1.8</code>这个语义化版本，如下图我已经升级到这个版本了。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/e6c9d24egy1h0bt5i9kanj21mc0ikwhg.jpg" 
+    alt="升级到Go1.8" 
+     /></p>
+<p>下面我写一段冒泡排序的代码，但是这个<code>bubbleSort</code>函数参数类型只能为<code>int64</code>，也就是说我们只能传入一个类型为<code>int64</code>切片，如果我需要传入其他类型的数据，那么我们就需要重新写一个函数逻辑是相同的代码片段但是类型又不同，这就是没有泛型带来的痛苦。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="s">&#34;fmt&#34;</span>
+
+<span class="kd">func</span> <span class="nf">bubbleSort</span><span class="p">(</span><span class="nx">sequence</span> <span class="p">[]</span><span class="kt">int64</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">sequence</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="nx">j</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="p">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">sequence</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="nx">i</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="nx">sequence</span><span class="p">[</span><span class="nx">j</span><span class="p">]</span> <span class="p">&gt;</span> <span class="nx">sequence</span><span class="p">[</span><span class="nx">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="p">{</span>
+                <span class="nx">sequence</span><span class="p">[</span><span class="nx">j</span><span class="p">],</span> <span class="nx">sequence</span><span class="p">[</span><span class="nx">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="p">=</span> <span class="nx">sequence</span><span class="p">[</span><span class="nx">j</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="nx">sequence</span><span class="p">[</span><span class="nx">j</span><span class="p">]</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">sequence</span> <span class="p">=</span> <span class="p">[]</span><span class="kt">int64</span><span class="p">{</span><span class="mi">12</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">99</span><span class="p">,</span> <span class="mi">88</span><span class="p">,</span> <span class="mi">23</span><span class="p">}</span>
+    <span class="nf">bubbleSort</span><span class="p">(</span><span class="nx">sequence</span><span class="p">)</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">sequence</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>有时候在开发的时候，为了统一使用一个函数处理，没有泛型情况下，需要对类型进行断言处理，例如在某种情况下居然写出下面这样的代码：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">bubbleSortByInterface</span><span class="p">(</span><span class="nx">sequence</span> <span class="p">[]</span><span class="kd">interface</span><span class="p">{})</span> <span class="p">{</span>
+    <span class="k">switch</span> <span class="nx">sequence</span><span class="p">[</span><span class="mi">0</span><span class="p">].(</span><span class="kd">type</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">case</span> <span class="kt">int64</span><span class="p">:</span>
+
+        <span class="kd">var</span> <span class="nx">arr</span> <span class="p">[]</span><span class="kt">int64</span>
+        <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">val</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">sequence</span> <span class="p">{</span>
+            <span class="nx">arr</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">arr</span><span class="p">,</span> <span class="nx">val</span><span class="p">.(</span><span class="kt">int64</span><span class="p">))</span>
+        <span class="p">}</span>
+
+        <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">arr</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+          <span class="k">for</span> <span class="nx">j</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="p">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">arr</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="nx">i</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">j</span><span class="p">]</span> <span class="p">&gt;</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="p">{</span>
+                    <span class="nx">arr</span><span class="p">[</span><span class="nx">j</span><span class="p">],</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="p">=</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">j</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">j</span><span class="p">]</span>
+                <span class="p">}</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">arr</span><span class="p">)</span>
+    <span class="k">case</span> <span class="kt">float64</span><span class="p">:</span>
+
+        <span class="kd">var</span> <span class="nx">arr</span> <span class="p">[]</span><span class="kt">float64</span>
+        <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">val</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">sequence</span> <span class="p">{</span>
+            <span class="nx">arr</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">arr</span><span class="p">,</span> <span class="nx">val</span><span class="p">.(</span><span class="kt">float64</span><span class="p">))</span>
+        <span class="p">}</span>
+
+        <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">arr</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+          <span class="k">for</span> <span class="nx">j</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="p">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">arr</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="nx">i</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span> <span class="p">{</span>
+              <span class="k">if</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">j</span><span class="p">]</span> <span class="p">&gt;</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="p">{</span>
+                <span class="nx">arr</span><span class="p">[</span><span class="nx">j</span><span class="p">],</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="p">=</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">j</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">j</span><span class="p">]</span>
+              <span class="p">}</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">arr</span><span class="p">)</span>
+    <span class="k">default</span><span class="p">:</span>
+        <span class="nb">panic</span><span class="p">(</span><span class="s">&#34;type not support!!!&#34;</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>然后就可以使用<code>interface</code>一把梭了：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">sequence</span> <span class="p">=</span> <span class="p">[]</span><span class="kd">interface</span><span class="p">{}{</span><span class="mf">12.12</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">99.4</span><span class="p">,</span> <span class="mf">99.2</span><span class="p">,</span> <span class="mf">88.8</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">}</span>
+    <span class="nf">bubbleSortByInterface</span><span class="p">(</span><span class="nx">sequence</span><span class="p">)</span>
+    <span class="c1">// [1.1 2.3 12.12 88.8 99.2 99.4]
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>但是这种一不注意就出现各种<code>bug</code>并且代码量上去就很难阅读代码。</p>
+<h3 id="泛型版本">
+    <a href="#%e6%b3%9b%e5%9e%8b%e7%89%88%e6%9c%ac" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    泛型版本
+</h3>
+<p>接下来就是<code>Go Generic</code>的使用介绍了，<code>Go</code>支持泛型函数和泛型类型，首先我们看一下泛型函数，下面是一个标准的泛型函数标准模板：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// GenericFunc 一个标准的泛型函数模板
+</span><span class="c1"></span><span class="kd">func</span> <span class="nx">GenericFunc</span><span class="p">[</span><span class="nx">T</span> <span class="nx">any</span><span class="p">](</span><span class="nx">args</span> <span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+	  <span class="c1">// logic code
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>函数签名里面多了<code>[T any]</code>部分，这就是<code>Go</code>泛型的参数列表，其中<code>T</code>就是参数，<code>any</code>为参数的约束。</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/e6c9d24egy1h0c0ok6eghj218p0u0tbo.jpg" 
+    alt="一个泛型函数" 
+     /></p>
+<p>跑起来这个泛型函数，可以正常运行，但是别急，我们写一个泛型加法函数试试：</p>
+<p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/e6c9d24egy1h0c1c2xiqhj21520b0mxx.jpg" 
+    alt="可以看到报错了" 
+     /></p>
+<p>这是为什么呢？可以看到提示说：<code>Invalid operation: a + b (the operator + is not defined on []T)</code>，这是因为我们的泛型声明<code>T</code>的类型约束在下面的逻辑代码里面进行数值运算符操作，如果大家写过<code>Java</code>里面的泛型都知道如果做数值比较操作，那我们的泛型类型参数还要写成<code>&lt;T extends Comparable&gt;</code>才能正常工作，这就是对不能进行数值运算符操作的类型进行规避操作，同理<code>Go</code>里面也是一样的。</p>
+<p>为此<code>Go</code>语言在泛型中引入一个叫<code>类型集合</code>概念，下面我们改造一下代码：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// 约束参数类型只能为数值类型
+</span><span class="c1"></span><span class="kd">func</span> <span class="nx">add</span><span class="p">[</span><span class="nx">T</span> <span class="kt">int64</span> <span class="p">|</span> <span class="kt">float64</span><span class="p">](</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="nx">T</span><span class="p">)</span> <span class="nx">T</span> <span class="p">{</span>
+	  <span class="k">return</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// 1 + 2 = 3
+</span><span class="c1"></span>    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;1 + 2 =&#34;</span><span class="p">,</span><span class="nx">add</span><span class="p">[</span><span class="kt">int64</span><span class="p">](</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="c1">// 6.1 + 0.5 = 6.6
+</span><span class="c1"></span>    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;6.1 + 0.5 =&#34;</span><span class="p">,</span><span class="nx">add</span><span class="p">[</span><span class="kt">float64</span><span class="p">](</span><span class="mf">6.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>可以看到上面可以正常运行得到正确的结果，但是有一个问题如果我们是通过内置的数据取一个类型别名怎么办？也就是以前我通过<code>type xx int8</code>这样的代码，泛型该如何限制呢？官方泛型里面映入一个<code>~</code>内置符号，这个符号会限制泛型参数底层是基于某种类型实现的变体或者别名，例如下面我这段代码：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">MyInt</span> <span class="kt">int8</span>
+
+<span class="c1">// 注意看~int8
+</span><span class="c1"></span><span class="kd">func</span> <span class="nx">add</span><span class="p">[</span><span class="nx">T</span> <span class="kt">int64</span> <span class="p">|</span> <span class="kt">float64</span> <span class="p">|</span> <span class="err">~</span><span class="kt">int8</span><span class="p">](</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="nx">T</span><span class="p">)</span> <span class="nx">T</span> <span class="p">{</span>
+	  <span class="k">return</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// 限制底层数据类型
+</span><span class="c1"></span>    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;MyInt 1 + 2 = &#34;</span><span class="p">,</span><span class="nx">add</span><span class="p">[</span><span class="nx">MyInt</span><span class="p">](</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>另外一种就是特殊比较约束，也就是上面我所的<code>Java</code>里面的<code>&lt;T extends Comparable&gt;</code>，比如有时候我们需要限制某个参数是否可以比较或者支持某特征某个行为，例如可比较<code>comparable</code>关键字：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nx">SumNumbers</span><span class="p">[</span><span class="nx">K</span> <span class="nx">comparable</span><span class="p">,</span> <span class="nx">V</span> <span class="nx">Number</span><span class="p">](</span><span class="nx">m</span> <span class="kd">map</span><span class="p">[</span><span class="nx">K</span><span class="p">]</span><span class="nx">V</span><span class="p">)</span> <span class="nx">V</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">s</span> <span class="nx">V</span>
+    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">v</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">m</span> <span class="p">{</span>
+        <span class="nx">s</span> <span class="o">+=</span> <span class="nx">v</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">s</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">whoisMin</span><span class="p">[</span><span class="nx">T</span> <span class="nx">Number</span><span class="p">](</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="nx">T</span><span class="p">)</span> <span class="nx">T</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">a</span> <span class="p">&lt;</span> <span class="nx">b</span> <span class="p">{</span>
+       <span class="k">return</span> <span class="nx">a</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">b</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// Initialize a map for the integer values
+</span><span class="c1"></span>    <span class="nx">ints</span> <span class="o">:=</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">int64</span><span class="p">{</span>
+        <span class="s">&#34;first&#34;</span><span class="p">:</span>  <span class="mi">34</span><span class="p">,</span>
+        <span class="s">&#34;second&#34;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="c1">// Initialize a map for the float values
+</span><span class="c1"></span>    <span class="nx">floats</span> <span class="o">:=</span> <span class="kd">map</span><span class="p">[</span><span class="kt">int8</span><span class="p">]</span><span class="kt">float64</span><span class="p">{</span>
+        <span class="o">-</span><span class="mi">128</span><span class="p">:</span> <span class="mf">35.98</span><span class="p">,</span>
+        <span class="mi">127</span><span class="p">:</span>  <span class="mf">26.99</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;Generic Sums with Constraint: %v and %v\n&#34;</span><span class="p">,</span>
+        <span class="nf">SumNumbers</span><span class="p">(</span><span class="nx">ints</span><span class="p">),</span>
+        <span class="nf">SumNumbers</span><span class="p">(</span><span class="nx">floats</span><span class="p">))</span>
+
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">whoisMin</span><span class="p">[</span><span class="kt">int64</span><span class="p">](</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">))</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>上面的<code>comparable</code>关键字就可以限制<code>map</code>是否为可比较的类型了，说到这里我估计过不了多久某些卷王肯定又要跑去分析一下<code>comparable</code>底层实现了，我其实挺反感这样的卷王的，我不知道某些没事做的就跑去分析一下底层代码实现卷王有什么优越感？？？除了面试八股一下，难到你要去实现<code>GO</code>编译器吗？</p>
+<p>不用分析了，我顺带说一下，其实<code>comparable</code>底层实现也就是基于一个<code>interface</code>的，只是里面有一个行为方法而已，<code>Go</code>内置的可比较数据类型在更新之后会默认实现<code>comparable</code>，这个如果大家使用其他编程语言的泛型，想一想也就知道怎么实现了，好了本篇关于<code>go</code>泛型文章就写到这里了。</p>
+
+    </div>
+</div>
+
+<div class="container">
+    
+    <nav class="flex container suggested">
+        
+        <a rel="prev" href="/post/bottle-release-v1.0.0/" title="Previous post (older)">
+            <span>Previous</span>
+            Bottle Release V1.0.0
+            </a>
+        
+        
+        
+    </nav>
+    
+</div>
+ 
+<div class="container">
+    
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "https-hugo-tania-netlify-app" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (DISQUS) {
+            DISQUS.reset({
+                reload: true
+            })
+        }
+    })
+</script>
+
+</div>
+
+</main>
+
+
+        </main>
+        <footer class="footer flex">
+    <section class="container">
+        <nav class="footer-links">
+            
+            <a href="/index.xml">RSS</a>
+            
+        </nav>
+    </section>
+    <script defer src="/ts/features.39c567b3af1363f8abe74bfd650f3d58cb963716b7ad4b3b53f801d3ca585599.js" data-enable-footnotes="true"></script>
+</footer>
+    </body>
+</html>
