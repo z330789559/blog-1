@@ -34,7 +34,7 @@ date: 2022-03-16T22:30:06+08:00
 
 首先需要使用泛型的话，你的`Go`语言版本需要升级到`1.18`这个语义化版本，如下图我已经升级到这个版本了。
 
-![升级到Go1.18](https://tva1.sinaimg.cn/large/e6c9d24egy1h0bt5i9kanj21mc0ikwhg.jpg)
+![升级到Go1.8](https://tva1.sinaimg.cn/large/e6c9d24egy1h0bt5i9kanj21mc0ikwhg.jpg)
 
 下面我写一段冒泡排序的代码，但是这个`bubbleSort`函数参数类型只能为`int64`，也就是说我们只能传入一个类型为`int64`切片，如果我需要传入其他类型的数据，那么我们就需要重新写一个函数逻辑是相同的代码片段但是类型又不同，这就是没有泛型带来的痛苦。
 
@@ -196,6 +196,66 @@ func main() {
 ![运行结果](https://tva1.sinaimg.cn/large/e6c9d24egy1h0c40vlvtaj21k00juwio.jpg)
 
 
+上面编写的泛型示例都是基于泛型函数进行的，但是我们有时候编程需要定义一些复合数据类型的数据结构，例如一个`stack`结构就是内部的`value`值类型不一样，如下的代码：
+
+```go
+type Element interface {
+	  int64 | float64 | string
+}
+
+type Stack[V Element] struct {
+    size  int
+    value []V
+}
+```
+
+上面的代码我们就通过泛型编程定义一个`value`类型只能为`Element`类型集合的`Stack`结构，`Stack[V Element]`的中括号里面的就是泛型约束条件。
+
+接着给`Stack`添加行为方法，方法签名上的`s *Stack[V]`就代表是一个泛型的`Stack`结构。
+
+```go
+func (s *Stack[V]) Push(v V) {
+    s.value = append(s.value, v)
+    s.size++
+}
+
+func (s *Stack[V]) Pop() V {
+    e := s.value[s.size-1]
+    if s.size != 0 {
+        s.value = s.value[:s.size-1]
+        s.size--
+    }
+    return e
+}
+```
+
+使用就和函数泛型差不多，在中括号里面指定泛型类型：
+
+```go
+func main() {
+
+    // INT STACK
+    strS := Stack[int64]{}
+    strS.Push(1)
+    strS.Push(2)
+    strS.Push(3)
+    fmt.Println(strS.Pop())
+    fmt.Println(strS.Pop())
+    fmt.Println(strS.Pop())
+
+    // FLOAT STACK
+    floatS := Stack[float64]{}
+    floatS.Push(1.1)
+    floatS.Push(2.2)
+    floatS.Push(3.3)
+    fmt.Println(floatS.Pop())
+    fmt.Println(floatS.Pop())
+    fmt.Println(floatS.Pop())
+
+}
+```
+
+![运行结果](https://tva1.sinaimg.cn/large/e6c9d24egy1h0cte4bxnuj21q60r40x7.jpg)
 
 另外一种就是特殊比较约束，也就是上面我所的`Java`里面的`<T extends Comparable>`，比如有时候我们需要限制某个参数是否可以比较或者支持某特征某个行为，例如可比较`comparable`关键字：
 
@@ -235,7 +295,8 @@ func main() {
     fmt.Println(whoisMin[int64](100, 1000))
 }
 ```
-上面的`comparable`关键字就可以限制`map`是否为可比较的类型了，说到这里我估计过不了多久某些卷王肯定又要跑去分析一下`comparable`底层实现了，我其实挺反感这样的卷王的，我不知道某些没事做的就跑去分析一下底层代码实现卷王有什么优越感？？？除了面试八股一下，难到你要去实现`GO`编译器吗？
+
+上面的`comparable`关键字就可以限制`map`的`Key`的类型是否为可比较的，说到这里我估计过不了多久某些卷王肯定又要跑去分析一下`comparable`底层实现了，我其实挺反感这样的卷王的，我不知道某些没事做的就跑去分析一下底层代码实现卷王有什么优越感？？？除了面试八股一下，难到你要去实现`GO`编译器吗？
 
 
-不用分析了，我顺带说一下，其实`comparable`底层实现也就是基于一个`interface`的，只是里面有一个行为方法而已，`Go`内置的可比较数据类型在更新之后会默认实现`comparable`，这个如果大家使用其他编程语言的泛型，想一想也就知道怎么实现了，当前一些开发集成环境还没有更好支持，可能格式化代码存在一些问题，不过可以忽略，泛型程序写起来还是挺流畅的，好了本篇关于`go`泛型文章就写到这里了。
+不用分析了，我顺带说一下，其实`comparable`底层实现也就是基于一个`interface`的，只是里面有一个行为方法而已，`Go`内置的可比较数据类型在更新之后会默认实现`comparable`，这个如果大家使用其他编程语言的泛型，想一想也就知道怎么实现了，当前一些开发集成环境还没有更好支持，可能格式化代码存在一些问题，不过可以忽略，泛型程序写起来还是挺流畅的，其实我感觉泛型参数指定的时候使用`<T>`比较好一点，用`[T]`这种在某种情况下给人一种从`map`里面运行函数调用一样，不过这个我猜测可能和底层实现有点关系，把生成的通用代码放到`map`里面，而泛型约束就是`map`的键，好了本篇关于`go`泛型文章就写到这里了。

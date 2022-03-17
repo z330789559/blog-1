@@ -45,7 +45,7 @@
     },
     "datePublished": "2022-03-16",
     "description": "",
-    "wordCount":  620 ,
+    "wordCount":  750 ,
     "mainEntityOfPage": "True",
     "dateModified": "2022-03-16",
     "publisher": {
@@ -124,7 +124,7 @@
                               
                             
                             By Leon Ding | <time>March 16, 2022</time>
-                            | 3 minutes
+                            | 4 minutes
                         </div>
                         <div class="tags">
                             
@@ -197,7 +197,7 @@
 <p>首先需要使用泛型的话，你的<code>Go</code>语言版本需要升级到<code>1.18</code>这个语义化版本，如下图我已经升级到这个版本了。</p>
 <p><img loading="lazy" 
     src="https://tva1.sinaimg.cn/large/e6c9d24egy1h0bt5i9kanj21mc0ikwhg.jpg" 
-    alt="升级到Go1.18" 
+    alt="升级到Go1.8" 
      /></p>
 <p>下面我写一段冒泡排序的代码，但是这个<code>bubbleSort</code>函数参数类型只能为<code>int64</code>，也就是说我们只能传入一个类型为<code>int64</code>切片，如果我需要传入其他类型的数据，那么我们就需要重新写一个函数逻辑是相同的代码片段但是类型又不同，这就是没有泛型带来的痛苦。</p>
 <div class="highlight"><div class="chroma">
@@ -490,6 +490,116 @@
     src="https://tva1.sinaimg.cn/large/e6c9d24egy1h0c40vlvtaj21k00juwio.jpg" 
     alt="运行结果" 
      /></p>
+<p>上面编写的泛型示例都是基于泛型函数进行的，但是我们有时候编程需要定义一些复合数据类型的数据结构，例如一个<code>stack</code>结构就是内部的<code>value</code>值类型不一样，如下的代码：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Element</span> <span class="kd">interface</span> <span class="p">{</span>
+	  <span class="kt">int64</span> <span class="p">|</span> <span class="kt">float64</span> <span class="p">|</span> <span class="kt">string</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">Stack</span><span class="p">[</span><span class="nx">V</span> <span class="nx">Element</span><span class="p">]</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">size</span>  <span class="kt">int</span>
+    <span class="nx">value</span> <span class="p">[]</span><span class="nx">V</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>上面的代码我们就通过泛型编程定义一个<code>value</code>类型只能为<code>Element</code>类型集合的<code>Stack</code>结构，<code>Stack[V Element]</code>的中括号里面的就是泛型约束条件。</p>
+<p>接着给<code>Stack</code>添加行为方法，方法签名上的<code>s *Stack[V]</code>就代表是一个泛型的<code>Stack</code>结构。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Stack</span><span class="p">[</span><span class="nx">V</span><span class="p">])</span> <span class="nf">Push</span><span class="p">(</span><span class="nx">v</span> <span class="nx">V</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">s</span><span class="p">.</span><span class="nx">value</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">value</span><span class="p">,</span> <span class="nx">v</span><span class="p">)</span>
+    <span class="nx">s</span><span class="p">.</span><span class="nx">size</span><span class="o">++</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Stack</span><span class="p">[</span><span class="nx">V</span><span class="p">])</span> <span class="nf">Pop</span><span class="p">()</span> <span class="nx">V</span> <span class="p">{</span>
+    <span class="nx">e</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">value</span><span class="p">[</span><span class="nx">s</span><span class="p">.</span><span class="nx">size</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nx">s</span><span class="p">.</span><span class="nx">size</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+        <span class="nx">s</span><span class="p">.</span><span class="nx">value</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">value</span><span class="p">[:</span><span class="nx">s</span><span class="p">.</span><span class="nx">size</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="nx">s</span><span class="p">.</span><span class="nx">size</span><span class="o">--</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">e</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>使用就和函数泛型差不多，在中括号里面指定泛型类型：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="c1">// INT STACK
+</span><span class="c1"></span>    <span class="nx">strS</span> <span class="o">:=</span> <span class="nx">Stack</span><span class="p">[</span><span class="kt">int64</span><span class="p">]{}</span>
+    <span class="nx">strS</span><span class="p">.</span><span class="nf">Push</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="nx">strS</span><span class="p">.</span><span class="nf">Push</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="nx">strS</span><span class="p">.</span><span class="nf">Push</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">strS</span><span class="p">.</span><span class="nf">Pop</span><span class="p">())</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">strS</span><span class="p">.</span><span class="nf">Pop</span><span class="p">())</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">strS</span><span class="p">.</span><span class="nf">Pop</span><span class="p">())</span>
+
+    <span class="c1">// FLOAT STACK
+</span><span class="c1"></span>    <span class="nx">floatS</span> <span class="o">:=</span> <span class="nx">Stack</span><span class="p">[</span><span class="kt">float64</span><span class="p">]{}</span>
+    <span class="nx">floatS</span><span class="p">.</span><span class="nf">Push</span><span class="p">(</span><span class="mf">1.1</span><span class="p">)</span>
+    <span class="nx">floatS</span><span class="p">.</span><span class="nf">Push</span><span class="p">(</span><span class="mf">2.2</span><span class="p">)</span>
+    <span class="nx">floatS</span><span class="p">.</span><span class="nf">Push</span><span class="p">(</span><span class="mf">3.3</span><span class="p">)</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">floatS</span><span class="p">.</span><span class="nf">Pop</span><span class="p">())</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">floatS</span><span class="p">.</span><span class="nf">Pop</span><span class="p">())</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">floatS</span><span class="p">.</span><span class="nf">Pop</span><span class="p">())</span>
+
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/e6c9d24egy1h0cte4bxnuj21q60r40x7.jpg" 
+    alt="运行结果" 
+     /></p>
 <p>另外一种就是特殊比较约束，也就是上面我所的<code>Java</code>里面的<code>&lt;T extends Comparable&gt;</code>，比如有时候我们需要限制某个参数是否可以比较或者支持某特征某个行为，例如可比较<code>comparable</code>关键字：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -565,8 +675,8 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>上面的<code>comparable</code>关键字就可以限制<code>map</code>是否为可比较的类型了，说到这里我估计过不了多久某些卷王肯定又要跑去分析一下<code>comparable</code>底层实现了，我其实挺反感这样的卷王的，我不知道某些没事做的就跑去分析一下底层代码实现卷王有什么优越感？？？除了面试八股一下，难到你要去实现<code>GO</code>编译器吗？</p>
-<p>不用分析了，我顺带说一下，其实<code>comparable</code>底层实现也就是基于一个<code>interface</code>的，只是里面有一个行为方法而已，<code>Go</code>内置的可比较数据类型在更新之后会默认实现<code>comparable</code>，这个如果大家使用其他编程语言的泛型，想一想也就知道怎么实现了，当前一些开发集成环境还没有更好支持，可能格式化代码存在一些问题，不过可以忽略，泛型程序写起来还是挺流畅的，好了本篇关于<code>go</code>泛型文章就写到这里了。</p>
+</div><p>上面的<code>comparable</code>关键字就可以限制<code>map</code>的<code>Key</code>的类型是否为可比较的，说到这里我估计过不了多久某些卷王肯定又要跑去分析一下<code>comparable</code>底层实现了，我其实挺反感这样的卷王的，我不知道某些没事做的就跑去分析一下底层代码实现卷王有什么优越感？？？除了面试八股一下，难到你要去实现<code>GO</code>编译器吗？</p>
+<p>不用分析了，我顺带说一下，其实<code>comparable</code>底层实现也就是基于一个<code>interface</code>的，只是里面有一个行为方法而已，<code>Go</code>内置的可比较数据类型在更新之后会默认实现<code>comparable</code>，这个如果大家使用其他编程语言的泛型，想一想也就知道怎么实现了，当前一些开发集成环境还没有更好支持，可能格式化代码存在一些问题，不过可以忽略，泛型程序写起来还是挺流畅的，其实我感觉泛型参数指定的时候使用<code>&lt;T&gt;</code>比较好一点，用<code>[T]</code>这种在某种情况下给人一种从<code>map</code>里面运行函数调用一样，不过这个我猜测可能和底层实现有点关系，把生成的通用代码放到<code>map</code>里面，而泛型约束就是<code>map</code>的键，好了本篇关于<code>go</code>泛型文章就写到这里了。</p>
 
     </div>
 </div>
