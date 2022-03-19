@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="theme-color" content="dark">
+    <title>Commonly Used Sorting Algorithm | 打码匠</title>
+
+    
+    
+    
+    <meta property="og:site_name" content="打码匠 | ibyte.me" />
+    <meta property="og:title" content="Commonly Used Sorting Algorithm | 打码匠"/>
+    <meta itemprop="name" content="Commonly Used Sorting Algorithm | 打码匠" />
+    <meta name="twitter:title" content="Commonly Used Sorting Algorithm | 打码匠" />
+    <meta name="application-name" content="Commonly Used Sorting Algorithm | 打码匠" />
+
+
+    <meta name="description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles." />
+    <meta name="twitter:description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles."/>
+    <meta itemprop="description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles."/>
+    <meta property="og:description" content="Share computer science and technology, Golang, Rust, distributed systems, system design articles." />
+
+    
+
+<meta property="og:type" content="article" />
+<meta property="article:publisher" content="Leon Ding" />
+<meta property="og:article:published_time" content=2022-03-19T15:14:12&#43;0800 />
+<meta property="article:published_time" content=2022-03-19T15:14:12&#43;0800 />
+
+
+
+
+
+<script defer type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "Article",
+    "headline": "Commonly Used Sorting Algorithm",
+    "author": {
+      "@type": "Person",
+      "name": "Leon Ding"
+    },
+    "datePublished": "2022-03-19",
+    "description": "",
+    "wordCount":  891 ,
+    "mainEntityOfPage": "True",
+    "dateModified": "2022-03-19",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Leon Ding",
+      "logo": {
+        "@type": "imageObject",
+        "url": "http:\/\/blog.ibyte.me\/favicon.ico"
+      }
+    }
+  }
+</script>
+
+
+    <link rel="shortcut icon" type="image/x-icon" href="https://avatars.githubusercontent.com/u/38412458?v=4" />
+    
+    
+    <link rel="stylesheet" href="/sass/main.min.3b60735c96f5faa623d75aceae8ee0a0c7d19f76a3eed0574c61f7253a4eeb3d.css">
+    
+</head>
+    <script>
+    (function() {
+        const colorSchemeKey = 'ThemeColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.userColorScheme = 'dark';
+        } else {
+            document.documentElement.dataset.userColorScheme = 'light';
+        }
+    })();
+</script>
+
+    <body class="dark">
+        <nav class="navbar">
+    <div class="container">
+        <div class="flex">
+            <div>
+                <a class="brand" href="/">
+                    
+                    
+                        <img src="https://avatars.githubusercontent.com/u/38412458?v=4" />
+                    
+                    打码匠
+                    </a>
+            </div>
+            <div class="flex">
+                
+                <a href="https://www.ibyte.me/">🏡 Home</a>
+                
+                <a href="/articles/">📚 Articles</a>
+                
+                <button id="dark-mode-button">
+                  <svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path fill="#FFD983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163 0 1 0 1.643 1.641a1.163 1.163 0 0 0-1.643-1.641zm-16.022 14.38a1.74 1.74 0 0 0 0 2.465a1.742 1.742 0 1 0 0-2.465zm13.968-2.147a2.904 2.904 0 0 1-4.108 0a2.902 2.902 0 0 1 0-4.107a2.902 2.902 0 0 1 4.108 0a2.902 2.902 0 0 1 0 4.107z" fill="#FFCC4D"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)" /></svg>
+                  <svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path fill="#FFD983" d="M16 2s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2V2zm18 14s2 0 2 2s-2 2-2 2h-2s-2 0-2-2s2-2 2-2h2zM4 16s2 0 2 2s-2 2-2 2H2s-2 0-2-2s2-2 2-2h2zm5.121-8.707s1.414 1.414 0 2.828s-2.828 0-2.828 0L4.878 8.708s-1.414-1.414 0-2.829c1.415-1.414 2.829 0 2.829 0l1.414 1.414zm21 21s1.414 1.414 0 2.828s-2.828 0-2.828 0l-1.414-1.414s-1.414-1.414 0-2.828s2.828 0 2.828 0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828l-1.414 1.414zM16 32s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2v-2z"/><circle fill="#FFD983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)" /></svg>
+                </button>
+            </div>
+            </div>
+    </div>
+</nav>
+        <main>
+            
+<div class="container">
+    <article>
+        <header class="article-header">
+            <div class="thumb">
+                <div>
+                    <h1>Commonly Used Sorting Algorithm</h1>
+                    <div class="post-meta">
+                        <div>
+                            
+                            
+                              
+                            
+                            By Leon Ding | <time>March 19, 2022</time>
+                            | 5 minutes
+                        </div>
+                        <div class="tags">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </article>
+
+    <div class="article-post">
+    <p><strong>作为一个程序员在谈到<code>算法</code>这个词的时候，第一反应就是那些令人头疼的LeetCode题目，那本篇文章我们就讲讲程序员几个基础排序算法。</strong></p>
+<ul>
+<li>冒泡排序</li>
+<li>选择排序</li>
+<li>插入排序</li>
+<li>希尔排序</li>
+<li>快速排序</li>
+<li>归并排序</li>
+</ul>
+<p><strong>复杂度对比图</strong>
+<img loading="lazy" 
+    src="https://www.runoob.com/wp-content/uploads/2019/03/sort.png" 
+    alt="算法复杂度" 
+     /></p>
+<h2 id="1冒泡排序">
+    <a href="#1%e5%86%92%e6%b3%a1%e6%8e%92%e5%ba%8f" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    1.冒泡排序
+</h2>
+<ul>
+<li>对无序数列进行安装每2个相邻数为一组的比较。</li>
+<li>如果每相邻的2个数,左边比右边大 <code>left &gt; right</code>就交换的位置。</li>
+<li>针对所有的元素重复以上的步骤，除了最后一个。</li>
+<li>持续每次对越来越少的元素重复上面的步骤，直到没有任何一对数字需要比较。</li>
+</ul>
+<p><strong>动图解析</strong><br>
+<img loading="lazy" 
+    src="https://www.runoob.com/wp-content/uploads/2019/03/bubbleSort.gif" 
+    alt="bubble sort" 
+     /></p>
+<p><strong>代码实现</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">Bubble</span><span class="p">(</span><span class="nx">arr</span> <span class="p">[]</span><span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">arr</span><span class="p">);</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="c1">// 冒泡是每次相邻的2个元素排
+</span><span class="c1"></span>        <span class="k">for</span> <span class="nx">j</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="p">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">arr</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="nx">i</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">j</span><span class="p">]</span> <span class="p">&gt;</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="p">{</span>
+                <span class="nx">arr</span><span class="p">[</span><span class="nx">j</span><span class="p">],</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="p">=</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">j</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">j</span><span class="p">]</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="2-选择排序">
+    <a href="#2-%e9%80%89%e6%8b%a9%e6%8e%92%e5%ba%8f" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    2. 选择排序
+</h2>
+<ul>
+<li>首先在未排序序列中找到最小（大）元素，存放到排序序列的起始位置。</li>
+<li>再从剩余未排序元素中继续寻找最小（大）元素，然后放到已排序序列的末尾。</li>
+<li>重复第二步，直到所有元素均排序完毕。</li>
+</ul>
+<p><strong>动图解析</strong>
+<img loading="lazy" 
+    src="https://www.runoob.com/wp-content/uploads/2019/03/selectionSort.gif" 
+    alt="selection sort" 
+     /></p>
+<p><strong>代码实现</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// 选择排序 O(n^2)
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">Selection</span><span class="p">(</span><span class="nx">arr</span> <span class="p">[]</span><span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// 这里的减一是因为需要通过下标方法元素 元素下标是从0开始的
+</span><span class="c1"></span>    <span class="c1">// 假设mid是最小值，然后和后面元素进行比较
+</span><span class="c1"></span>    <span class="c1">// 如果发现有比mid小的元素，就更新mid坐标
+</span><span class="c1"></span>    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">arr</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="nx">min</span> <span class="o">:=</span> <span class="nx">i</span>
+        <span class="k">for</span> <span class="nx">j</span> <span class="o">:=</span> <span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">j</span> <span class="p">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">arr</span><span class="p">);</span> <span class="nx">j</span><span class="o">++</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">min</span><span class="p">]</span> <span class="p">&gt;</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">j</span><span class="p">]</span> <span class="p">{</span>
+                <span class="nx">min</span> <span class="p">=</span> <span class="nx">j</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="c1">// 一轮结束之后交换2个元素位置
+</span><span class="c1"></span>        <span class="nx">arr</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">min</span><span class="p">]</span> <span class="p">=</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">min</span><span class="p">],</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="3-插入排序">
+    <a href="#3-%e6%8f%92%e5%85%a5%e6%8e%92%e5%ba%8f" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    3. 插入排序
+</h2>
+<ul>
+<li>将无序数列看成一个有序数列(范围是第一个元素)和无序数列(范围就是第二元素到末尾元素)。</li>
+<li>然后从头到尾扫描无序数列，把扫描到的元素插入到有序数列的适当位置。</li>
+<li>如果待插入的元素与有序序列中的某个元素相等，则将待插入元素插入到相等元素的后面。</li>
+</ul>
+<p><strong>动图解析</strong>
+<img loading="lazy" 
+    src="https://www.runoob.com/wp-content/uploads/2019/03/insertionSort.gif" 
+    alt="insertion sort" 
+     /></p>
+<p><strong>代码实现</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">Insertion</span><span class="p">(</span><span class="nx">numbers</span> <span class="p">[]</span><span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">numbers</span><span class="p">);</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="nx">pervIndex</span> <span class="o">:=</span> <span class="nx">i</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="nx">current</span> <span class="o">:=</span> <span class="nx">numbers</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span>
+        <span class="c1">// 用上一个元素比较当前的元素
+</span><span class="c1"></span>        <span class="k">for</span> <span class="nx">pervIndex</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">numbers</span><span class="p">[</span><span class="nx">pervIndex</span><span class="p">]</span> <span class="p">&gt;</span> <span class="nx">current</span> <span class="p">{</span>
+            <span class="nx">numbers</span><span class="p">[</span><span class="nx">pervIndex</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="p">=</span> <span class="nx">numbers</span><span class="p">[</span><span class="nx">pervIndex</span><span class="p">]</span>
+            <span class="c1">// 向左移动方便下次比较
+</span><span class="c1"></span>            <span class="nx">pervIndex</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="p">}</span>
+        <span class="c1">// 如果pervIndex没有变化说明就不需要操作
+</span><span class="c1"></span>        <span class="k">if</span> <span class="nx">pervIndex</span><span class="o">+</span><span class="mi">1</span> <span class="o">!=</span> <span class="nx">i</span> <span class="p">{</span>
+            <span class="nx">numbers</span><span class="p">[</span><span class="nx">pervIndex</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="p">=</span> <span class="nx">current</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="4-希尔排序">
+    <a href="#4-%e5%b8%8c%e5%b0%94%e6%8e%92%e5%ba%8f" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    4. 希尔排序
+</h2>
+<ul>
+<li>希尔排序属于缩小增量排序。</li>
+<li>将数据区分成特定间隔的几个小区块。</li>
+<li>每排完一轮数据渐进式变成有序的。</li>
+<li>以插入排序法排完区块内的数据后再渐渐减少间隔的距离。</li>
+</ul>
+<p><strong>动图解析</strong>
+<img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/0081Kckwgy1gkh1hyq8a5g30qi0exkc0.gif" 
+    alt="shell sort" 
+     /></p>
+<p><strong>代码实现</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// 希尔排序 O(n log n)
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">Shell</span><span class="p">(</span><span class="nx">arr</span> <span class="p">[]</span><span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">pervIndex</span><span class="p">,</span> <span class="nx">current</span> <span class="kt">int</span>
+    <span class="c1">// 1.先把原数据安装自定义步长分组
+</span><span class="c1"></span>    <span class="k">for</span> <span class="nx">gap</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="nx">arr</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span> <span class="nx">gap</span> <span class="p">&gt;</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">gap</span> <span class="o">/=</span> <span class="mi">2</span> <span class="p">{</span>
+      <span class="c1">// 2.然后分好组的数据进行选择排序
+</span><span class="c1"></span>        <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="nx">gap</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">arr</span><span class="p">);</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+          <span class="c1">// 希尔排序
+</span><span class="c1"></span>          <span class="nx">pervIndex</span> <span class="p">=</span> <span class="nx">i</span> <span class="o">-</span> <span class="nx">gap</span>
+          <span class="nx">current</span> <span class="p">=</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span>
+          <span class="k">for</span> <span class="nx">pervIndex</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">pervIndex</span><span class="p">]</span> <span class="p">&gt;</span> <span class="nx">current</span> <span class="p">{</span>
+              <span class="nx">arr</span><span class="p">[</span><span class="nx">pervIndex</span><span class="o">+</span><span class="nx">gap</span><span class="p">]</span> <span class="p">=</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">pervIndex</span><span class="p">]</span>
+              <span class="nx">pervIndex</span> <span class="o">-=</span> <span class="nx">gap</span>
+          <span class="p">}</span>
+          <span class="k">if</span> <span class="nx">pervIndex</span><span class="o">+</span><span class="nx">gap</span> <span class="o">!=</span> <span class="nx">i</span> <span class="p">{</span>
+              <span class="nx">arr</span><span class="p">[</span><span class="nx">pervIndex</span><span class="o">+</span><span class="nx">gap</span><span class="p">]</span> <span class="p">=</span> <span class="nx">current</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="5-递归函数">
+    <a href="#5-%e9%80%92%e5%bd%92%e5%87%bd%e6%95%b0" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    5. 递归函数
+</h2>
+<ul>
+<li>递归函数就是在函数里面调用自己。</li>
+<li>下面就是一个阶乘例子</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// https://zh.wikipedia.org/wiki/%E9%9A%8E%E4%B9%98
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">factorial</span><span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="mi">1</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">n</span> <span class="o">*</span> <span class="nf">factorial</span><span class="p">(</span><span class="nx">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="6-归并排序">
+    <a href="#6-%e5%bd%92%e5%b9%b6%e6%8e%92%e5%ba%8f" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    6. 归并排序
+</h2>
+<ul>
+<li>该算法是采用<code>分治法（Divide and Conquer）</code>的一个非常典型的应用。</li>
+<li>先将一个无序数列进行分组。</li>
+<li>然后子组也进行分组。</li>
+<li>将已有序的子序列合并，得到完全有序的序列；即先使每个子序列有序，再使子序列段间有序。若将两个有序表合并成一个有序表，称为二路归并。</li>
+</ul>
+<p><strong>动图解析</strong>
+<img loading="lazy" 
+    src="https://tva1.sinaimg.cn/large/0081Kckwgy1gkj9pvmv9wj31170qlh0x.jpg" 
+    alt="merge sort" 
+     /></p>
+<p><strong>1.代码实现</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">me.ibyte.algorithm.sort</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">me.ibyte.algorithm.Sort</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.Arrays</span><span class="o">;</span>
+
+<span class="c1">// Go写多了换Java写一些 思路和逻辑是一样的
+</span><span class="c1"></span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MergeSort</span> <span class="kd">implements</span> <span class="n">Sort</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="n">Integer</span><span class="o">[]</span> <span class="nf">sort</span><span class="o">(</span><span class="n">Integer</span><span class="o">[]</span> <span class="n">arr</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// 取到中轴 分组
+</span><span class="c1"></span>        <span class="kt">int</span> <span class="n">middle</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="na">length</span> <span class="o">/</span> <span class="n">2</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">arr</span><span class="o">.</span><span class="na">length</span> <span class="o">&lt;</span> <span class="n">2</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">arr</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="c1">// 通过中轴分左右组
+</span><span class="c1"></span>        <span class="n">Integer</span><span class="o">[]</span> <span class="n">left</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">copyOfRange</span><span class="o">(</span><span class="n">arr</span><span class="o">,</span> <span class="n">0</span><span class="o">,</span> <span class="n">middle</span><span class="o">);</span>
+        <span class="n">Integer</span><span class="o">[]</span> <span class="n">right</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">copyOfRange</span><span class="o">(</span><span class="n">arr</span><span class="o">,</span> <span class="n">middle</span><span class="o">,</span> <span class="n">arr</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+        <span class="c1">// 重复分组 直到不能分组为止并且进行小块归并排序
+</span><span class="c1"></span>        <span class="k">return</span> <span class="n">merge</span><span class="o">(</span><span class="n">sort</span><span class="o">(</span><span class="n">left</span><span class="o">),</span> <span class="n">sort</span><span class="o">(</span><span class="n">right</span><span class="o">));</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="n">Integer</span><span class="o">[]</span> <span class="nf">merge</span><span class="o">(</span><span class="n">Integer</span><span class="o">[]</span> <span class="n">left</span><span class="o">,</span> <span class="n">Integer</span><span class="o">[]</span> <span class="n">right</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// 存放排序好的零时数组
+</span><span class="c1"></span>        <span class="n">Integer</span><span class="o">[]</span> <span class="n">result</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Integer</span><span class="o">[</span><span class="n">left</span><span class="o">.</span><span class="na">length</span> <span class="o">+</span> <span class="n">right</span><span class="o">.</span><span class="na">length</span><span class="o">];</span>
+        <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
+        <span class="c1">// 不为空就进行排序
+</span><span class="c1"></span>        <span class="k">while</span> <span class="o">(</span><span class="n">left</span><span class="o">.</span><span class="na">length</span> <span class="o">!=</span> <span class="n">0</span> <span class="o">&amp;&amp;</span> <span class="n">right</span><span class="o">.</span><span class="na">length</span> <span class="o">!=</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">left</span><span class="o">[</span><span class="n">0</span><span class="o">]</span> <span class="o">&lt;=</span> <span class="n">right</span><span class="o">[</span><span class="n">0</span><span class="o">])</span> <span class="o">{</span>
+                <span class="n">result</span><span class="o">[</span><span class="n">i</span><span class="o">++]</span> <span class="o">=</span> <span class="n">left</span><span class="o">[</span><span class="n">0</span><span class="o">];</span>
+                <span class="c1">// 排好的就减去
+</span><span class="c1"></span>                <span class="n">left</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">copyOfRange</span><span class="o">(</span><span class="n">left</span><span class="o">,</span> <span class="n">1</span><span class="o">,</span> <span class="n">left</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="n">result</span><span class="o">[</span><span class="n">i</span><span class="o">++]</span> <span class="o">=</span> <span class="n">right</span><span class="o">[</span><span class="n">0</span><span class="o">];</span>
+                <span class="n">right</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">copyOfRange</span><span class="o">(</span><span class="n">right</span><span class="o">,</span> <span class="n">1</span><span class="o">,</span> <span class="n">right</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="c1">// 检测剩下的
+</span><span class="c1"></span>        <span class="k">while</span> <span class="o">(</span><span class="n">left</span><span class="o">.</span><span class="na">length</span> <span class="o">!=</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">result</span><span class="o">[</span><span class="n">i</span><span class="o">++]</span> <span class="o">=</span> <span class="n">left</span><span class="o">[</span><span class="n">0</span><span class="o">];</span>
+            <span class="n">left</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">copyOfRange</span><span class="o">(</span><span class="n">left</span><span class="o">,</span> <span class="n">1</span><span class="o">,</span> <span class="n">left</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">while</span> <span class="o">(</span><span class="n">right</span><span class="o">.</span><span class="na">length</span> <span class="o">!=</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">result</span><span class="o">[</span><span class="n">i</span><span class="o">++]</span> <span class="o">=</span> <span class="n">right</span><span class="o">[</span><span class="n">0</span><span class="o">];</span>
+            <span class="n">right</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">copyOfRange</span><span class="o">(</span><span class="n">right</span><span class="o">,</span> <span class="n">1</span><span class="o">,</span> <span class="n">right</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>源代码查看地址<a href="https://github.com/auula/java-algorithm/blob/main/src/main/java/me/ibyte/algorithm/sort/MergeSort.java">源代码</a></strong></p>
+<p><strong>2.Golang实现就想尝试一下go特性高阶函数</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">mergeSort</span><span class="p">(</span><span class="nx">arr</span> <span class="p">[]</span><span class="kt">int</span><span class="p">)</span> <span class="p">[]</span><span class="kt">int</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">result</span> <span class="p">[]</span><span class="kt">int</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">arr</span><span class="p">)</span> <span class="p">&lt;</span> <span class="mi">2</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">arr</span>
+    <span class="p">}</span>
+    <span class="nx">middle</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="nx">arr</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="c1">// 注意这是切片 切取的时候是包左 不包右
+</span><span class="c1"></span>    <span class="nx">left</span> <span class="o">:=</span> <span class="nx">arr</span><span class="p">[:</span><span class="nx">middle</span><span class="p">]</span>
+    <span class="nx">right</span> <span class="o">:=</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">middle</span><span class="p">:]</span>
+    <span class="k">return</span> <span class="kd">func</span><span class="p">(</span><span class="nx">left</span><span class="p">,</span> <span class="nx">right</span> <span class="p">[]</span><span class="kt">int</span><span class="p">)</span> <span class="p">[]</span><span class="kt">int</span> <span class="p">{</span>
+      <span class="c1">// 分组不能保证左右各组数据个数是一样的
+</span><span class="c1"></span>        <span class="k">for</span> <span class="nb">len</span><span class="p">(</span><span class="nx">left</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">right</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="nx">left</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="nx">right</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">{</span>
+              <span class="nx">result</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">result</span><span class="p">,</span> <span class="nx">left</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+              <span class="nx">left</span> <span class="p">=</span> <span class="nx">left</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+              <span class="nx">result</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">result</span><span class="p">,</span> <span class="nx">right</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+              <span class="nx">right</span> <span class="p">=</span> <span class="nx">right</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="nb">len</span><span class="p">(</span><span class="nx">left</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+            <span class="nx">result</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">result</span><span class="p">,</span> <span class="nx">left</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="c1">// 不断减小剩下的
+</span><span class="c1"></span>            <span class="nx">left</span> <span class="p">=</span> <span class="nx">left</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="nb">len</span><span class="p">(</span><span class="nx">right</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+            <span class="nx">result</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">result</span><span class="p">,</span> <span class="nx">right</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="nx">right</span> <span class="p">=</span> <span class="nx">right</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nx">result</span>
+    <span class="p">}(</span><span class="nf">mergeSort</span><span class="p">(</span><span class="nx">left</span><span class="p">),</span> <span class="nf">mergeSort</span><span class="p">(</span><span class="nx">right</span><span class="p">))</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="7-快速排序">
+    <a href="#7-%e5%bf%ab%e9%80%9f%e6%8e%92%e5%ba%8f" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    7. 快速排序
+</h2>
+<ul>
+<li>该算法是采用<code>分治法（Divide and Conquer）</code>的一个非常典型的应用。</li>
+<li>从数列中挑出来一个元素作为基准<code>pivot</code>。</li>
+<li>重新排序数列,所有元素比基准值小的摆放在基准前面,所有元素比基准值大的摆在基准的后面(相同的数可以到任一边)，在这个分区退出之后,该基准就处于数列的中间位置，这个称为分区<code>(partition)</code>操作。</li>
+<li>递归地<code>(recursive)</code>把小于基准值元素的子数列和大于基准值元素的子数列排序。</li>
+</ul>
+<p><strong>视频解析</strong></p>
+<iframe src="//player.bilibili.com/player.html?aid=62621532&bvid=BV1at411T75o&cid=108813206&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:300px;hight:500px" > </iframe>
+<p><strong>代码实现</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">me.ibyte.algorithm.sort</span><span class="o">;</span>
+
+
+<span class="kn">import</span> <span class="nn">me.ibyte.algorithm.Sort</span><span class="o">;</span>
+
+
+<span class="c1">// https://www.bilibili.com/video/BV1at411T75o?zw
+</span><span class="c1"></span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">QuickSort</span> <span class="kd">implements</span> <span class="n">Sort</span> <span class="o">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">Integer</span><span class="o">[]</span> <span class="nf">sort</span><span class="o">(</span><span class="n">Integer</span><span class="o">[]</span> <span class="n">arr</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">quickSort</span><span class="o">(</span><span class="n">arr</span><span class="o">,</span><span class="n">0</span><span class="o">,</span><span class="n">arr</span><span class="o">.</span><span class="na">length</span><span class="o">-</span><span class="n">1</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span>  <span class="n">Integer</span><span class="o">[]</span> <span class="nf">quickSort</span><span class="o">(</span><span class="n">Integer</span><span class="o">[]</span> <span class="n">arr</span><span class="o">,</span> <span class="kt">int</span> <span class="n">left</span><span class="o">,</span> <span class="kt">int</span> <span class="n">right</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">left</span> <span class="o">&gt;=</span> <span class="n">right</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">arr</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="c1">// L记录开始位置 R记录尾巴位置
+</span><span class="c1"></span>        <span class="kt">int</span> <span class="n">pivot</span> <span class="o">=</span> <span class="n">arr</span><span class="o">[</span><span class="n">left</span><span class="o">],</span><span class="n">L</span><span class="o">=</span><span class="n">left</span><span class="o">,</span><span class="n">R</span><span class="o">=</span><span class="n">right</span><span class="o">;</span>
+        <span class="k">while</span><span class="o">(</span><span class="n">left</span> <span class="o">&lt;</span> <span class="n">right</span><span class="o">){</span>
+            <span class="k">while</span> <span class="o">(</span><span class="n">left</span> <span class="o">&lt;</span> <span class="n">right</span> <span class="o">&amp;&amp;</span> <span class="n">arr</span><span class="o">[</span><span class="n">right</span><span class="o">]</span> <span class="o">&gt;=</span> <span class="n">pivot</span><span class="o">){</span>
+                <span class="n">right</span><span class="o">--;</span>
+            <span class="o">}</span>
+            <span class="n">arr</span><span class="o">[</span><span class="n">left</span><span class="o">]</span> <span class="o">=</span> <span class="n">arr</span><span class="o">[</span><span class="n">right</span><span class="o">];</span>
+            <span class="k">while</span><span class="o">(</span><span class="n">left</span> <span class="o">&lt;</span> <span class="n">right</span> <span class="o">&amp;&amp;</span> <span class="n">arr</span><span class="o">[</span><span class="n">left</span><span class="o">]</span> <span class="o">&lt;=</span> <span class="n">pivot</span><span class="o">){</span>
+                <span class="n">left</span><span class="o">++;</span>
+            <span class="o">}</span>
+            <span class="n">arr</span><span class="o">[</span><span class="n">right</span><span class="o">]</span> <span class="o">=</span> <span class="n">arr</span><span class="o">[</span><span class="n">left</span><span class="o">];</span>
+        <span class="o">}</span>
+        <span class="n">arr</span><span class="o">[</span><span class="n">left</span><span class="o">]</span> <span class="o">=</span> <span class="n">pivot</span><span class="o">;</span>
+        <span class="c1">// L =0 left = 是中心轴值的位置 -1 分左右作用
+</span><span class="c1"></span>        <span class="n">quickSort</span><span class="o">(</span><span class="n">arr</span><span class="o">,</span><span class="n">L</span><span class="o">,</span><span class="n">left</span><span class="o">-</span><span class="n">1</span><span class="o">);</span>
+        <span class="n">quickSort</span><span class="o">(</span><span class="n">arr</span><span class="o">,</span><span class="n">left</span><span class="o">+</span><span class="n">1</span><span class="o">,</span><span class="n">R</span><span class="o">);</span>
+        <span class="k">return</span>  <span class="n">arr</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="算法对比">
+    <a href="#%e7%ae%97%e6%b3%95%e5%af%b9%e6%af%94" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    算法对比
+</h2>
+<p><strong>根据个人电脑配置不同耗时不同！！!</strong>
+<strong>随机数据范围是:<code>rand.Intn(99999) - 9999)</code></strong>
+<strong>测试过程中包含了随机数生成逻辑代码，所有算法速度应该减去随机数生成耗时（实际时间应该更短）。</strong></p>
+<table>
+<thead>
+<tr>
+<th>算法</th>
+<th>数量积</th>
+<th>时间</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>冒泡</td>
+<td>10万</td>
+<td>14.118 seconds</td>
+</tr>
+<tr>
+<td>选择</td>
+<td>10万</td>
+<td>8.862 seconds</td>
+</tr>
+<tr>
+<td>插入</td>
+<td>10万</td>
+<td>1.69 seconds</td>
+</tr>
+<tr>
+<td>希尔</td>
+<td>10万</td>
+<td>0.25 seconds</td>
+</tr>
+<tr>
+<td>希尔</td>
+<td>100万</td>
+<td>0.509 seconds</td>
+</tr>
+<tr>
+<td>希尔</td>
+<td>1000万</td>
+<td>3.314 seconds</td>
+</tr>
+<tr>
+<td>希尔</td>
+<td>1亿</td>
+<td>40s 左右(5次重复测试结果)</td>
+</tr>
+<tr>
+<td>归并</td>
+<td>100万</td>
+<td>0.752 seconds</td>
+</tr>
+<tr>
+<td>快速</td>
+<td>100万</td>
+<td>0.109 seconds</td>
+</tr>
+</tbody>
+</table>
+<p><strong>测试源代码链接<a href="https://github.com/auula/go-algorithm/blob/master/sort.go">查看源代码</a>,别忘了<code>star</code>😯。</strong></p>
+
+    </div>
+</div>
+
+<div class="container">
+    
+    <nav class="flex container suggested">
+        
+        <a rel="prev" href="/post/golang-generic-programming/" title="Previous post (older)">
+            <span>Previous</span>
+            Golang Generic Programming
+            </a>
+        
+        
+        
+    </nav>
+    
+</div>
+ 
+<div class="container">
+    
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "https-hugo-tania-netlify-app" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (DISQUS) {
+            DISQUS.reset({
+                reload: true
+            })
+        }
+    })
+</script>
+
+</div>
+
+</main>
+
+
+        </main>
+        <footer class="footer flex">
+    <section class="container">
+        <nav class="footer-links">
+            
+            <a href="/index.xml">RSS</a>
+            
+        </nav>
+    </section>
+    <script defer src="/ts/features.39c567b3af1363f8abe74bfd650f3d58cb963716b7ad4b3b53f801d3ca585599.js" data-enable-footnotes="true"></script>
+</footer>
+    </body>
+</html>

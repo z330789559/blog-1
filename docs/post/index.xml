@@ -6,7 +6,19 @@
     <description>Recent content in Posts on 打码匠</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 16 Mar 2022 22:30:06 +0800</lastBuildDate><atom:link href="http://blog.ibyte.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 19 Mar 2022 15:14:12 +0800</lastBuildDate><atom:link href="http://blog.ibyte.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Commonly Used Sorting Algorithm</title>
+      <link>http://blog.ibyte.me/post/commonly-used-sorting-algorithm/</link>
+      <pubDate>Sat, 19 Mar 2022 15:14:12 +0800</pubDate>
+      
+      <guid>http://blog.ibyte.me/post/commonly-used-sorting-algorithm/</guid>
+      <description>作为一个程序员在谈到算法这个词的时候，第一反应就是那些令人头疼的LeetCode题目，那本篇文章我们就讲讲程序员几个基础排序算法。
+ 冒泡排序 选择排序 插入排序 希尔排序 快速排序 归并排序  复杂度对比图    1.冒泡排序   对无序数列进行安装每2个相邻数为一组的比较。 如果每相邻的2个数,左边比右边大 left &amp;gt; right就交换的位置。 针对所有的元素重复以上的步骤，除了最后一个。 持续每次对越来越少的元素重复上面的步骤，直到没有任何一对数字需要比较。  动图解析
+代码实现
+1 2 3 4 5 6 7 8 9 10  func Bubble(arr []int) { for i := 0; i &amp;lt; len(arr); i++ { // 冒泡是每次相邻的2个元素排  for j := 0; j &amp;lt; len(arr)-1-i; j++ { if arr[j] &amp;gt; arr[j+1] { arr[j], arr[j+1] = arr[j+1], arr[j] } } } }      2.</description>
+    </item>
+    
     <item>
       <title>Golang Generic Programming</title>
       <link>http://blog.ibyte.me/post/golang-generic-programming/</link>
