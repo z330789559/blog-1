@@ -5,5 +5,5 @@ description: Bottle is a lightweight kv storage engine based on a log structured
 weight: 1
 link: https://github.com/auula/bottle
 repo: https://github.com/auula/bottle
-icon: https://bottle.ibyte.me/static/gopher-bottle.png
+icon: 🏺
 ---
