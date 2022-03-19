@@ -677,16 +677,7 @@
 </div>
 </div><p>上面的<code>comparable</code>关键字就可以限制<code>map</code>的<code>Key</code>的类型是否为可比较的，说到这里我估计过不了多久某些卷王肯定又要跑去分析一下<code>comparable</code>底层实现了，我其实挺反感这样的卷王的，我不知道某些没事做的就跑去分析一下底层代码实现卷王有什么优越感？？？除了面试八股一下，难到你要去实现<code>GO</code>编译器吗？</p>
 <p>不用分析了，我顺带说一下，其实<code>comparable</code>底层实现也就是基于一个<code>interface</code>的，只是里面有一个行为方法而已，<code>Go</code>内置的可比较数据类型在更新之后会默认实现<code>comparable</code>，这个如果大家使用其他编程语言的泛型，想一想也就知道怎么实现了，当前一些开发集成环境还没有更好支持，可能格式化代码存在一些问题，不过可以忽略，泛型程序写起来还是挺流畅的，其实我感觉泛型参数指定的时候使用<code>&lt;T&gt;</code>比较好一点，用<code>[T]</code>这种在某种情况下给人一种从<code>map</code>里面运行函数调用一样，不过这个我猜测可能和底层实现有点关系，把生成的通用代码放到<code>map</code>里面，而泛型约束就是<code>map</code>的键，好了本篇关于<code>go</code>泛型文章就写到这里了。</p>
-<h2 id="本文章实例代码仓库">
-    <a href="#%e6%9c%ac%e6%96%87%e7%ab%a0%e5%ae%9e%e4%be%8b%e4%bb%a3%e7%a0%81%e4%bb%93%e5%ba%93" class="anchor">
-        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
-            <path fill-rule="evenodd"
-                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
-            </path>
-        </svg>
-    </a>
-    本文章实例代码仓库
-</h2>
+<p><strong>本文章实例代码仓库:</strong></p>
 <ul>
 <li><a href="https://github.com/auula/go_generic_code">https://github.com/auula/go_generic_code</a></li>
 </ul>
